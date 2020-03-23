@@ -1,0 +1,24 @@
+{
+  "name": "sum3",
+  "version": "1.0.0",
+  "description": "This is our back-end. You need front-end to run this project. Alternatively, use Postman to monitor the request and response.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "grunt": "^1.1.0",
+    "mongoose": "^5.9.5"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "^2.1.0",
+    "grunt-contrib-uglify": "^4.0.1",
+    "grunt-contrib-watch": "^1.1.0"
+  }
+}
