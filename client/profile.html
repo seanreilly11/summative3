@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Trade Easy - My Account</title>
+
+	<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<!-- Logged in nav -->
+	<nav class="navbar navbar-light bg-light justify-content-between">
+		<a href="index.html" class="navbar-brand">trade easy</a>
+		<div class="form-inline">
+			<p class="my-2 mr-3">Hi, <span id="firstNameGreeting"></span>!</p>
+			<a href="profile.html" class="btn btn-dark my-2 mr-2">My account</a>
+			<a href="index.html" class="btn btn-outline-dark logoutButton my-2">Logout</a>
+		</div>
+	</nav>
+
+	<div class="container-fluid h-100 my-5">
+		<div class="row h-100 justify-content-center align-items-center">
+			<div class="col-10 col-md-10 col-lg-8">
+				<div class="row account-info">
+					<div class="col-4 account-info__sidebar border d-flex flex-column justify-content-center">
+						<h5 class="account-info__sidebar__heading">Selling</h5>
+						<ul class="account-info__sidebar__list">
+							<li class="account-info__sidebar__list-item account-info__sidebar__list-item--active">Items I'm Selling</li>
+							<li class="account-info__sidebar__list-item">Sold items</li>
+						</ul>
+						<h5 class="account-info__sidebar__heading">Buying</h5>
+						<ul class="account-info__sidebar__list">
+							<li class="account-info__sidebar__list-item">Bought items</li>
+							<li class="account-info__sidebar__list-item">My watchlist</li>
+						</ul>
+					</div>
+					<div class="col-4 account-info__picture border">
+						<img src="images/avatar.png" alt="Profile avatar" class="w-100">
+					</div>
+					<div class="col-4 account-info__details border text-right d-flex flex-column justify-content-center">
+						<p>Username: <span id="profile-username"></span></p>
+						<p>Name: <span id="profile-fullname"></span></p>
+						<p>Email: <span id="profile-email"></span></p>
+						<p>Balance: <span id="profile-balance"></span></p>
+						<div>
+							<button class="btn btn-primary">Add Listing</button>
+							<button class="btn btn-outline-primary">Edit Profile</button>
+						</div>
+					</div>
+				</div>
+				<div class="row" id="account__cards"></div>
+			</div>
+		</div>
+	</div>
+	
+	<script src="node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
+	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<script src="js/script.js"></script>
+</body>
+</html>

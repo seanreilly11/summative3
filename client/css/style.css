@@ -1,6 +1,35 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans|Roboto&display=swap');
 
+
+/*html{
+	font-size: 62.5%;
+}*/
+
 body{
 	font-family: 'Open Sans', sans-serif;
 	/*font-family: 'Roboto', sans-serif;*/
+}
+
+.swal-text {
+    text-align: center;
+}
+
+.account-info__picture{
+	max-width: 250px;
+}
+
+.account-info__sidebar__list{
+	list-style: none;
+}
+
+.account-info__sidebar__list-item{
+	cursor: pointer;
+	margin-left: -25px;;
+	color: #007bff;
+	transition: margin-left .35s ease-in-out;
+}
+
+.account-info__sidebar__list-item--active{
+	margin-left: -15px;
+	font-weight: bold;
 }
