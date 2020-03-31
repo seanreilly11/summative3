@@ -134,15 +134,12 @@ $(document).ready(function(){
 					}
 					else{
 						$('#registerForm').hide();
-						sessionStorage.setItem('userID', user['_id']);
-						sessionStorage.setItem('username', user['username']);
-						sessionStorage.setItem('userFName',user['firstName']);
-						sessionStorage.setItem('userLName',user['lastName']);
-						sessionStorage.setItem('userEmail',user['email']);
-						fullName = sessionStorage.getItem('userFName') + " " + sessionStorage.getItem('userLName');
-						document.getElementById("firstNameGreeting").innerHTML = sessionStorage.getItem('userFName');
-						$('#navLoggedIn').show();
-						$('#navLoggedOut').hide();
+						swal({
+							title: 'Success!',
+							text: `New account registered ${username}`,
+							icon: 'success',
+							button: 'Okay!',
+						});
 					}
 				},
 				error:function(){
