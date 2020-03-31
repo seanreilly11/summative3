@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+
+	<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<!-- Logged out nav -->
+	<nav id="navLoggedOut" class="navbar navbar-light bg-light justify-content-between">
+		<a class="navbar-brand">trade easy</a>
+		<div class="form-inline">
+			<input id="loginUsername" class="form-control mr-2" type="text" placeholder="Username" aria-label="Username">
+			<input id="loginPassword" class="form-control mr-2" type="password" placeholder="Password" aria-label="Password">
+			<button id="loginButton" class="btn btn-outline-dark my-2 mr-2">Login</button>
+			<button id="registerButton" class="btn btn-dark my-2">Register</button>
+		</div>
+	</nav>
+
+	<!-- Logged in nav -->
+	<nav id="navLoggedIn" class="navbar navbar-light bg-light justify-content-between">
+		<a class="navbar-brand">trade easy</a>
+		<div class="form-inline">
+			<p class="my-2 mr-3">Hi, <span id="firstNameGreeting"></span>!</p>
+			<button id="myAccountButton" class="btn btn-dark my-2 mr-2">My account</button>
+			<button id="logoutButton" class="btn btn-outline-dark my-2">Logout</button>
+		</div>
+	</nav>
+
+
+
+
+	<div class="container-fluid h-100 mb-5">
+		<div class="row h-100 justify-content-center align-items-center">
+			<div class="col-10 col-md-8 col-lg-6">
+
+				<!-- Product card section -->
+				<div id="productCards" class="card-columns mt-5">
+				</div>
+
+				<!-- Sign Up Start -->
+				<form class="form-example" id="registerForm">
+					<h1 class="mt-5">Sign Up</h1>
+					<p class="">Sign up today and get a free $100 credit for your account!</p>
+
+					<!-- Input fields -->
+					<div class="form-group mt-5">
+						<label for="registerUsername">Username</label>
+						<input type="text" class="form-control" id="registerUsername" name="registerUsername">
+					</div>
+					<div class="row">
+						<div class="col-6 form-group">
+							<label for="registerFirstName">First Name</label>
+							<input type="text" class="form-control" id="registerFirstName" name="registerFirstName">
+						</div>
+						<div class=" col-6 form-group">
+							<label for="registerLastName">Last Name</label>
+							<input type="text" class="form-control" id="registerLastName" name="registerLastName">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="registerLocation">City</label>
+						<input type="text" class="form-control" id="registerLocation" name="registerLocation">
+					</div>
+					<div class="form-group">
+						<label for="registerEmail">Email</label>
+						<input type="email" class="form-control" id="registerEmail" name="registerEmail">
+					</div>
+					<div class="form-group">
+						<label for="registerPassword">Password</label>
+						<input type="password" class="form-control" id="registerPassword" name="registerPassword">
+					</div>
+
+					<button type="button" class="btn btn-primary mt-3" id="registerUser">Sign Up</button>
+					<!-- End input fields -->
+				</form>
+				<!-- Sign Up Finish -->
+			</div>
+		</div>
+	</div>
+
+	<script src="node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
+	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+	<script src="js/script.js"></script>
+</body>
+</html>
