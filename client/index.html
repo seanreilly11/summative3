@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<title>Trade Easy - Home</title>
 
 	<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/style.css">
@@ -11,7 +11,7 @@
 <body>
 	<!-- Logged out nav -->
 	<nav id="navLoggedOut" class="navbar navbar-light bg-light justify-content-between">
-		<a class="navbar-brand">trade easy</a>
+		<a href="index.html" class="navbar-brand">trade easy</a>
 		<div class="form-inline">
 			<input id="loginUsername" class="form-control mr-2" type="text" placeholder="Username" aria-label="Username">
 			<input id="loginPassword" class="form-control mr-2" type="password" placeholder="Password" aria-label="Password">
@@ -25,18 +25,19 @@
 		<a class="navbar-brand">trade easy</a>
 		<div class="form-inline">
 			<p class="my-2 mr-3">Hi, <span id="firstNameGreeting"></span>!</p>
-			<button id="myAccountButton" class="btn btn-dark my-2 mr-2">My account</button>
-			<button id="logoutButton" class="btn btn-outline-dark my-2">Logout</button>
+			<a href="profile.html" id="myAccountButton" class="btn btn-dark my-2 mr-2">My account</a>
+			<button id="logoutButton" class="btn btn-outline-dark logoutButton my-2">Logout</button>
 		</div>
 	</nav>
 
-	<div class="container-fluid h-100 mb-5">
+	<div class="container-fluid h-100 my-5">
 		<div class="row h-100 justify-content-center align-items-center">
+			<div class="row" id="productCards"></div>
 			<div class="col-10 col-md-8 col-lg-6">
 				<!-- Sign Up Start -->
 				<form class="form-example" id="registerForm">
-					<h1 class="mt-5">Sign Up</h1>
-					<p class="">Sign up today and get a free $100 credit for your account!</p>
+					<h1>Sign Up</h1>
+					<p>Sign up today and get a free $100 credit for your account!</p>
 
 					<!-- Input fields -->
 					<div class="form-group mt-5">
