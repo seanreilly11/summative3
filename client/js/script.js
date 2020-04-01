@@ -25,6 +25,7 @@ $(document).ready(function(){
 		$('#registerForm').hide();
 		showAllProducts();
 		$("#productCards").show();
+		$('#productPage').hide();
 	});
 
 	//get url and port from config.json
@@ -51,13 +52,16 @@ $(document).ready(function(){
 				console.log(data);
 				document.getElementById('productCards').innerHTML = "";
 				for (let i = 0; i < data.length; i++) {
-					document.getElementById('productCards').innerHTML +=
-					`<div class="product-link card col-4" id="${data[i]["_id"]}" >
-					<img class="img-thumbnail" src="${data[i].image}" alt="Image">
-					<div class="card-body">
+					let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+					<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+					if (sessionStorage['username']) {
+						card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+					}
+					card += `<div class="card-body">
 					<h3 class="card-title"> ${data[i].title}</h3>
 					<h4 class="card-text">$${data[i].price}</h4>
 					</div></div>`;
+					document.getElementById('productCards').innerHTML += card;
 				}
 				openProduct();
 			},
@@ -79,8 +83,9 @@ $(document).ready(function(){
 			$('#productPage').addClass('d-flex align-items-start');
 			
 			// Hides list of products
-			$('#productCards').toggle();
+			$('#productCards').hide();
 			$('#productPage').show();
+			$('#filterBar').hide();
 			
 			// Conditional statement for a user who is logged in
 			if(sessionStorage['username']){
@@ -103,22 +108,22 @@ $(document).ready(function(){
 										// Image, description, question section
 										document.getElementById('productInformation').innerHTML = 
 										`<img src="${data[i].image}" class="img-fluid" alt="failed to load ${data[i].title} image">
-										<div class="product-description">
-											${data[i].description}
+										<div class="product-description my-5">
+										${data[i].description}
 										</div>
 										<form>
-											<div class="question-form row form-group bg-secondary py-3 col-12">
-												<h3>Ask a Question</h3>
-												<textarea class="form-control" id="newQuestion" rows="3"></textarea>
-												<div class="col">
-													<button id="" class="btn btn-primary mt-3 float-right">Ask Question</button>
-												</div>
-											</div>
+										<div class="question-form row form-group bg-secondary py-3 col-12">
+										<h3>Ask a Question</h3>
+										<textarea class="form-control" id="newQuestion" rows="3"></textarea>
+										<div class="col">
+										<button id="" class="btn btn-primary mt-3 float-right">Ask Question</button>
+										</div>
+										</div>
 										</form>
 										<div id="qAndAPrintOut" class="question-previous-questions row">
-											<div class="col-12">
-												<h3>Questions and Answers</h3>
-											</div>
+										<div class="col-12">
+										<h3>Questions and Answers</h3>
+										</div>
 										</div>`;
 										// Button, title, listing id and seller information
 										document.getElementById('productButtonContainer').innerHTML =
@@ -126,18 +131,17 @@ $(document).ready(function(){
 										<h4 class="small">Listing #: ${data[i]._id}</h4>
 										<h4 class="text-success">$${data[i].price}</h4>
 										<div class="row">
-											<div class="col-md-6">
-												<button class="btn btn-outline-success btn-block">Buy Now</button>
-											</div>
-											<div class="col-md-6">
-												<button class="btn btn-outline-primary btn-block">Add watchlist</button>
-											</div>
+										<div class="col-md-6">
+										<button class="btn btn-outline-success btn-block">Buy Now</button>
+										</div>
+										<div class="col-md-6">
+										<button class="btn btn-outline-primary btn-block">Add watchlist</button>
+										</div>
 										</div>
 										<div class="mt-2">
-											<h5>Seller's Username:</h5>
-											<h5 class="small"><b>${sellerData[i].username}</b></h5>
-											<h5>Location:</h5>
-											<h5 class="small"><b>${sellerData[i].location}</b></h5>
+										<h5 class="small">Seller:</h5>
+										<h5>${sellerData[i].username}</h5>
+										<h6>${sellerData[i].location}</h6>
 										</div>
 										`;
 									}
@@ -173,14 +177,14 @@ $(document).ready(function(){
 												// Image, description, question section
 												document.getElementById('productInformation').innerHTML = 
 												`<img src="${data[i].image}" class="img-fluid" alt="failed to load ${data[i].title} image">
-												<div class="product-description">
-													${data[i].description}
+												<div class="product-description my-5">
+												${data[i].description}
 												</div>
 												<div class="question-previous-questions">
-													<h3>Questions and Answers</h3>
-													<div class="bg-secondary p-3">
-														<h4 class="text-light">Please log in or register to ask a question</h4>
-													</div>
+												<h3>Questions and Answers</h3>
+												<div class="bg-secondary p-3">
+												<h4 class="text-light">Please log in or register to ask a question</h4>
+												</div>
 												</div>`;
 												// Button, title, listing id and seller information
 												document.getElementById('productButtonContainer').innerHTML =
@@ -188,15 +192,14 @@ $(document).ready(function(){
 												<h4 class="small">Listing #: ${data[i]._id}</h4>
 												<h4 class="text-success">$${data[i].price}</h4>
 												<div class="row">
-													<div class="col-12">
-														<button id="registerAccountProductPageBtn" class="btn btn-outline-primary btn-block">Register an account</button>
-													</div>
+												<div class="col-12">
+												<button id="registerAccountProductPageBtn" class="btn btn-outline-primary btn-block">Register an account</button>
+												</div>
 												</div>
 												<div class="mt-2">
-													<h5>Seller's Username:</h5>
-													<h5 class="small"><b>${sellerData[i].username}</b></h5>
-													<h5>Location:</h5>
-													<h5 class="small"><b>${sellerData[i].location}</b></h5>
+												<h5 class="small">Seller:</h5>
+												<h5>${sellerData[i].username}</h5>
+												<h6>${sellerData[i].location}</h6>
 												</div>`;
 											}
 										}
@@ -215,7 +218,7 @@ $(document).ready(function(){
 				});
 			}
 		});
-	}
+}
 	// --- Product details end ---
 
 	//login
@@ -292,33 +295,35 @@ $(document).ready(function(){
 		$('#navLoggedOut').show();
 		$('#loginUsername').val("");
 		$('#loginPassword').val("");
+		$("#productPage").hide();
 		$("#productCards").show();
 	});
 
 	// show register
-		$('#registerButton').click(function(){
-			$("#productCards").hide();
-			$("#productPage").hide();
-			$('#registerUsername').val('');
-			$('#registerFirstName').val('');
-			$('#registerLastName').val('');
-			$('#registerLocation').val('');
-			$('#registerEmail').val('');
-			$('#registerPassword').val('');
-			$('#registerForm').show();
-		});
-  
-		$('#registerAccountProductPageBtn').click(function(){
-			$("#productCards").hide();
-			$("#productPage").hide();
-			$('#registerUsername').val('');
-			$('#registerFirstName').val('');
-			$('#registerLastName').val('');
-			$('#registerLocation').val('');
-			$('#registerEmail').val('');
-			$('#registerPassword').val('');
-			$('#registerForm').show();
-		});
+	$('#registerButton').click(function(){
+		$("#productCards").hide();
+		$("#productPage").hide();
+		$("#filterContainer").hide();
+		$('#registerUsername').val('');
+		$('#registerFirstName').val('');
+		$('#registerLastName').val('');
+		$('#registerLocation').val('');
+		$('#registerEmail').val('');
+		$('#registerPassword').val('');
+		$('#registerForm').show();
+	});
+
+	$('#registerAccountProductPageBtn').click(function(){
+		$("#productCards").hide();
+		$("#productPage").hide();
+		$('#registerUsername').val('');
+		$('#registerFirstName').val('');
+		$('#registerLastName').val('');
+		$('#registerLocation').val('');
+		$('#registerEmail').val('');
+		$('#registerPassword').val('');
+		$('#registerForm').show();
+	});
 
 	// register
 	$('#registerUser').click(function(){
@@ -459,6 +464,7 @@ $(document).ready(function(){
 	$("#myAccountButton").click(function(){
 		addProfileDetails();
 		$("#productCards").hide();
+		$("#productPage").hide();
 		$("#account").show();
 	})
 
