@@ -5,6 +5,7 @@ $(document).ready(function(){
 	// check log in and hide and show everything
 	$('#navLoggedIn').hide();
 	$('#registerForm').hide();
+	$('#account').hide();
 	$("#productCards").show();
 	
 	if (sessionStorage['username']) {
@@ -216,6 +217,79 @@ $(document).ready(function(){
 		} // else
 	});//register form
 
+	// empty all inputs on add product form
+	$("#addListingBtn").click(function(){
+		$('#addTitle').val('');
+		$('#addPrice').val('');
+		$('#addCategory').val('');
+		$('#addDescription').val('');
+		$('#addImage').val('');
+		$('#addKeywords').val('');
+		$('#shipping-pick').prop("checked", false);
+		$('#shipping-deliver').prop("checked", false);
+	})
+
+	// add product
+	$('#addProductBtn').click(function(){
+		let title = $('#addTitle').val();
+		let price = parseInt($('#addPrice').val());
+		let category = $('#addCategory').val();
+		let desc = $('#addDescription').val();
+		let image = $('#addImage').val();
+		let keywords = $('#addKeywords').val();
+		let pickup = $('#shipping-pick').is(":checked");
+		let deliver = $('#shipping-deliver').is(":checked");
+		let shipping = [];
+		if(pickup){shipping.push($('#shipping-pick').val());}
+		if(deliver){shipping.push($('#shipping-deliver').val());}
+		let keywordArray = keywords.split(' ');
+		let status = "listed";
+		price = price.toFixed(2);
+		let seller = sessionStorage.getItem("userID");
+
+		if (title == '' || price == '' || category == '' || desc == '' || image == '' || keywords == '' || (!pickup && !deliver)){
+			swal({
+				title: 'Fill Out Details',
+				text: 'Please enter all details',
+				icon: 'warning',
+				button: 'Got it',
+				timer: 2500
+			});
+		} 
+		else {
+			$.ajax({
+				url :`${url}/addProduct`,
+				type :'POST',
+				data:{
+					title : title,
+					description : desc,
+					price : price,
+					image : image,
+					status : status,
+					keywords : keywordArray,
+					sellerId : seller,
+					buyerId : seller,
+					category : category,
+					shipping : shipping
+				},
+				success : function(data){
+					console.log(data)
+					swal({
+						title: 'Success!',
+						text: `Congratulations! Your product has been listed`,
+						icon: 'success',
+						button: 'Okay!',
+						timer: 2500
+					});
+					showAllProducts();
+				},
+				error:function(){
+					console.log('error: cannot call api');
+				}
+			});//ajax
+		} // else
+	});//add product form
+
 	$("#myAccountButton").click(function(){
 		addProfileDetails();
 		$("#productCards").hide();
@@ -229,12 +303,10 @@ $(document).ready(function(){
 			type :'GET',
 			dataType :'json',
 			success : function(data){
-				console.log(data);
 				$("#profile-username").html(data.username);
 				$("#profile-fullname").html(fullName);
 				$("#profile-email").html(data.email);
 				$("#profile-balance").html(`$${data.balance}`);
-				
 			},//success
 			error:function(){
 				console.log('error: cannot call api');

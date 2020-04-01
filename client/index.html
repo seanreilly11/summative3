@@ -124,7 +124,7 @@
 					<p>Email: <span id="profile-email"></span></p>
 					<p>Balance: <span id="profile-balance"></span></p>
 					<div class="row justify-content-end">
-						<button class="btn btn-primary mr-2" data-toggle="modal" data-target="#addProductModal">Add Listing</button>
+						<button class="btn btn-primary mr-2" data-toggle="modal" data-target="#addProductModal" id="addListingBtn">Add Listing</button>
 						<button class="btn btn-outline-primary">Edit Profile</button>
 					</div>
 				</div>
@@ -198,11 +198,11 @@
 							<legend class="col-form-label col-sm-2 pt-0">Shipping</legend>
 							<div class="col-sm-10">
 								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="checkbox" id="shipping-pick" value="shipping-pick">
+									<input class="form-check-input" type="checkbox" id="shipping-pick" value="Pick up">
 									<label class="form-check-label" for="shipping-pick">Pick up</label>
 								</div>
 								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="checkbox" id="shipping-deliver" value="shipping-deliver">
+									<input class="form-check-input" type="checkbox" id="shipping-deliver" value="Delivery">
 									<label class="form-check-label" for="shipping-deliver">Delivery</label>
 								</div>
 							</div>
@@ -213,7 +213,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary">Save changes</button>
+					<button type="button" class="btn btn-primary" id="addProductBtn"  data-dismiss="modal">Save changes</button>
 				</div>
 			</div>
 		</div>
