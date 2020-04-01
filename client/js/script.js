@@ -7,13 +7,13 @@ $(document).ready(function(){
 	$('#registerForm').hide();
 	$("#productCards").show();
 	$('#productPage').hide();
-	
+
 	if (sessionStorage['username']) {
 		$('#navLoggedIn').show();
 		$('#navLoggedOut').hide();
 		fullName = sessionStorage.getItem('userFName') + " " + sessionStorage.getItem('userLName');
 		document.getElementById("firstNameGreeting").innerHTML = sessionStorage.getItem('userFName');
-	} 
+	}
 	else {
 		$('#navLoggedIn').hide();
 		$('#navLoggedOut').show();
@@ -232,7 +232,7 @@ $(document).ready(function(){
 				button: 'Got it',
 				timer: 2500
 			});
-		} 
+		}
 		else {
 			$.ajax({
 				url :`${url}/login`,
@@ -304,7 +304,6 @@ $(document).ready(function(){
 	});
 
 	// show register
-	function showRegister(){
 		$('#registerButton').click(function(){
 			$("#productCards").hide();
 			$("#productPage").hide();
@@ -316,6 +315,7 @@ $(document).ready(function(){
 			$('#registerPassword').val('');
 			$('#registerForm').show();
 		});
+  
 		$('#registerAccountProductPageBtn').click(function(){
 			$("#productCards").hide();
 			$("#productPage").hide();
@@ -327,8 +327,6 @@ $(document).ready(function(){
 			$('#registerPassword').val('');
 			$('#registerForm').show();
 		});
-	}
-	showRegister();
 
 	// register
 	$('#registerUser').click(function(){
@@ -347,7 +345,7 @@ $(document).ready(function(){
 				button: 'Got it',
 				timer: 2500
 			});
-		} 
+		}
 		else {
 			let watchlist = [];
 			$.ajax({
@@ -417,7 +415,7 @@ $(document).ready(function(){
 	// $(".product-link").click(function(){
 	// 	sessionStorage.setItem('productId',"this id");
 	// 	productId = $(this).attr('id');
-	// 	// console.log($(this).id, productId, sessionStorage)	
+	// 	// console.log($(this).id, productId, sessionStorage)
 	// })
 
 	// function showProductInfo(){
@@ -449,4 +447,3 @@ $(document).ready(function(){
 	});
 
 }); // document
-
