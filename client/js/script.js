@@ -77,9 +77,10 @@ $(document).ready(function(){
 		$('.product-link').click(function(){
 			clickedProduct = this.id;
 			console.log(clickedProduct);
+			$('#productPage').addClass('d-flex align-items-start');
 			
 			// Hides list of products
-			$('#productCards').hide();
+			$('#productCards').toggle();
 			$('#productPage').show();
 			
 			// Conditional statement for a user who is logged in
@@ -101,7 +102,7 @@ $(document).ready(function(){
 									// Couldn't figure out how to get user name displayed so calling ajax inside ajax. May not be proper practice
 									success: function(sellerData){
 										// Image, description, question section
-										document.getElementById('productInformation').innerHTML += 
+										document.getElementById('productInformation').innerHTML = 
 										`<img src="${data[i].image}" class="img-fluid" alt="failed to load ${data[i].title} image">
 										<div class="product-description">
 											${data[i].description}
@@ -115,13 +116,13 @@ $(document).ready(function(){
 												</div>
 											</div>
 										</form>
-										<div id="qAndAPrintOut" class="question-previous-questions col-12">
-											<h3>Questions and Answers</h3>
-											<div>
+										<div id="qAndAPrintOut" class="question-previous-questions row">
+											<div class="col-12">
+												<h3>Questions and Answers</h3>
 											</div>
 										</div>`;
 										// Button, title, listing id and seller information
-										document.getElementById('productButtonContainer').innerHTML +=
+										document.getElementById('productButtonContainer').innerHTML =
 										`<h3>${data[i].title}</h3>
 										<h4 class="small">Listing #: ${data[i]._id}</h4>
 										<h4 class="text-success">$${data[i].price}</h4>
@@ -171,22 +172,19 @@ $(document).ready(function(){
 										for(let i = 0; i < sellerData.length; i++){
 											if(newSellerId === sellerData[i]._id){
 												// Image, description, question section
-												document.getElementById('productInformation').innerHTML += 
+												document.getElementById('productInformation').innerHTML = 
 												`<img src="${data[i].image}" class="img-fluid" alt="failed to load ${data[i].title} image">
 												<div class="product-description">
 													${data[i].description}
 												</div>
-												<div id="qAndAPrintOut" class="question-previous-questions col-12 bg-secondary p-2">
+												<div class="question-previous-questions">
 													<h3>Questions and Answers</h3>
-													<div>
+													<div class="bg-secondary p-3">
+														<h4 class="text-light">Please log in or register to ask a question</h4>
 													</div>
-												</div>
-												<div class="p-2 bg-secondary">
-													<h4 class="small">Please log in or register to ask a question</h4>
-												</div>
-												`;
+												</div>`;
 												// Button, title, listing id and seller information
-												document.getElementById('productButtonContainer').innerHTML +=
+												document.getElementById('productButtonContainer').innerHTML =
 												`<h3>${data[i].title}</h3>
 												<h4 class="small">Listing #: ${data[i]._id}</h4>
 												<h4 class="text-success">$${data[i].price}</h4>
@@ -200,8 +198,7 @@ $(document).ready(function(){
 													<h5 class="small"><b>${sellerData[i].username}</b></h5>
 													<h5>Location:</h5>
 													<h5 class="small"><b>${sellerData[i].location}</b></h5>
-												</div>
-												`;
+												</div>`;
 											}
 										}
 									},
