@@ -33,3 +33,7 @@ body{
 	margin-left: -15px;
 	font-weight: bold;
 }
+
+.product-btn-container{
+	border: 2px solid grey;
+}
