@@ -84,10 +84,23 @@ $(document).ready(function(){
 				success : function(user){
 					console.log(user);
 					if (user == 'User not found'){
-						alert('There is no account for this username. Please try again or register');
+						swal({
+							title: 'Not a user',
+							text: 'There is no account for this username. Please try again or register',
+							icon: 'warning',
+							button: 'Got it',
+							timer: 2500
+						});
 						$('#loginUsername').val('');
 						$('#loginPassword').val('');
 					} else if (user == 'Not authorised. Incorrect password'){
+						swal({
+							title: 'Incorrect password',
+							text: 'Password incorrect. Please try again',
+							icon: 'warning',
+							button: 'Got it',
+							timer: 2500
+						});
 						alert('Password incorrect. Please try again');
 						$('#loginPassword').val('');
 						$('#loginPassword').focus();
@@ -146,7 +159,13 @@ $(document).ready(function(){
 		let password = $('#registerPassword').val();
 
 		if (username == '' ||fname == '' || lname == '' || location == '' || email == '' || password == ''){
-			alert('Please enter all details');
+			swal({
+				title: 'Fill Out Details',
+				text: 'Please enter all details',
+				icon: 'warning',
+				button: 'Got it',
+				timer: 2500
+			});
 		} 
 		else {
 			let watchlist = [];
@@ -166,7 +185,13 @@ $(document).ready(function(){
 				success : function(user){
 					console.log(user);
 					if (user === "This username is already taken. Please try another one"){
-						alert('There is already an account with this username. Please login or try again');
+						swal({
+							title: 'error',
+							text: 'There is already an account with this username. Please login or try again',
+							icon: 'warning',
+							button: 'Got it',
+							timer: 2500
+						});
 					}
 					else{
 						$('#registerForm').hide();
