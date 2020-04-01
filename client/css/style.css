@@ -33,3 +33,9 @@ body{
 	margin-left: -15px;
 	font-weight: bold;
 }
+
+@media (min-width: 576px){
+	.modal-dialog{
+		max-width: 600px;
+	}
+}
