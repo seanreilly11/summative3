@@ -41,7 +41,7 @@ app.get('/products', (req,res)=>{
 	Product.find().then(result =>{
 		res.send(result);
 	})
-}); // get all products 
+}); // get all products
 
 //get Products by ID
 app.get('/products/p=:id', (req,res)=>{
@@ -90,7 +90,7 @@ app.delete('/deleteProduct/p=:id', (req,res)=>{
 			res.send("Can't delete Product. ID Not found")
 		}
 	}).catch(err => res.send(err));
-}); // delete Product  
+}); // delete Product
 
 // update Product
 app.patch('/updateProduct/p=:id', (req,res)=>{
@@ -147,7 +147,7 @@ app.get('/comments', (req,res)=>{
 	Comment.find().then(result =>{
 		res.send(result);
 	})
-}); // get all comments 
+}); // get all comments
 
 //get comments of a product
 app.get('/comments/p=:id', (req,res)=>{
@@ -217,7 +217,7 @@ app.delete('/deleteComment/c=:id', (req,res)=>{
 			res.send("Can't delete Comment. ID Not found")
 		}
 	}).catch(err => res.send(err));
-}); // delete comment  
+}); // delete comment
 // comment functions ENDS
 
 // user functions STARTS
@@ -344,4 +344,3 @@ app.delete('/deleteUser/u=:id', (req,res)=>{
 
 // leave right at bottom
 app.listen(port, () => console.log(`App listening on port ${port}!`))
-

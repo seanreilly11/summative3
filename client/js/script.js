@@ -6,13 +6,13 @@ $(document).ready(function(){
 	$('#navLoggedIn').hide();
 	$('#registerForm').hide();
 	$("#productCards").show();
-	
+
 	if (sessionStorage['username']) {
 		$('#navLoggedIn').show();
 		$('#navLoggedOut').hide();
 		fullName = sessionStorage.getItem('userFName') + " " + sessionStorage.getItem('userLName');
 		document.getElementById("firstNameGreeting").innerHTML = sessionStorage.getItem('userFName');
-	} 
+	}
 	else {
 		$('#navLoggedIn').hide();
 		$('#navLoggedOut').show();
@@ -79,7 +79,7 @@ $(document).ready(function(){
 				button: 'Got it',
 				timer: 2500
 			});
-		} 
+		}
 		else {
 			$.ajax({
 				url :`${url}/login`,
@@ -152,7 +152,8 @@ $(document).ready(function(){
 
 	// show register
 	$('#registerButton').click(function(){
-		$("#productCards").hide();
+		$('#productCards').hide();
+		$('#filterContainer').hide();
 		$('#registerUsername').val('');
 		$('#registerFirstName').val('');
 		$('#registerLastName').val('');
@@ -179,7 +180,7 @@ $(document).ready(function(){
 				button: 'Got it',
 				timer: 2500
 			});
-		} 
+		}
 		else {
 			let watchlist = [];
 			$.ajax({
@@ -249,7 +250,7 @@ $(document).ready(function(){
 	// $(".product-link").click(function(){
 	// 	sessionStorage.setItem('productId',"this id");
 	// 	productId = $(this).attr('id');
-	// 	// console.log($(this).id, productId, sessionStorage)	
+	// 	// console.log($(this).id, productId, sessionStorage)
 	// })
 
 	// function showProductInfo(){
@@ -280,4 +281,3 @@ $(document).ready(function(){
 		$(this).addClass("account-info__sidebar__list-item--active")
 	});
 }); // document
-
