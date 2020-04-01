@@ -37,3 +37,9 @@ body{
 .product-btn-container{
 	border: 2px solid grey;
 }
+
+@media (min-width: 576px){
+	.modal-dialog{
+		max-width: 600px;
+	}
+}

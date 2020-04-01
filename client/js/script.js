@@ -5,6 +5,7 @@ $(document).ready(function(){
 	// check log in and hide and show everything
 	$('#navLoggedIn').hide();
 	$('#registerForm').hide();
+	$('#account').hide();
 	$("#productCards").show();
 	$('#productPage').hide();
 
@@ -20,7 +21,10 @@ $(document).ready(function(){
 	}
 
 	$(".navbar-brand").click(function(){
+		$("#account").hide();
+		$('#registerForm').hide();
 		showAllProducts();
+		$("#productCards").show();
 	});
 
 	//get url and port from config.json
@@ -31,8 +35,6 @@ $(document).ready(function(){
 		success : function(data){
 			url = `${data.SERVER_URL}:${data.SERVER_PORT}`;
 			showAllProducts();
-			addProfileDetails();
-			// showProductInfo();
 		},//success
 		error:function(){
 			console.log('error: cannot call api');
@@ -47,18 +49,15 @@ $(document).ready(function(){
 			dataType :'json',
 			success: function(data){
 				console.log(data);
-				if(window.location.href.includes("index.html")){
-					document.getElementById('productCards').innerHTML = "";
-					for (let i = 0; i < data.length; i++) {
-						document.getElementById('productCards').innerHTML +=
-						`<div class="product-link card col" id="${data[i]["_id"]}" >
-							<img class="img-thumbnail" src="${data[i].image}" alt="Image">
-							<div class="card-body">
-								<h3 class="card-title"> ${data[i].title}</h3>
-								<h4 class="card-text">$${data[i].price}</h4>
-							</div>
-						</div>`;
-					}
+				document.getElementById('productCards').innerHTML = "";
+				for (let i = 0; i < data.length; i++) {
+					document.getElementById('productCards').innerHTML +=
+					`<div class="product-link card col-4" id="${data[i]["_id"]}" >
+					<img class="img-thumbnail" src="${data[i].image}" alt="Image">
+					<div class="card-body">
+					<h3 class="card-title"> ${data[i].title}</h3>
+					<h4 class="card-text">$${data[i].price}</h4>
+					</div></div>`;
 				}
 				openProduct();
 			},
@@ -252,17 +251,11 @@ $(document).ready(function(){
 							timer: 2500
 						});
 						$('#loginUsername').val('');
+						$('#loginUsername').focus();
 						$('#loginPassword').val('');
 					} else if (user == 'Not authorised. Incorrect password'){
 						swal({
 							title: 'Incorrect password',
-							text: 'Password incorrect. Please try again',
-							icon: 'warning',
-							button: 'Got it',
-							timer: 2500
-						});
-						swal({
-							title: 'Incorrect Password',
 							text: 'Password incorrect. Please try again',
 							icon: 'warning',
 							button: 'Got it',
@@ -282,7 +275,6 @@ $(document).ready(function(){
 						$('#navLoggedIn').show();
 						$('#navLoggedOut').hide();
 						$('#registerForm').hide();
-						console.log(window.location.href)
 						showAllProducts();
 					}
 				},
@@ -294,7 +286,7 @@ $(document).ready(function(){
 	});//login form
 
 	// logout button
-	$('.logoutButton').click(function(){
+	$('#logoutButton').click(function(){
 		sessionStorage.clear();
 		$('#navLoggedIn').hide();
 		$('#navLoggedOut').show();
@@ -391,6 +383,85 @@ $(document).ready(function(){
 		} // else
 	});//register form
 
+	// empty all inputs on add product form
+	$("#addListingBtn").click(function(){
+		$('#addTitle').val('');
+		$('#addPrice').val('');
+		$('#addCategory').val('');
+		$('#addDescription').val('');
+		$('#addImage').val('');
+		$('#addKeywords').val('');
+		$('#shipping-pick').prop("checked", false);
+		$('#shipping-deliver').prop("checked", false);
+	})
+
+	// add product
+	$('#addProductBtn').click(function(){
+		let title = $('#addTitle').val();
+		let price = parseInt($('#addPrice').val());
+		let category = $('#addCategory').val();
+		let desc = $('#addDescription').val();
+		let image = $('#addImage').val();
+		let keywords = $('#addKeywords').val();
+		let pickup = $('#shipping-pick').is(":checked");
+		let deliver = $('#shipping-deliver').is(":checked");
+		let shipping = [];
+		if(pickup){shipping.push($('#shipping-pick').val());}
+		if(deliver){shipping.push($('#shipping-deliver').val());}
+		let keywordArray = keywords.split(' ');
+		let status = "listed";
+		price = price.toFixed(2);
+		let seller = sessionStorage.getItem("userID");
+
+		if (title == '' || price == '' || category == '' || desc == '' || image == '' || keywords == '' || (!pickup && !deliver)){
+			swal({
+				title: 'Fill Out Details',
+				text: 'Please enter all details',
+				icon: 'warning',
+				button: 'Got it',
+				timer: 2500
+			});
+		} 
+		else {
+			$.ajax({
+				url :`${url}/addProduct`,
+				type :'POST',
+				data:{
+					title : title,
+					description : desc,
+					price : price,
+					image : image,
+					status : status,
+					keywords : keywordArray,
+					sellerId : seller,
+					buyerId : seller,
+					category : category,
+					shipping : shipping
+				},
+				success : function(data){
+					console.log(data)
+					swal({
+						title: 'Success!',
+						text: `Congratulations! Your product has been listed`,
+						icon: 'success',
+						button: 'Okay!',
+						timer: 2500
+					});
+					showAllProducts();
+				},
+				error:function(){
+					console.log('error: cannot call api');
+				}
+			});//ajax
+		} // else
+	});//add product form
+
+	$("#myAccountButton").click(function(){
+		addProfileDetails();
+		$("#productCards").hide();
+		$("#account").show();
+	})
+
 	// add profile details on account page
 	function addProfileDetails(){
 		$.ajax({
@@ -398,44 +469,16 @@ $(document).ready(function(){
 			type :'GET',
 			dataType :'json',
 			success : function(data){
-				console.log(data);
-				if(window.location.href.includes("profile.html")){
-					$("#profile-username").html(data.username);
-					$("#profile-fullname").html(fullName);
-					$("#profile-email").html(data.email);
-					$("#profile-balance").html(`$${data.balance}`);
-				}
+				$("#profile-username").html(data.username);
+				$("#profile-fullname").html(fullName);
+				$("#profile-email").html(data.email);
+				$("#profile-balance").html(`$${data.balance}`);
 			},//success
 			error:function(){
 				console.log('error: cannot call api');
 			}//error
 		});//ajax
 	}// add profile details
-
-	// $(".product-link").click(function(){
-	// 	sessionStorage.setItem('productId',"this id");
-	// 	productId = $(this).attr('id');
-	// 	// console.log($(this).id, productId, sessionStorage)
-	// })
-
-	// function showProductInfo(){
-	// 	let id = sessionStorage.getItem('productId');
-	// 	console.log(productId);
-	// 	$.ajax({
-	// 		url :`${url}/products/`,
-	// 		type :'GET',
-	// 		dataType :'json',
-	// 		success : function(data){
-	// 			console.log(data);
-	// 			if(window.location.href.includes("product.html")){
-	// 				$("#product-info").html(data.title)
-	// 			}
-	// 		},//success
-	// 		error:function(){
-	// 			console.log('error: cannot call api');
-	// 		}//error
-	// 	});//ajax
-	// }
 
 	// add and remove active list class on profile side bar
 	$(".account-info__sidebar__list-item").click(function(){
