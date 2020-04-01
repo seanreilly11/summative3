@@ -50,12 +50,13 @@ $(document).ready(function(){
 					document.getElementById('productCards').innerHTML = "";
 					for (let i = 0; i < data.length; i++) {
 						document.getElementById('productCards').innerHTML +=
-						`<a href="product.html" class="product-link" id="${data[i]["_id"]}"><div class="card col">
-						<img class="img-thumbnail" src="${data[i].image}" alt="Image">
-						<div class="card-body">
-						<h3 class="card-title"> ${data[i].title}</h3>
-						<h4 class="card-text">$${data[i].price}</h4>
-						</div></div></a>`;
+						`<div class="product-link card col" id="${data[i]["_id"]}" >
+							<img class="img-thumbnail" src="${data[i].image}" alt="Image">
+							<div class="card-body">
+								<h3 class="card-title"> ${data[i].title}</h3>
+								<h4 class="card-text">$${data[i].price}</h4>
+							</div>
+						</div>`;
 					}
 				}
 			},
@@ -71,7 +72,13 @@ $(document).ready(function(){
 		let password = $('#loginPassword').val();
 
 		if (username == '' || password == ''){
-			alert('Please enter all details');
+			swal({
+				title: 'Enter username and password',
+				text: 'Please fill all fields details',
+				icon: 'warning',
+				button: 'Got it',
+				timer: 2500
+			});
 		} 
 		else {
 			$.ajax({
@@ -101,7 +108,13 @@ $(document).ready(function(){
 							button: 'Got it',
 							timer: 2500
 						});
-						alert('Password incorrect. Please try again');
+						swal({
+							title: 'Incorrect Password',
+							text: 'Password incorrect. Please try again',
+							icon: 'warning',
+							button: 'Got it',
+							timer: 2500
+						});
 						$('#loginPassword').val('');
 						$('#loginPassword').focus();
 					} else{
