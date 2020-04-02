@@ -126,9 +126,66 @@ $(document).ready(function(){
 							<h5 class="small">Seller:</h5>
 							<h5>${sellerData.username}</h5>
 							<h6>${sellerData.location}</h6>
-							</div>
-							`;
+							</div>`;
 							listingPrivledges();
+							// Confirmation pop up add to watchlist
+							$('#productAddToWatchList').click(function(){
+								// Alert pop up
+								swal({
+									title: `Add to Wishlist`,
+									text: `Are you sure you want to add ${data.title} to your watchlist?`,
+									buttons: {
+										cancel: 'Cancel',
+										success: {
+											text: 'Add',
+											value: 'add',
+										},
+									},
+								})
+								// Add to watch list method
+								.then((value) => {
+									switch (value) {
+										case 'add': 
+										swal({
+											title: 'Added to watchlist',
+											text: `Successfully added ${data.title} to your watchlist`,
+											icon: 'success',
+											button: 'Got it',
+											timer: 2500
+										});
+										break;
+									}
+								});
+							})
+							// Confirmation pop up purchase item
+							$('#productPurchase').click(function(){
+								// Alert pop up
+								swal({
+									title: `Purchase ${data.title}`,
+									text: `Are you sure you want to Purchase ${data.title} to your watchlist?`,
+									buttons: {
+										cancel: 'Cancel',
+										success: {
+											text: 'Purchase',
+											value: 'add',
+										},
+									},
+								})
+								// Add to watch list method
+								.then((value) => {
+									switch (value) {
+										case 'add': 
+										swal({
+											title: `${data.title} has been purchased`,
+											text: `Successfully purchased ${data.title}, itemId #: ${data._id}`,
+											icon: 'success',
+											button: 'Got it',
+											timer: 2500
+										});
+										break;
+									}
+								});
+							});
 						}
 					});
 				},
@@ -155,10 +212,10 @@ $(document).ready(function(){
 			// Adds buttons
 			document.getElementById('dynamicBtnContainer').innerHTML = 
 			`<div class="col-md-6">
-			<button class="btn btn-outline-success btn-block">Buy Now</button>
+			<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
 			</div>
 			<div class="col-md-6">
-			<button class="btn btn-outline-primary btn-block">Add watchlist</button>
+			<button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
 			</div>`;
 		} else{
 			// Adds warning to login or register
