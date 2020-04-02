@@ -102,7 +102,7 @@ $(document).ready(function(){
 						success: function(sellerData){
 							// Image, description, question section
 							document.getElementById('productInformation').innerHTML = 
-							`<img src="${data.image}" class="img-fluid" alt="failed to load ${data.title} image">
+							`<img src="${data.image}" class="img-fluid" alt="failed to load ${data.title} image"/>
 							<div class="product-description my-5">
 							${data.description}
 							</div>
@@ -130,6 +130,18 @@ $(document).ready(function(){
 							listingPrivledges();
 							// Confirmation pop up add to watchlist
 							$('#productAddToWatchList').click(function(){
+								$.ajax({
+											url: `${url}/users/u=${localStorage.getItem('userID');}`
+											type: 'POST',
+											data: 'json',
+											success: function(buyerData){
+												buyerData.watchlist.push(data._id);
+												alert('success');
+											},
+											error: function(error){
+												alert('failed to add to watchlist');
+											}
+										})
 								// Alert pop up
 								swal({
 									title: `Add to Wishlist`,
@@ -144,8 +156,9 @@ $(document).ready(function(){
 								})
 								// Add to watch list method
 								.then((value) => {
+
 									switch (value) {
-										case 'add': 
+										case 'add':
 										swal({
 											title: 'Added to watchlist',
 											text: `Successfully added ${data.title} to your watchlist`,
