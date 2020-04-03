@@ -151,16 +151,20 @@ $(document).ready(function(){
 												console.log(buyerWatchlist + ' before');
 												var productToAdd = data._id;
 												buyerWatchlist = productToAdd;
+												previousWatchlist.push(buyerWatchlist);
+												console.log(buyerData.watchlist);
 												// Adding product id to user's watchlist array
 												$.ajax({
 													url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
 													type: 'PATCH',
 													data: {
-														watchlist: previousWatchlist
+														// watchlist: buyerWatchlist
+														watchlist: [previousWatchlist]
 													},
 													success: function(updateBuyerWatchlist){
 														console.log(buyerWatchlist);
-														previousWatchlist.push(buyerWatchlist);
+														buyerWatchlist = productToAdd;
+														// previousWatchlist.push(buyerWatchlist);
 														console.log(previousWatchlist);
 													},
 													error: function(error){
