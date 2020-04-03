@@ -319,7 +319,7 @@ app.patch('/updateWatchlist/u=:id', (req,res)=>{
 	const idParam = req.params.id;
 	User.findById(idParam, (err,result)=>{
 		const updatedWatchlist = {
-			watchlist : req.body.watchlist
+			$push : {watchlist : req.body.watchlist}
 		};
 		User.updateOne({_id:idParam}, updatedWatchlist).then(result=>{
 			res.send(result);
