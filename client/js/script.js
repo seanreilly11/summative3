@@ -75,12 +75,10 @@ $(document).ready(function(){
 	// Open product page
 	function openProduct(){
 		$('.product-link').click(function(){
-			var sellerId;
-			var sellerUsername;
+			let sellerId, sellerUsername;
 			let clickedProduct = this.id;
 			console.log(clickedProduct);
-			$('#productPage').addClass('d-flex align-items-start');
-			
+
 			// Hides list of products
 			$('#productCards').hide();
 			$('#productPage').show();
@@ -92,6 +90,7 @@ $(document).ready(function(){
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
+					console.log(data)
 					// Gets seller's information
 					sellerId = data.sellerId;
 					$.ajax({
@@ -102,30 +101,24 @@ $(document).ready(function(){
 						success: function(sellerData){
 							// Image, description, question section
 							document.getElementById('productInformation').innerHTML = 
-							`<img src="${data.image}" class="img-fluid" alt="failed to load ${data.title} image"/>
-							<div class="product-description my-5">
-							${data.description}
-							</div>
-							<div id="questionForm">
-
-							</div>
+							`<img src="${data.image}" class="img-fluid" alt="${data.title}">
+							<div class="product-description my-5">${data.description}</div>
+							<div id="questionForm"></div>
 							<div id="qAndAPrintOut" class="question-previous-questions row">
 							<div class="col-12">
 							<h3>Questions and Answers</h3>
-							</div>
-							</div>`;
+							</div></div>`;
 							// Button, title, listing id and seller information
 							document.getElementById('productButtonContainer').innerHTML =
 							`<h3>${data.title}</h3>
 							<h4 class="small">Listing #: ${data._id}</h4>
-							<h4 class="text-success">$${data.price}</h4>
-							<div id="dynamicBtnContainer" class="row">
-							
-							</div>
+							<h4 class="text-success font-weight-bold my-4">$${data.price}</h4>
+							<div id="dynamicBtnContainer" class="row"></div>
 							<div class="mt-2">
 							<h5 class="small">Seller:</h5>
 							<h5>${sellerData.username}</h5>
 							<h6>${sellerData.location}</h6>
+							<h6>Shipping: </h6>
 							</div>`;
 							listingPrivledges();
 							// Confirmation pop up add to watchlist
@@ -195,7 +188,7 @@ $(document).ready(function(){
 								// Alert pop up
 								swal({
 									title: `Purchase ${data.title}`,
-									text: `Are you sure you want to Purchase ${data.title} to your watchlist?`,
+									text: `Are you sure you want to Purchase ${data.title} to for $${data.price}?`,
 									buttons: {
 										cancel: 'Cancel',
 										success: {
@@ -323,6 +316,7 @@ $(document).ready(function(){
 						$('#navLoggedOut').hide();
 						$('#registerForm').hide();
 						showAllProducts();
+						listingPrivledges();
 					}
 				},
 				error:function(){
@@ -337,6 +331,7 @@ $(document).ready(function(){
 		sessionStorage.clear();
 		$('#navLoggedIn').hide();
 		$('#navLoggedOut').show();
+		$("#account").hide();
 		$('#loginUsername').val("");
 		$('#loginPassword').val("");
 		$("#productPage").hide();
@@ -442,6 +437,7 @@ $(document).ready(function(){
 		$('#addKeywords').val('');
 		$('#shipping-pick').prop("checked", false);
 		$('#shipping-deliver').prop("checked", false);
+		$('#addTitle').focus();
 	})
 
 	// add product
@@ -489,6 +485,7 @@ $(document).ready(function(){
 				},
 				success : function(data){
 					console.log(data)
+					$('#addProductModal').modal('hide');
 					swal({
 						title: 'Success!',
 						text: `Congratulations! Your product has been listed`,
@@ -508,8 +505,9 @@ $(document).ready(function(){
 	$("#myAccountButton").click(function(){
 		addProfileDetails();
 		$("#productCards").hide();
-		$("#productPage").hide();
+		$('#productPage').hide();
 		$("#account").show();
+		$('#filterBar').hide();
 	})
 
 	// add profile details on account page
@@ -521,6 +519,7 @@ $(document).ready(function(){
 			success : function(data){
 				$("#profile-username").html(data.username);
 				$("#profile-fullname").html(fullName);
+				$("#profile-location").html(data.location);
 				$("#profile-email").html(data.email);
 				$("#profile-balance").html(`$${data.balance}`);
 			},//success
@@ -529,6 +528,63 @@ $(document).ready(function(){
 			}//error
 		});//ajax
 	}// add profile details
+
+
+	$("#editProfileBtn").click(function(){
+		$.ajax({
+			url :`${url}/users/u=${sessionStorage.getItem('userID')}`,
+			type :'GET',
+			dataType :'json',
+			success : function(data){
+				$("#editFirstName").val(data.firstName);
+				$("#editLastName").val(data.lastName);
+				$("#editLocation").val(data.location);
+				$("#editEmail").val(data.email);
+			},//success
+			error:function(){
+				console.log('error: cannot call api');
+			}//error
+		});//ajax
+	});
+
+	$("#saveProductBtn").click(function(){
+		let fname = $("#editFirstName").val();
+		let lname = $("#editLastName").val();
+		let city = $("#editLocation").val();
+		let email = $("#editEmail").val();
+		$.ajax({
+			url :`${url}/updateUser/u=${sessionStorage.getItem('userID')}`,
+			type :'PATCH',
+			data:{
+				firstName : fname,
+				lastName : lname,
+				email : email,
+				location : city
+			},
+			success : function(data){
+				$('#editProfileModal').modal('hide');
+				swal({
+					title: 'Success!',
+					text: `Your profile details have been updated`,
+					icon: 'success',
+					button: 'Okay!',
+					timer: 2500
+				});
+				sessionStorage.setItem('userFName',fname);
+				sessionStorage.setItem('userLName',lname);
+				sessionStorage.setItem('userEmail',email);
+				fullName = sessionStorage.getItem('userFName') + " " + sessionStorage.getItem('userLName');
+				addProfileDetails()
+			},//success
+			error:function(){
+				console.log('error: cannot call api');
+			}//error
+		});//ajax
+	});
+
+
+
+
 
 	// add and remove active list class on profile side bar
 	$(".account-info__sidebar__list-item").click(function(){
