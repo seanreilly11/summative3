@@ -151,16 +151,18 @@ $(document).ready(function(){
 				console.log(data);
 				document.getElementById('productCards').innerHTML = "";
 				for (let i = 0; i < data.length; i++) {
-					let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
-					<img class="card-img-top" src="${data[i].image}" alt="Image">`;
-					if (sessionStorage['username']) {
-						card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+					if(data[i].status === "listed"){
+						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+						if (sessionStorage['username']) {
+							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+						}
+						card += `<div class="card-body">
+						<h3 class="card-title"> ${data[i].title}</h3>
+						<h4 class="card-text">$${data[i].price}</h4>
+						</div></div>`;
+						document.getElementById('productCards').innerHTML += card;
 					}
-					card += `<div class="card-body">
-					<h3 class="card-title"> ${data[i].title}</h3>
-					<h4 class="card-text">$${data[i].price}</h4>
-					</div></div>`;
-					document.getElementById('productCards').innerHTML += card;
 				}
 				openProduct();
 			},
@@ -179,6 +181,7 @@ $(document).ready(function(){
 			console.log(clickedProduct);
 
 			// Hides list of products
+			$('#account').hide();
 			$('#productCards').hide();
 			$('#productPage').show();
 			$('#filterBar').hide();
@@ -213,79 +216,64 @@ $(document).ready(function(){
 							<h4 class="small">Listing #: ${data._id}</h4>
 							<h4 class="text-success font-weight-bold my-4">$${data.price}</h4>
 							<div id="dynamicBtnContainer" class="row"></div>
-							<div class="mt-2">
+							<div class="mt-3">
 							<h5 class="small">Seller:</h5>
 							<h5>${sellerData.username}</h5>
 							<h6>${sellerData.location}</h6>
 							<h6>Shipping: </h6>
 							</div>`;
-							listingPrivledges();
+							listingPrivledges(sellerId);
 							// Confirmation pop up add to watchlist
 							$('#productAddToWatchList').click(function(){
-								// Alert pop up
-								swal({
-									title: `Add to Wishlist`,
-									text: `Are you sure you want to add ${data.title} to your watchlist?`,
-									buttons: {
-										cancel: 'Cancel',
-										success: {
-											text: 'Add',
-											value: 'add',
-										},
+								$.ajax({
+									url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+									type: 'GET',
+									data: 'json',
+									success: function(buyerData){
+										var newWatchlist = buyerData.watchlist;
+										var productToAdd = data['_id'];
+										// Adding product id to user's watchlist array
+										if((newWatchlist.indexOf(productToAdd) == -1) && (sellerId != sessionStorage.getItem("userID"))){
+											$.ajax({
+												url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
+												type: 'PATCH',
+												data: {
+													watchlist : productToAdd
+												},
+												success: function(updateBuyerWatchlist){
+													swal({
+														title: 'Added to watchlist',
+														text: `Successfully added ${data.title} to your watchlist`,
+														icon: 'success',
+														button: 'Got it',
+														timer: 2500
+													})		
+												},
+												error: function(error){
+													alert('failed to add product to watchlist')
+												}
+											}) // ajax
+										} 
+										else{
+											swal({
+												title: 'Already added',
+												text: `${data.title} is already on your watchlist`,
+												icon: 'info',
+												button: 'Got it',
+												timer: 2500
+											})	
+										}
 									},
-								})
-								// Add to watch list method
-								.then((value) => {
-									switch (value) {
-										case 'add':
-										// Getting buyers details
-										$.ajax({
-											url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
-											type: 'GET',
-											data: 'json',
-											success: function(buyerData){
-												console.log(buyerData.watchlist);
-												var newWatchlist = buyerData.watchlist;
-												// console.log(buyerWatchlist + ' before');
-												var productToAdd = data['_id'];
-												// newWatchlist.push(productToAdd);
-												console.log(buyerData.watchlist);
-												console.log(newWatchlist);
-												// Adding product id to user's watchlist array
-												$.ajax({
-													url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
-													type: 'PATCH',
-													data: {
-														// watchlist: buyerWatchlist
-														watchlist: newWatchlist
-													},
-													success: function(updateBuyerWatchlist){
-														swal({
-															title: 'Added to watchlist',
-															text: `Successfully added ${data.title} to your watchlist`,
-															icon: 'success',
-															button: 'Got it',
-															timer: 2500
-														});
-													},
-													error: function(error){
-														alert('failed to add product to watchlist')
-													}
-												})
-											},
-											error: function(error){
-												alert('failed to add to watchlist');
-											}
-										})
-										swal({
-											title: 'Added to watchlist',
-											text: `Successfully added ${data.title} to your watchlist`,
-											icon: 'success',
-											button: 'Got it',
-											timer: 2500
-										});
-										break;
+									error: function(error){
+										alert('failed to add to watchlist');
 									}
+								})
+								swal({
+									title: 'Added to watchlist',
+									text: `Successfully added ${data.title} to your watchlist`,
+									icon: 'success',
+									button: 'Got it',
+									timer: 2500
 								});
 							})
 							// Confirmation pop up purchase item
@@ -324,11 +312,35 @@ $(document).ready(function(){
 					console.log('failed');
 				}
 			});
-		});
-	}
+});
+}
 	// Gives different layout if user is logged in our out
-	function listingPrivledges(){
-		if(sessionStorage['username']){
+	function listingPrivledges(sellerId){
+		console.log(sellerId)
+		console.log(sessionStorage.getItem("userID"))
+		if((sessionStorage['username']) && (sellerId == sessionStorage.getItem("userID"))){
+			// Adds question form
+			document.getElementById('questionForm').innerHTML = 
+			`<form>
+			<div class="question-form row form-group bg-secondary py-3 col-12">
+			<h3>Ask a Question</h3>
+			<textarea class="form-control" id="newQuestion" rows="3"></textarea>
+			<div class="col">
+			<button id="" class="btn btn-primary mt-3 float-right">Ask Question</button>
+			</div>
+			</div>
+			</form>`;
+			// Adds buttons
+			document.getElementById('dynamicBtnContainer').innerHTML = 
+			`<div class="alert alert-primary col-12 text-center" role="alert">This is your product</div>
+			<div class="col-md-6">
+			<button id="editProduct" class="btn btn-outline-success btn-block">Edit product</button>
+			</div>
+			<div class="col-md-6">
+			<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
+			</div>`;
+		}
+		else if(sessionStorage['username']){
 			// Adds question form
 			document.getElementById('questionForm').innerHTML =
 			`<form>
@@ -348,7 +360,8 @@ $(document).ready(function(){
 			<div class="col-md-6">
 			<button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
 			</div>`;
-		} else{
+		}
+		else{
 			// Adds warning to login or register
 			document.getElementById('questionForm').innerHTML =
 			`<div class="bg-secondary p-3">
@@ -420,6 +433,8 @@ $(document).ready(function(){
 						$('#navLoggedIn').show();
 						$('#navLoggedOut').hide();
 						$('#registerForm').hide();
+						$("#productPage").show();
+						$("#filterContainer").show();
 						showAllProducts();
 						listingPrivledges();
 					}
@@ -609,6 +624,7 @@ $(document).ready(function(){
 
 	$("#myAccountButton").click(function(){
 		addProfileDetails();
+		showMyProducts("selling");
 		$("#productCards").hide();
 		$('#productPage').hide();
 		$("#account").show();
@@ -633,6 +649,121 @@ $(document).ready(function(){
 			}//error
 		});//ajax
 	}// add profile details
+
+	$("#viewSelling").click(function(){
+		showMyProducts("selling");
+	})
+	$("#viewSold").click(function(){
+		showMyProducts("sold");
+	})
+	$("#viewBought").click(function(){
+		showMyProducts("bought");
+	})
+	//Load my cards
+	function showMyProducts(group){
+		$.ajax({
+			url: `${url}/products`,
+			type: 'GET',
+			dataType :'json',
+			success: function(data){
+				console.log(data);
+				document.getElementById('myProductCards').innerHTML = "";
+				for (let i = 0; i < data.length; i++) {
+					if(group === "selling" && data[i].sellerId == sessionStorage.getItem("userID") && data[i].status === "listed"){
+						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						<img class="card-img-top" src="${data[i].image}" alt="Image">
+						<div class="card-body">
+						<h3 class="card-title"> ${data[i].title}</h3>
+						<h4 class="card-text">$${data[i].price}</h4>
+						</div></div>`;
+						document.getElementById('myProductCards').innerHTML += card;
+					}
+					if(group === "sold" && data[i].sellerId == sessionStorage.getItem("userID") && data[i].status === "sold"){
+						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						<img class="card-img-top" src="${data[i].image}" alt="Image">
+						<div class="card-body">
+						<h3 class="card-title"> ${data[i].title}</h3>
+						<h4 class="card-text">$${data[i].price}</h4>
+						</div></div>`;
+						document.getElementById('myProductCards').innerHTML += card;
+					}
+					if(group === "bought" && data[i].buyerId == sessionStorage.getItem("userID") && data[i].status === "sold"){
+						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						<img class="card-img-top" src="${data[i].image}" alt="Image">
+						<div class="card-body">
+						<h3 class="card-title"> ${data[i].title}</h3>
+						<h4 class="card-text">$${data[i].price}</h4>
+						</div></div>`;
+						document.getElementById('myProductCards').innerHTML += card;
+					}
+				}
+				openProduct();
+			},
+			error: function(error) {
+				console.log('no good');
+			}
+		})
+	}
+
+	$("#viewWatchlist").click(function(){
+		showMyWatchlist();
+	})
+	//Load my watchlist
+	function showMyWatchlist(){
+		$.ajax({
+			url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+			type: 'GET',
+			dataType :'json',
+			success: function(userData){
+				console.log(userData);
+				document.getElementById('myProductCards').innerHTML = "";
+				if(userData.watchlist.length == 0){
+					document.getElementById('myProductCards').innerHTML = "You have no products added to your watchlist. Click the plus icon in the corner of a product to add it to your watchlist";
+				}
+				else{
+					$.ajax({
+						url: `${url}/products`,
+						type: 'GET',
+						dataType :'json',
+						success: function(data){
+							console.log(data);
+							document.getElementById('myProductCards').innerHTML = "";
+							for (let j = 0; j < userData.watchlist.length; j++) {
+								for (let i = 0; i < data.length; i++) {
+									if(data[i]["_id"] == userData.watchlist[j] && data[i].status === "listed"){
+										let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+										<img class="card-img-top" src="${data[i].image}" alt="Image">
+										<div class="card-body">
+										<h3 class="card-title"> ${data[i].title}</h3>
+										<h4 class="card-text">$${data[i].price}</h4>
+										</div></div>`;
+										document.getElementById('myProductCards').innerHTML += card;
+									}
+								}
+							}
+							openProduct();
+						},
+						error: function(error) {
+							console.log('no good');
+						}
+					})
+					// if(data[i].sellerId == sessionStorage.getItem("userID") && data[i].status === "listed"){
+					// 	let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+					// 	<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+					// 	card += `<div class="card-body">
+					// 	<h3 class="card-title"> ${data[i].title}</h3>
+					// 	<h4 class="card-text">$${data[i].price}</h4>
+					// 	</div></div>`;
+					// 	document.getElementById('myProductCards').innerHTML += card;
+					// }
+				}
+				openProduct();
+			},
+			error: function(error) {
+				console.log('no good');
+			}
+		})
+	}
 
 
 	$("#editProfileBtn").click(function(){
