@@ -32,10 +32,10 @@
 
 	<!-- search nav section -->
 	<div id="filterContainer" class="container mt-3 border-success rounded p-0">
-			<form id="searchNav" class="bg-success rounded p-2 form-inline w-100">
-				<input id="searchBar" class="col-lg-11 col-sm-10 form-control bg-light border border-success" type="search" placeholder="Search" aria-label="Search">
-				<button id="searchButton" class="col-lg-1 col-sm-2 btn btn-light">Search</button>
-			</form>
+		<form id="searchNav" class="bg-success rounded p-2 form-inline w-100">
+			<input id="searchBar" class="col-lg-11 col-sm-10 form-control bg-light border border-success" type="search" placeholder="Search" aria-label="Search">
+			<button id="searchButton" class="col-lg-1 col-sm-2 btn btn-light">Search</button>
+		</form>
 
 		<div class="categories-section p-3 bg-light d-flex justify-content-around row m-0">
 			<button type="button" id="collectablesButton" class="btn btn-outline-secondary btn-sm my-1">Antiques/Collectables</button>
@@ -61,12 +61,12 @@
 
 	</div>
 
-	<div class="container h-100 my-5">
-		<div class="row h-100 justify-content-center align-items-center">
-			<div class="row col-12" id="productCards"></div>
+	<div class="container h-100">
+		<div class="row justify-content-center align-items-center">
+			<div class="row col-12 my-5" id="productCards"></div>
 			<div class="col-10 col-md-8 col-lg-6">
 				<!-- Sign Up Start -->
-				<form class="form-example" id="registerForm">
+				<form class="form-example my-5" id="registerForm">
 					<h1>Sign Up</h1>
 					<p>Sign up today and get a free $100 credit for your account!</p>
 
@@ -129,20 +129,18 @@
 				<!-- Sign Up Finish -->
 			</div>
 			<!-- Product page -->
-				<div class="row" id="productPage">
+			<div class="my-5" id="productPage">
+				<div class="row d-flex align-items-start">
 					<!-- Product information -->
-					<div id="productInformation" class="col-8">
-
-					</div>
+					<div id="productInformation" class="col-8"></div>
 					<!-- Button container -->
-					<div id="productButtonContainer" class="col-4 py-2 product-btn-container">
-						
-					</div>
+					<div id="productButtonContainer" class="col-4 py-2 product-btn-container"></div>
 				</div>
+			</div>
 		</div>
 	</div>
 
-	<div class="container h-100 mb-5" id="account">
+	<div class="container h-100 my-5" id="account">
 		<div class="row h-100 justify-content-center align-items-center">
 			<div class="col-9 row account-info border py-3 rounded-lg">
 				<div class="col-4 account-info__sidebar d-flex flex-column justify-content-center">
@@ -158,34 +156,36 @@
 					</ul>
 				</div>
 				<div class="col account-info__picture">
+					<h3 class="text-center" id="profile-fullname"></h3>
 					<img src="images/avatar.png" alt="Profile avatar" class="w-100">
 				</div>
 				<div class="col-4 account-info__details text-right d-flex flex-column justify-content-center">
-					<p>Username: <span id="profile-username"></span></p>
-					<p>Name: <span id="profile-fullname"></span></p>
-					<p>Email: <span id="profile-email"></span></p>
-					<p>Balance: <span id="profile-balance"></span></p>
+					<p class="mb-2">Username: <span id="profile-username"></span></p>
+					<p class="mb-2">Email: <span id="profile-email"></span></p>
+					<p class="mb-2">Location: <span id="profile-location"></span></p>
+					<p class="mb-3">Balance: <span id="profile-balance"></span></p>
 					<div class="row justify-content-end">
 						<button class="btn btn-primary mr-2" data-toggle="modal" data-target="#addProductModal" id="addListingBtn">Add Listing</button>
-						<button class="btn btn-outline-primary">Edit Profile</button>
+						<button class="btn btn-outline-primary" data-toggle="modal" data-target="#editProfileModal" id="editProfileBtn">Edit Profile</button>
 					</div>
 				</div>
 			</div>
 		</div>
+		<div class="row col-12 my-5" id="myProductCards"></div>
 	</div>
 
-	<!-- Modal -->
-	<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+	<!-- Add product Modal -->
+	<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="productModalTitle" aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="exampleModalLongTitle">Add new listing</h5>
+					<h5 class="modal-title" id="productModalTitle">Add new listing</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
-					<!-- Sign Up Start -->
+					<!-- Add product Start -->
 					<form class="form-example" id="addProductForm">
 						<!-- Input fields -->
 						<div class="form-group row">
@@ -221,7 +221,7 @@
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label" for="addDescription">Description</label>
 							<div class="col-sm-10">
-								<textarea type="text" class="form-control" id="addDescription" name="addDescription"></textarea>
+								<textarea class="form-control" id="addDescription" name="addDescription"></textarea>
 							</div>
 						</div>
 						<div class="form-group row">
@@ -233,7 +233,7 @@
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label" for="addKeywords">Keywords</label>
 							<div class="col-sm-10">
-								<textarea type="text" class="form-control" id="addKeywords" name="addKeywords" placeholder="Enter keywords related to your product"></textarea>
+								<textarea class="form-control" id="addKeywords" name="addKeywords" placeholder="Enter keywords related to your product"></textarea>
 							</div>
 						</div>
 						<div class="form-group row">
@@ -251,16 +251,82 @@
 						</div>
 						<!-- End input fields -->
 					</form>
-					<!-- Sign Up Finish -->
+					<!-- Add product Finish -->
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary" id="addProductBtn"  data-dismiss="modal">Save changes</button>
+					<button type="button" class="btn btn-primary" id="addProductBtn">Save changes</button>
 				</div>
 			</div>
 		</div>
 	</div>
-	
+
+	<!-- edit profile Modal -->
+	<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalTitle" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="profileModalTitle">Edit your profile</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<!-- Edit profile Start -->
+					<form class="form-example" id="editProfileForm">
+						<div class="row">
+							<div class="col-6 form-group">
+								<label for="editFirstName">First Name</label>
+								<input type="text" class="form-control" id="editFirstName" name="editFirstName">
+							</div>
+							<div class=" col-6 form-group">
+								<label for="editLastName">Last Name</label>
+								<input type="text" class="form-control" id="editLastName" name="editLastName">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="editLocation">City</label>
+							<select class="form-control" id="editLocation">
+								<option value="">Please select City</option>
+								<option value="Auckland">Auckland</option>
+								<option value="Blenheim">Blenheim</option>
+								<option value="Christchurch">Christchurch</option>
+								<option value="Dunedin">Dunedin</option>
+								<option value="Gisborne">Gisborne</option>
+								<option value="Gore">Gore</option>
+								<option value="Hamilton">Hamilton</option>
+								<option value="Hastings">Hastings</option>
+								<option value="Invercargill">Invercargill</option>
+								<option value="Masterton">Masterton</option>
+								<option value="Napier">Napier</option>
+								<option value="Nelson">Nelson</option>
+								<option value="Northland">Northland</option>
+								<option value="New Plymouth">New Plymouth</option>
+								<option value="Oamaru">Oamaru</option>
+								<option value="Palmerson North">Palmerson North</option>
+								<option value="Queenstown">Queenstown</option>
+								<option value="Rotorua">Rotorua</option>
+								<option value="Taupo">Taupo</option>
+								<option value="Tauranga">Tauranga</option>
+								<option value="Timaru">Timaru</option>
+								<option value="Wellington">Wellington</option>
+								<option value="Whangarei">Whangarei</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="editEmail">Email</label>
+							<input type="email" class="form-control" id="editEmail" name="editEmail">
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" id="saveProductBtn">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<script src="node_modules/jquery/dist/jquery.min.js"></script>
 	<script src="node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
 	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
