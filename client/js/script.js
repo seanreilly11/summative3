@@ -123,6 +123,18 @@ $(document).ready(function(){
 							listingPrivledges();
 							// Confirmation pop up add to watchlist
 							$('#productAddToWatchList').click(function(){
+								$.ajax({
+											url: `${url}/users/u=${localStorage.getItem('userID');}`
+											type: 'POST',
+											data: 'json',
+											success: function(buyerData){
+												buyerData.watchlist.push(data._id);
+												alert('success');
+											},
+											error: function(error){
+												alert('failed to add to watchlist');
+											}
+										})
 								// Alert pop up
 								swal({
 									title: `Add to Wishlist`,
@@ -137,8 +149,9 @@ $(document).ready(function(){
 								})
 								// Add to watch list method
 								.then((value) => {
+
 									switch (value) {
-										case 'add': 
+										case 'add':
 										swal({
 											title: 'Added to watchlist',
 											text: `Successfully added ${data.title} to your watchlist`,
