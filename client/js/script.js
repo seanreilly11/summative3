@@ -130,18 +130,6 @@ $(document).ready(function(){
 							listingPrivledges();
 							// Confirmation pop up add to watchlist
 							$('#productAddToWatchList').click(function(){
-								$.ajax({
-											url: `${url}/users/u=${localStorage.getItem('userID');}`
-											type: 'POST',
-											data: 'json',
-											success: function(buyerData){
-												buyerData.watchlist.push(data._id);
-												alert('success');
-											},
-											error: function(error){
-												alert('failed to add to watchlist');
-											}
-										})
 								// Alert pop up
 								swal({
 									title: `Add to Wishlist`,
@@ -156,9 +144,41 @@ $(document).ready(function(){
 								})
 								// Add to watch list method
 								.then((value) => {
-
 									switch (value) {
 										case 'add':
+										// Getting buyers details
+										$.ajax({
+											url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+											type: 'GET',
+											data: 'json',
+											success: function(buyerData){
+												console.log(buyerData.watchlist);
+												var buyerWatchlist;
+												var previousWatchlist = buyerData.watchlist;
+												console.log(buyerWatchlist + ' before');
+												var productToAdd = data._id;
+												buyerWatchlist = productToAdd;
+												// Adding product id to user's watchlist array
+												$.ajax({
+													url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
+													type: 'PATCH',
+													data: {
+														watchlist: previousWatchlist
+													},
+													success: function(updateBuyerWatchlist){
+														console.log(buyerWatchlist);
+														previousWatchlist.push(buyerWatchlist);
+														console.log(previousWatchlist);
+													},
+													error: function(error){
+														alert('failed to add product to watchlist')
+													}
+												})
+											},
+											error: function(error){
+												alert('failed to add to watchlist');
+											}
+										})
 										swal({
 											title: 'Added to watchlist',
 											text: `Successfully added ${data.title} to your watchlist`,
