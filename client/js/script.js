@@ -146,26 +146,28 @@ $(document).ready(function(){
 											data: 'json',
 											success: function(buyerData){
 												console.log(buyerData.watchlist);
-												var buyerWatchlist;
-												var previousWatchlist = buyerData.watchlist;
-												console.log(buyerWatchlist + ' before');
-												var productToAdd = data._id;
-												buyerWatchlist = productToAdd;
-												previousWatchlist.push(buyerWatchlist);
+												var newWatchlist = buyerData.watchlist;
+												// console.log(buyerWatchlist + ' before');
+												var productToAdd = data['_id'];
+												// newWatchlist.push(productToAdd);
 												console.log(buyerData.watchlist);
+												console.log(newWatchlist);
 												// Adding product id to user's watchlist array
 												$.ajax({
 													url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
 													type: 'PATCH',
 													data: {
 														// watchlist: buyerWatchlist
-														watchlist: [previousWatchlist]
+														watchlist: newWatchlist
 													},
 													success: function(updateBuyerWatchlist){
-														console.log(buyerWatchlist);
-														buyerWatchlist = productToAdd;
-														// previousWatchlist.push(buyerWatchlist);
-														console.log(previousWatchlist);
+														swal({
+															title: 'Added to watchlist',
+															text: `Successfully added ${data.title} to your watchlist`,
+															icon: 'success',
+															button: 'Got it',
+															timer: 2500
+														});
 													},
 													error: function(error){
 														alert('failed to add product to watchlist')
