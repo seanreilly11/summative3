@@ -37,20 +37,20 @@
 			<button id="searchButton" class="col-lg-1 col-sm-2 btn btn-light">Search</button>
 		</form>
 
-		<div class="categories-section p-3 bg-light d-flex justify-content-around row m-0">
-			<button type="button" id="collectablesButton" class="btn btn-outline-secondary btn-sm my-1">Antiques/Collectables</button>
-			<button type="button" id="booksButton" class="btn btn-outline-secondary btn-sm my-1">Books</button>
-			<button type="button" id="clothingButton" class="btn btn-outline-secondary btn-sm my-1">Clothing</button>
-			<button type="button" id="electronicsButton" class="btn btn-outline-secondary btn-sm my-1">Electronics</button>
-			<button type="button" id="furnitureButton" class="btn btn-outline-secondary btn-sm my-1">Furniture/Homeware</button>
-			<button type="button" id="gamesButton" class="btn btn-outline-secondary btn-sm my-1">Games/Toys</button>
-			<button type="button" id="gardeningButton" class="btn btn-outline-secondary btn-sm my-1">Gardening</button>
-			<button type="button" id="musicButton" class="btn btn-outline-secondary btn-sm my-1">Music</button>
-			<button type="button" id="sportButton" class="btn btn-outline-secondary btn-sm my-1">Sport</button>
-			<button type="button" id="otherButton" class="btn btn-outline-secondary btn-sm my-1">Other</button>
+		<div id="categories" class="categories-section p-3 bg-light d-flex justify-content-around row m-0">
+			<button type="button" id="collectiblesButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Antiques/Collectibles</button>
+			<button type="button" id="booksButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Books</button>
+			<button type="button" id="clothingButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Clothing</button>
+			<button type="button" id="electronicsButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Electronics</button>
+			<button type="button" id="furnitureButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Furniture/Homeware</button>
+			<button type="button" id="gamesButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Games/Toys</button>
+			<button type="button" id="gardeningButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Gardening</button>
+			<button type="button" id="musicButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Music</button>
+			<button type="button" id="sportButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Sport</button>
+			<button type="button" id="otherButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Other</button>
 		</div>
 		<div id="filterBar" class="rounded p-2 bg-success">
-			<select class="form-control col-lg-2 col-md-4 col-sm-12">
+			<select id="filterSelect" class="form-control col-lg-2 col-md-4 col-sm-12">
 				<option value="featured">Featured First</option>
 				<option value="latest">Latest Listings</option>
 				<option value="oldest">Oldest Listings</option>

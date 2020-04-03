@@ -42,6 +42,105 @@ $(document).ready(function(){
 		}//error
 	});//ajax
 
+	//category filter
+	$('#categories').on('click', 'button', function(clickedButton) {
+		let clickedCategory = clickedButton.target.id.slice(0, -6);
+		let btnCategory = clickedButton.target.id;
+		console.log(btnCategory);
+		console.log(clickedCategory);
+		let list = document.querySelectorAll(".btn-category");
+		for(var i = 0; i < list.length; i++){
+			list[i].classList.remove(".btn-secondary");
+			list[i].classList.add(".btn-outline-secondary");
+		}
+		document.getElementById(btnCategory).classList.add('btn-secondary');
+		document.getElementById(btnCategory).classList.remove('btn-outline-secondary');
+			$.ajax({
+			url: `${url}/products`,
+			type: 'GET',
+			dataType: 'json',
+			success: function(data){
+				document.getElementById('productCards').innerHTML = " ";
+				for (var i = 0; i < data.length; i++) {
+					let cat = data[i].category.toLowerCase();
+					console.log(data[i].category, cat);
+					if (cat.includes(clickedCategory)) {
+						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+						if (sessionStorage['username']) {
+							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+						}
+						card += `<div class="card-body">
+						<h3 class="card-title"> ${data[i].title}</h3>
+						<h4 class="card-text">$${data[i].price}</h4>
+						</div></div>`;
+						document.getElementById('productCards').innerHTML += card;
+					}
+				}
+				openProduct();
+			},
+			error: function(){
+				console.log('cannot get category');
+			}
+		})
+	});
+
+	$('.btn-category').click(function(){
+		$('#account').hide();
+		$("#productCards").show();
+		$('#productPage').hide();
+	})
+
+
+	//price filter
+	$('#filterSelect').on('change', function(){
+		if ($(this).val() == 'low') {
+			console.log('low to high price selected');
+			$.ajax({
+				url: `${url}/products`,
+				type: 'GET',
+				dataType: 'json',
+				success: function(data){
+					for (var i = 0; i < data.length; i++) {
+						let products = data[i].price;
+						function compare(a ,b){
+							return a.price - b.price;
+						};
+						data.sort(compare);
+						console.log(products);
+					}
+				},
+				error: function(){
+					console.log('cannot filter objects');
+				}
+		});//ajax end
+		} else if ($(this).val() == 'high') {
+			console.log('high to low price selected');
+			$.ajax({
+				url: `${url}/products`,
+				type: 'GET',
+				dataType: 'json',
+				success: function(data){
+					for (var i = 0; i < data.length; i++) {
+						let products = data[i].price;
+						function compare(a ,b){
+							return b.price - a.price;
+						};
+						data.sort(compare);
+						console.log(products);
+					}
+				},
+				error: function(){
+					console.log('cannot filter objects');
+				}
+		});//ajax end
+		} else if ($(this).val() == 'latest') {
+			console.log('latest listings selected');
+		} else if ($(this).val() == 'oldest') {
+			console.log('oldest listings selected');
+		}
+	});
+
 	//Load cards
 	function showAllProducts(){
 		$.ajax({
@@ -83,7 +182,7 @@ $(document).ready(function(){
 			$('#productCards').hide();
 			$('#productPage').show();
 			$('#filterBar').hide();
-			
+
 			// Creates produc page dynamically
 			$.ajax({
 				url: `${url}/products/p=${clickedProduct}`,
@@ -100,7 +199,7 @@ $(document).ready(function(){
 						// Couldn't figure out how to get user name displayed so calling ajax inside ajax. May not be proper practice
 						success: function(sellerData){
 							// Image, description, question section
-							document.getElementById('productInformation').innerHTML = 
+							document.getElementById('productInformation').innerHTML =
 							`<img src="${data.image}" class="img-fluid" alt="${data.title}">
 							<div class="product-description my-5">${data.description}</div>
 							<div id="questionForm"></div>
@@ -206,7 +305,7 @@ $(document).ready(function(){
 								// Add to watch list method
 								.then((value) => {
 									switch (value) {
-										case 'add': 
+										case 'add':
 										swal({
 											title: `${data.title} has been purchased`,
 											text: `Successfully purchased ${data.title}, itemId #: ${data._id}`,
@@ -231,7 +330,7 @@ $(document).ready(function(){
 	function listingPrivledges(){
 		if(sessionStorage['username']){
 			// Adds question form
-			document.getElementById('questionForm').innerHTML = 
+			document.getElementById('questionForm').innerHTML =
 			`<form>
 			<div class="question-form row form-group bg-secondary py-3 col-12">
 			<h3>Ask a Question</h3>
@@ -242,7 +341,7 @@ $(document).ready(function(){
 			</div>
 			</form>`;
 			// Adds buttons
-			document.getElementById('dynamicBtnContainer').innerHTML = 
+			document.getElementById('dynamicBtnContainer').innerHTML =
 			`<div class="col-md-6">
 			<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
 			</div>
@@ -251,12 +350,12 @@ $(document).ready(function(){
 			</div>`;
 		} else{
 			// Adds warning to login or register
-			document.getElementById('questionForm').innerHTML = 
+			document.getElementById('questionForm').innerHTML =
 			`<div class="bg-secondary p-3">
 			<h4 class="text-light">Please log in or register to ask a question</h4>
 			</div>`;
 			// Adds buttons
-			document.getElementById('dynamicBtnContainer').innerHTML = 
+			document.getElementById('dynamicBtnContainer').innerHTML =
 			`<div class="col-12">
 			<button id="registerAccountProductPageBtn" class="btn btn-outline-primary btn-block">Register an account</button>
 			</div>`;
@@ -472,7 +571,7 @@ $(document).ready(function(){
 				button: 'Got it',
 				timer: 2500
 			});
-		} 
+		}
 		else {
 			$.ajax({
 				url :`${url}/addProduct`,
