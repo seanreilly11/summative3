@@ -101,6 +101,7 @@ $(document).ready(function(){
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
+					document.getElementById('productCards').innerHTML = " ";
 					for (var i = 0; i < data.length; i++) {
 						let products = data[i].price;
 						function compare(a ,b){
@@ -108,6 +109,16 @@ $(document).ready(function(){
 						};
 						data.sort(compare);
 						console.log(products);
+						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+						if (sessionStorage['username']) {
+							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+						}
+						card += `<div class="card-body">
+						<h3 class="card-title"> ${data[i].title}</h3>
+						<h4 class="card-text">$${data[i].price}</h4>
+						</div></div>`;
+						document.getElementById('productCards').innerHTML += card;
 					}
 				},
 				error: function(){
@@ -121,6 +132,7 @@ $(document).ready(function(){
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
+					document.getElementById('productCards').innerHTML = " ";
 					for (var i = 0; i < data.length; i++) {
 						let products = data[i].price;
 						function compare(a ,b){
@@ -128,6 +140,16 @@ $(document).ready(function(){
 						};
 						data.sort(compare);
 						console.log(products);
+						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+						if (sessionStorage['username']) {
+							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+						}
+						card += `<div class="card-body">
+						<h3 class="card-title"> ${data[i].title}</h3>
+						<h4 class="card-text">$${data[i].price}</h4>
+						</div></div>`;
+						document.getElementById('productCards').innerHTML += card;
 					}
 				},
 				error: function(){
@@ -247,13 +269,13 @@ $(document).ready(function(){
 														icon: 'success',
 														button: 'Got it',
 														timer: 2500
-													})		
+													})
 												},
 												error: function(error){
 													alert('failed to add product to watchlist')
 												}
 											}) // ajax
-										} 
+										}
 										else{
 											swal({
 												title: 'Already added',
@@ -261,7 +283,7 @@ $(document).ready(function(){
 												icon: 'info',
 												button: 'Got it',
 												timer: 2500
-											})	
+											})
 										}
 									},
 									error: function(error){
@@ -320,7 +342,7 @@ $(document).ready(function(){
 		console.log(sessionStorage.getItem("userID"))
 		if((sessionStorage['username']) && (sellerId == sessionStorage.getItem("userID"))){
 			// Adds question form
-			document.getElementById('questionForm').innerHTML = 
+			document.getElementById('questionForm').innerHTML =
 			`<form>
 			<div class="question-form row form-group bg-secondary py-3 col-12">
 			<h3>Ask a Question</h3>
@@ -331,7 +353,7 @@ $(document).ready(function(){
 			</div>
 			</form>`;
 			// Adds buttons
-			document.getElementById('dynamicBtnContainer').innerHTML = 
+			document.getElementById('dynamicBtnContainer').innerHTML =
 			`<div class="alert alert-primary col-12 text-center" role="alert">This is your product</div>
 			<div class="col-md-6">
 			<button id="editProduct" class="btn btn-outline-success btn-block">Edit product</button>
