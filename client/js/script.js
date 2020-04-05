@@ -199,13 +199,13 @@ $(document).ready(function(){
 			$('#productPage').show();
 			$('#filterBar').hide();
 
-			// Creates produc page dynamically
+			// Creates product page dynamically
 			$.ajax({
 				url: `${url}/products/p=${clickedProduct}`,
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
-					console.log(data)
+					console.log(data);
 					// Gets seller's information
 					sellerId = data.sellerId;
 					$.ajax({
@@ -234,7 +234,106 @@ $(document).ready(function(){
 							<h6>${sellerData.location}</h6>
 							<h6>Shipping: </h6>
 							</div>`;
+
 							listingPrivledges(sellerId, data);
+
+							// Allows owner of listing to edit and delete the product
+							$('#editProduct').click(function(){
+								let oldKeywords = data.keywords;
+								let newKeywordArray = oldKeywords.join(' ');
+								// Outputs exsiting product information
+								$('#updateTitle').val(data.title);
+								$('#updatePrice').val(data.price);
+								$('#updateCategory').val(data.category);
+								$('#updateDescription').val(data.description);
+								$('#updateKeywords').val(newKeywordArray);
+								$('#updateImage').val(data.image);
+								$('#updateShipping-pick').val(data.shipping);
+								$('#updateShipping-deliver').val(data.shipping);
+								console.log(clickedProduct);
+								// Updates listing after save changes has been clicked
+								$('#updateProductBtn').click(function(){
+									let newTitle = document.getElementById('updateTitle').value;
+									// let newTitle = $('#updateTitle').val();
+									let newPrice = document.getElementById('updatePrice').value;
+									// let newPrice = $('#updatePrice').val();
+									let newCategory = document.getElementById('updateCategory').value;
+									// let newCategory = $('#updateCategory').val();
+									let newDescription = document.getElementById('updateDescription').value;
+									// let newDescription = $('#updateDescription').val();
+									let newImage = document.getElementById('updateImage').value;
+									// let newImage = $('#updateImage').val();
+									// Turns keywords into an array
+									let modifiedKeywordArray = document.getElementById('updateKeywords').value;
+									// let modifiedKeywordArray = $('#updateKeywords').val();
+									let convertToNewKeywordArray = modifiedKeywordArray.split(' ');
+									// Updates product information
+									$.ajax({
+										url: url + '/updateProduct/p=' + clickedProduct,
+										type: 'PATCH',
+										dataType: {
+											title : newTitle,
+											description : newDescription,
+											price : newPrice,
+											image : newImage,
+											category : newCategory,
+											keywords : convertToNewKeywordArray,
+											shipping : data.shipping
+										},
+										success: function(){
+											swal({
+												title: 'Listing Updated',
+												text: `Successfully updated ${data.title} with new details that you have entered`,
+												icon: 'success',
+												button: 'Got it',
+												timer: 2500
+											});
+										},
+										error: function(error){
+											alert('Could not update listing');
+										}
+									});
+								}); // Save changes end
+							}); // Edit listing
+
+							// Delete a listing
+							$('#deleteProduct').click(function(){
+								swal({
+									title: `Delete ${data.title}`,
+									text: `Are you sure that you want to permentaly remove ${data.title} as a listing. This action cannot be undone!`,
+									icon: 'info',
+									buttons: {
+										cancel: 'Cancel',
+										success: {
+											text: 'Delete Listing',
+											value: 'delete',
+										},
+									},
+								})
+								.then((value) => {
+									switch (value) {
+										case 'delete':
+										$.ajax({
+											url: `${url}/deleteProduct/p=${clickedProduct}`,
+											type: 'DELETE',
+											data: 'json',
+											success: function(){
+												swal({
+													title: 'Listing Deleted',
+													text: `Successfully deleted ${data.title}`,
+													icon: 'success',
+													button: 'Got it',
+													timer: 2500
+												});
+											},
+											error: function(){
+												alert('Failed to delete listing');
+											}
+										});
+									}
+								});
+							});
+
 							// Confirmation pop up add to watchlist
 							$('#productAddToWatchList').click(function(){
 								// Gets buyer's data
@@ -260,13 +359,13 @@ $(document).ready(function(){
 														icon: 'success',
 														button: 'Got it',
 														timer: 2500
-													})
+													});		
 												},
 												error: function(error){
-													alert('failed to add product to watchlist')
+													alert('failed to add product to watchlist');
 												}
-											}) // ajax
-										}
+											}); // ajax
+										} 
 										else{
 											swal({
 												title: 'Already added',
@@ -274,13 +373,13 @@ $(document).ready(function(){
 												icon: 'info',
 												button: 'Got it',
 												timer: 2500
-											})
+											});	
 										}
 									},
 									error: function(error){
 										alert('failed to add to watchlist');
 									}
-								})
+								});
 								swal({
 									title: 'Added to watchlist',
 									text: `Successfully added ${data.title} to your watchlist`,
@@ -288,7 +387,7 @@ $(document).ready(function(){
 									button: 'Got it',
 									timer: 2500
 								});
-							})
+							});
 							// Confirmation pop up purchase item
 							$('#productPurchase').click(function(){
 								// Alert pop up
@@ -303,7 +402,7 @@ $(document).ready(function(){
 										},
 									},
 								})
-								// Add to watch list method
+								// Add to purchased list method
 								.then((value) => {
 									switch (value) {
 										case 'add':
@@ -350,7 +449,7 @@ $(document).ready(function(){
 																error: function(error){
 																	console.log('Couldn\'t update buyer\'s balance');
 																}
-															})
+															});
 															// Update seller's wallet
 															$.ajax({
 																url: `${url}/updateBalance/u=${sellerData._id}`,
@@ -364,12 +463,12 @@ $(document).ready(function(){
 																error: function(error){
 																	console.log('Couldn\'t update seller\'s balance');
 																}
-															})													
+															});													
 														},
 														error: function(error){
 															alert('Unable to make purchase');
 														}
-													})
+													});
 												}
 												else{
 													swal({
@@ -378,13 +477,13 @@ $(document).ready(function(){
 														icon: `error`,
 														button: `Got it!`,
 														timer: 2500
-													})
+													});
 												}
 											},
 											error: function(error){
 												alert('Failed to get buyer\'s details');
 											}
-										})
+										});
 										swal({
 											title: `${data.title} has been purchased`,
 											text: `Successfully purchased ${data.title}, itemId #: ${data._id}`,
@@ -404,7 +503,7 @@ error: function(error){
 }
 });
 		}); // Initial ajax ends
-	} // Function ends
+	} // Open product function ends
 
 	// Gives different layout if user is logged in our out
 	function listingPrivledges(sellerId, data){
@@ -422,7 +521,7 @@ error: function(error){
 			document.getElementById('dynamicBtnContainer').innerHTML =
 			`<div class="alert alert-primary col-12 text-center" role="alert">This is your product</div>
 			<div class="col-lg-6 col-md-12">
-			<button id="editProduct" class="btn btn-outline-success btn-block">Edit product</button>
+			<button id="editProduct" class="btn btn-outline-success btn-block" data-toggle="modal" data-target="#updateProductModal">Edit product</button>
 			</div>
 			<div class="col-lg-6 col-md-12">
 			<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
@@ -459,6 +558,7 @@ error: function(error){
 			<button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
 			</div>`;
 		}
+		// If the user isn't logged in
 		else{
 			// Adds warning to login or register
 			document.getElementById('questionForm').innerHTML =
