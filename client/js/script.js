@@ -225,6 +225,7 @@ $(document).ready(function(){
 							listingPrivledges(sellerId);
 							// Confirmation pop up add to watchlist
 							$('#productAddToWatchList').click(function(){
+								// Gets buyer's data
 								$.ajax({
 									url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
 									type: 'GET',
@@ -294,6 +295,73 @@ $(document).ready(function(){
 								.then((value) => {
 									switch (value) {
 										case 'add':
+										// Gets buyer's information
+										$.ajax({
+											url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+											type: 'GET',
+											data: 'json',
+											success: function(buyerData){
+												// Conditional statement to make sure that the user buying the product has enough in their account to do so
+												if(buyerData.balance > data.price){
+													// Edit product details
+													$.ajax({
+														url: `${url}/productSold/p=${data._id}`,
+														type: `PATCH`,
+														data: {
+															buyerId: `${sessionStorage.getItem('userID')}`,
+															status: `sold`
+														},
+														success: function(updateBuyerBalance){
+															var updateBuyerWallet = buyerData.balance - data.price;
+															var updateSellerWallet = sellerData.balance + data.price;
+															// Update buyer's wallet
+															$.ajax({
+																url: `${url}/updateBalance/u=${sessionStorage.getItem('userID')}`,
+																type: `PATCH`,
+																data: {
+																	balance: updateBuyerWallet
+																},
+																success: function(){
+																	console.log('Buyer\'s balance has changed by ' + buyerData.balance);
+																},
+																error: function(error){
+																	console.log('Couldn\'t update buyer\'s balance');
+																}
+															})
+															// Update seller's wallet
+															$.ajax({
+																url: `${url}/updateBalance/u=${sellerData._id}`,
+																type: `PATCH`,
+																data: {
+																	balance: updateSellerWallet
+																},
+																success: function(){
+																	console.log('Seller\'s balance has changed by ' + sellerData.balance);
+																},
+																error: function(error){
+																	console.log('Couldn\'t update seller\'s balance');
+																}
+															})													
+														},
+														error: function(error){
+															alert('Unable to make purchase');
+														}
+													})
+												}
+												else{
+													swal({
+														title: `Insuficient funds`,
+														text: `Unable to purchase ${data.title} due to insuficient funds. Please add more credit to your account to be able to purchase this.`,
+														icon: `error`,
+														button: `Got it!`,
+														timer: 2500
+													})
+												}
+											},
+											error: function(error){
+												alert('Failed to get buyer\'s details');
+											}
+										})
 										swal({
 											title: `${data.title} has been purchased`,
 											text: `Successfully purchased ${data.title}, itemId #: ${data._id}`,
@@ -312,12 +380,12 @@ $(document).ready(function(){
 					console.log('failed');
 				}
 			});
-});
-}
+		}); // Initial ajax ends
+	} // Function ends
 	// Gives different layout if user is logged in our out
 	function listingPrivledges(sellerId){
-		console.log(sellerId)
-		console.log(sessionStorage.getItem("userID"))
+		console.log(sellerId);
+		console.log(sessionStorage.getItem("userID"));
 		if((sessionStorage['username']) && (sellerId == sessionStorage.getItem("userID"))){
 			// Adds question form
 			document.getElementById('questionForm').innerHTML = 
