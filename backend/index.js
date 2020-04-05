@@ -192,11 +192,11 @@ app.patch('/editComment/c=:id', (req,res)=>{
 }) // update comment
 
 // reply to comment. Must create a new object of a comment with all data except replies
-app.patch('/editComment/c=:id', (req,res)=>{
+app.patch('/commentReply/c=:id', (req,res)=>{
 	const idParam = req.params.id;
 	Comment.findById(idParam, (err,result)=>{
 		const updatedComment = {
-			replies : req.body.replies
+			$push : {replies : req.body.replies}
 		};
 		Comment.updateOne({_id:idParam}, updatedComment).then(result=>{
 			res.send(result);
