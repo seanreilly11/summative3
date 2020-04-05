@@ -1,9 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans|Roboto&display=swap');
 
-
-/*html{
-	font-size: 62.5%;
-}*/
+html{
+	scroll-behavior: smooth;
+}
 
 body{
 	font-family: 'Open Sans', sans-serif;
