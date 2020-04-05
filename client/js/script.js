@@ -43,19 +43,17 @@ $(document).ready(function(){
 	});//ajax
 
 	//category filter
-	$('#categories').on('click', 'button', function(clickedButton) {
-		let clickedCategory = clickedButton.target.id.slice(0, -6);
-		let btnCategory = clickedButton.target.id;
+	$('.btn-category').click(function(){
+		let clickedCategory = $(this).attr("id").slice(0, -6);
+		let btnCategory = $(this).attr("id");
 		console.log(btnCategory);
 		console.log(clickedCategory);
-		let list = document.querySelectorAll(".btn-category");
-		for(var i = 0; i < list.length; i++){
-			list[i].classList.remove(".btn-secondary");
-			list[i].classList.add(".btn-outline-secondary");
-		}
-		document.getElementById(btnCategory).classList.add('btn-secondary');
-		document.getElementById(btnCategory).classList.remove('btn-outline-secondary');
-			$.ajax({
+		$('#account').hide();
+		$("#productCards").show();
+		$("#filterBar").show();
+		$('#productPage').hide();
+		$(this).removeClass('btn-outline-secondary').addClass('btn-secondary').siblings().removeClass('btn-secondary').addClass('btn-outline-secondary');
+		$.ajax({
 			url: `${url}/products`,
 			type: 'GET',
 			dataType: 'json',
@@ -65,7 +63,7 @@ $(document).ready(function(){
 					let cat = data[i].category.toLowerCase();
 					console.log(data[i].category, cat);
 					if (cat.includes(clickedCategory)) {
-						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username']) {
 							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
@@ -85,13 +83,6 @@ $(document).ready(function(){
 		})
 	});
 
-	$('.btn-category').click(function(){
-		$('#account').hide();
-		$("#productCards").show();
-		$('#productPage').hide();
-	})
-
-
 	//price filter
 	$('#filterSelect').on('change', function(){
 		if ($(this).val() == 'low') {
@@ -101,15 +92,15 @@ $(document).ready(function(){
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
+					function compare(a ,b){
+						return a.price - b.price;
+					};
+					data.sort(compare);
 					document.getElementById('productCards').innerHTML = " ";
 					for (var i = 0; i < data.length; i++) {
 						let products = data[i].price;
-						function compare(a ,b){
-							return a.price - b.price;
-						};
-						data.sort(compare);
 						console.log(products);
-						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username']) {
 							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
@@ -124,7 +115,7 @@ $(document).ready(function(){
 				error: function(){
 					console.log('cannot filter objects');
 				}
-		});//ajax end
+			});//ajax end
 		} else if ($(this).val() == 'high') {
 			console.log('high to low price selected');
 			$.ajax({
@@ -132,15 +123,15 @@ $(document).ready(function(){
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
+					function compare(a ,b){
+						return b.price - a.price;
+					};
+					data.sort(compare);
 					document.getElementById('productCards').innerHTML = " ";
 					for (var i = 0; i < data.length; i++) {
 						let products = data[i].price;
-						function compare(a ,b){
-							return b.price - a.price;
-						};
-						data.sort(compare);
 						console.log(products);
-						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username']) {
 							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
@@ -174,7 +165,7 @@ $(document).ready(function(){
 				document.getElementById('productCards').innerHTML = "";
 				for (let i = 0; i < data.length; i++) {
 					if(data[i].status === "listed"){
-						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username']) {
 							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
