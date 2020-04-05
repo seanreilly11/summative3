@@ -192,7 +192,7 @@ $(document).ready(function(){
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
-					console.log(data)
+					console.log(data);
 					// Gets seller's information
 					sellerId = data.sellerId;
 					$.ajax({
@@ -223,6 +223,59 @@ $(document).ready(function(){
 							<h6>Shipping: </h6>
 							</div>`;
 							listingPrivledges(sellerId);
+							// Allows owner of listing to edit and delete the product
+							$('#editProduct').click(function(){
+								let oldKeywords = data.keywords;
+								let newKeywordArray = oldKeywords.join(' ');
+								// Outputs exsiting product information
+								$('#updateTitle').val(data.title);
+								$('#updatePrice').val(data.price);
+								$('#updateCategory').val(data.category);
+								$('#updateDescription').val(data.description);
+								$('#updateKeywords').val(newKeywordArray);
+								$('#updateImage').val(data.image);
+								$('#updateShipping-pick').val(data.shipping);
+								$('#updateShipping-deliver').val(data.shipping);
+								console.log(clickedProduct);
+								// Updates listing after save changes has been clicked
+								$('#updateProductBtn').click(function(){
+									let newTitle = $('#updateTitle').val();
+									let newPrice = $('#updatePrice').val();
+									let newCategory = $('#updateCategory').val();
+									let newDescription = $('#updateDescription').val();
+									let newImage = $('#updateImage').val();
+									// Turns keywords into an array
+									let modifiedKeywordArray = $('#updateKeywords').val();
+									let convertToNewKeywordArray = modifiedKeywordArray.split(' ');
+									// Updates product information
+									$.ajax({
+										url: `${url}/updateProduct/p=${clickedProduct}`,
+										type: 'PATCH',
+										dataType: {
+											title : newTitle,
+											description : newDescription,
+											price : newPrice,
+											image : newImage,
+											category : newCategory,
+											keywords : convertToNewKeywordArray,
+											shipping : data.shipping
+										},
+										success: function(){
+											swal({
+												title: 'Listing Updated',
+												text: `Successfully updated ${data.title} with new details that you have entered`,
+												icon: 'success',
+												button: 'Got it',
+												timer: 2500
+											});
+										},
+										error: function(error){
+											alert('Could not update listing');
+										}
+									});
+								}); // Save changes end
+							});
+
 							// Confirmation pop up add to watchlist
 							$('#productAddToWatchList').click(function(){
 								// Gets buyer's data
@@ -248,12 +301,12 @@ $(document).ready(function(){
 														icon: 'success',
 														button: 'Got it',
 														timer: 2500
-													})		
+													});		
 												},
 												error: function(error){
-													alert('failed to add product to watchlist')
+													alert('failed to add product to watchlist');
 												}
-											}) // ajax
+											}); // ajax
 										} 
 										else{
 											swal({
@@ -262,13 +315,13 @@ $(document).ready(function(){
 												icon: 'info',
 												button: 'Got it',
 												timer: 2500
-											})	
+											});	
 										}
 									},
 									error: function(error){
 										alert('failed to add to watchlist');
 									}
-								})
+								});
 								swal({
 									title: 'Added to watchlist',
 									text: `Successfully added ${data.title} to your watchlist`,
@@ -276,7 +329,7 @@ $(document).ready(function(){
 									button: 'Got it',
 									timer: 2500
 								});
-							})
+							});
 							// Confirmation pop up purchase item
 							$('#productPurchase').click(function(){
 								// Alert pop up
@@ -327,7 +380,7 @@ $(document).ready(function(){
 																error: function(error){
 																	console.log('Couldn\'t update buyer\'s balance');
 																}
-															})
+															});
 															// Update seller's wallet
 															$.ajax({
 																url: `${url}/updateBalance/u=${sellerData._id}`,
@@ -341,12 +394,12 @@ $(document).ready(function(){
 																error: function(error){
 																	console.log('Couldn\'t update seller\'s balance');
 																}
-															})													
+															});													
 														},
 														error: function(error){
 															alert('Unable to make purchase');
 														}
-													})
+													});
 												}
 												else{
 													swal({
@@ -355,13 +408,13 @@ $(document).ready(function(){
 														icon: `error`,
 														button: `Got it!`,
 														timer: 2500
-													})
+													});
 												}
 											},
 											error: function(error){
 												alert('Failed to get buyer\'s details');
 											}
-										})
+										});
 										swal({
 											title: `${data.title} has been purchased`,
 											text: `Successfully purchased ${data.title}, itemId #: ${data._id}`,
@@ -381,11 +434,13 @@ $(document).ready(function(){
 				}
 			});
 		}); // Initial ajax ends
-	} // Function ends
+	} // Open product function ends
+
 	// Gives different layout if user is logged in our out
 	function listingPrivledges(sellerId){
 		console.log(sellerId);
 		console.log(sessionStorage.getItem("userID"));
+		// If the user who is logged in has listed the viewed product
 		if((sessionStorage['username']) && (sellerId == sessionStorage.getItem("userID"))){
 			// Adds question form
 			document.getElementById('questionForm').innerHTML = 
@@ -402,12 +457,13 @@ $(document).ready(function(){
 			document.getElementById('dynamicBtnContainer').innerHTML = 
 			`<div class="alert alert-primary col-12 text-center" role="alert">This is your product</div>
 			<div class="col-md-6">
-			<button id="editProduct" class="btn btn-outline-success btn-block">Edit product</button>
+			<button id="editProduct" data-toggle="modal" data-target="#updateProductModal" class="btn btn-outline-success btn-block">Edit product</button>
 			</div>
 			<div class="col-md-6">
 			<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
 			</div>`;
 		}
+		// If the user is logged in BUT has not listed the item
 		else if(sessionStorage['username']){
 			// Adds question form
 			document.getElementById('questionForm').innerHTML =
@@ -429,6 +485,7 @@ $(document).ready(function(){
 			<button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
 			</div>`;
 		}
+		// If the user isn't logged in
 		else{
 			// Adds warning to login or register
 			document.getElementById('questionForm').innerHTML =
