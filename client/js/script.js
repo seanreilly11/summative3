@@ -43,19 +43,17 @@ $(document).ready(function(){
 	});//ajax
 
 	//category filter
-	$('#categories').on('click', 'button', function(clickedButton) {
-		let clickedCategory = clickedButton.target.id.slice(0, -6);
-		let btnCategory = clickedButton.target.id;
+	$('.btn-category').click(function(){
+		let clickedCategory = $(this).attr("id").slice(0, -6);
+		let btnCategory = $(this).attr("id");
 		console.log(btnCategory);
 		console.log(clickedCategory);
-		let list = document.querySelectorAll(".btn-category");
-		for(var i = 0; i < list.length; i++){
-			list[i].classList.remove(".btn-secondary");
-			list[i].classList.add(".btn-outline-secondary");
-		}
-		document.getElementById(btnCategory).classList.add('btn-secondary');
-		document.getElementById(btnCategory).classList.remove('btn-outline-secondary');
-			$.ajax({
+		$('#account').hide();
+		$("#productCards").show();
+		$("#filterBar").show();
+		$('#productPage').hide();
+		$(this).removeClass('btn-outline-secondary').addClass('btn-secondary').siblings().removeClass('btn-secondary').addClass('btn-outline-secondary');
+		$.ajax({
 			url: `${url}/products`,
 			type: 'GET',
 			dataType: 'json',
@@ -65,7 +63,7 @@ $(document).ready(function(){
 					let cat = data[i].category.toLowerCase();
 					console.log(data[i].category, cat);
 					if (cat.includes(clickedCategory)) {
-						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username']) {
 							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
@@ -85,13 +83,6 @@ $(document).ready(function(){
 		})
 	});
 
-	$('.btn-category').click(function(){
-		$('#account').hide();
-		$("#productCards").show();
-		$('#productPage').hide();
-	})
-
-
 	//price filter
 	$('#filterSelect').on('change', function(){
 		if ($(this).val() == 'low') {
@@ -101,19 +92,30 @@ $(document).ready(function(){
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
+					function compare(a ,b){
+						return a.price - b.price;
+					};
+					data.sort(compare);
+					document.getElementById('productCards').innerHTML = " ";
 					for (var i = 0; i < data.length; i++) {
 						let products = data[i].price;
-						function compare(a ,b){
-							return a.price - b.price;
-						};
-						data.sort(compare);
 						console.log(products);
+						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+						if (sessionStorage['username']) {
+							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+						}
+						card += `<div class="card-body">
+						<h3 class="card-title"> ${data[i].title}</h3>
+						<h4 class="card-text">$${data[i].price}</h4>
+						</div></div>`;
+						document.getElementById('productCards').innerHTML += card;
 					}
 				},
 				error: function(){
 					console.log('cannot filter objects');
 				}
-		});//ajax end
+			});//ajax end
 		} else if ($(this).val() == 'high') {
 			console.log('high to low price selected');
 			$.ajax({
@@ -121,13 +123,24 @@ $(document).ready(function(){
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
+					function compare(a ,b){
+						return b.price - a.price;
+					};
+					data.sort(compare);
+					document.getElementById('productCards').innerHTML = " ";
 					for (var i = 0; i < data.length; i++) {
 						let products = data[i].price;
-						function compare(a ,b){
-							return b.price - a.price;
-						};
-						data.sort(compare);
 						console.log(products);
+						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+						if (sessionStorage['username']) {
+							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+						}
+						card += `<div class="card-body">
+						<h3 class="card-title"> ${data[i].title}</h3>
+						<h4 class="card-text">$${data[i].price}</h4>
+						</div></div>`;
+						document.getElementById('productCards').innerHTML += card;
 					}
 				},
 				error: function(){
@@ -152,7 +165,7 @@ $(document).ready(function(){
 				document.getElementById('productCards').innerHTML = "";
 				for (let i = 0; i < data.length; i++) {
 					if(data[i].status === "listed"){
-						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username']) {
 							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
@@ -186,7 +199,7 @@ $(document).ready(function(){
 			$('#productPage').show();
 			$('#filterBar').hide();
 
-			// Creates produc page dynamically
+			// Creates product page dynamically
 			$.ajax({
 				url: `${url}/products/p=${clickedProduct}`,
 				type: 'GET',
@@ -205,11 +218,10 @@ $(document).ready(function(){
 							document.getElementById('productInformation').innerHTML =
 							`<img src="${data.image}" class="img-fluid" alt="${data.title}">
 							<div class="product-description my-5">${data.description}</div>
-							<div id="questionForm"></div>
-							<div id="qAndAPrintOut" class="question-previous-questions row">
-							<div class="col-12">
-							<h3>Questions and Answers</h3>
-							</div></div>`;
+							<div class="col-12" id="questionForm"></div>
+							<div class="question-previous-questions col-12 mt-5">
+							<h3 class="bg-light p-3">Questions and Answers</h3>
+							<div class="col-12" id="qAndAPrintOut"></div></div>`;
 							// Button, title, listing id and seller information
 							document.getElementById('productButtonContainer').innerHTML =
 							`<h3>${data.title}</h3>
@@ -222,7 +234,8 @@ $(document).ready(function(){
 							<h6>${sellerData.location}</h6>
 							<h6>Shipping: </h6>
 							</div>`;
-							listingPrivledges(sellerId);
+
+							listingPrivledges(sellerId, data);
 
 							// Allows owner of listing to edit and delete the product
 							$('#editProduct').click(function(){
@@ -407,11 +420,22 @@ $(document).ready(function(){
 														type: `PATCH`,
 														data: {
 															buyerId: `${sessionStorage.getItem('userID')}`,
-															status: `sold`
+															status: 'sold'
 														},
 														success: function(updateBuyerBalance){
 															var updateBuyerWallet = buyerData.balance - data.price;
 															var updateSellerWallet = sellerData.balance + data.price;
+															$.ajax({
+																url: `${url}/products/p=${data._id}`,
+																type: 'GET',
+																data: 'json',
+																success: function(newProdData){
+																	listingPrivledges(sellerId, newProdData);
+																},
+																error: function(error){
+																	alert("Can't get product");
+																}
+															})
 															// Update buyer's wallet
 															$.ajax({
 																url: `${url}/updateBalance/u=${sessionStorage.getItem('userID')}`,
@@ -420,7 +444,7 @@ $(document).ready(function(){
 																	balance: updateBuyerWallet
 																},
 																success: function(){
-																	console.log('Buyer\'s balance has changed by ' + buyerData.balance);
+																	console.log('Buyer\'s balance has changed to ' + buyerData.balance);
 																},
 																error: function(error){
 																	console.log('Couldn\'t update buyer\'s balance');
@@ -434,7 +458,7 @@ $(document).ready(function(){
 																	balance: updateSellerWallet
 																},
 																success: function(){
-																	console.log('Seller\'s balance has changed by ' + sellerData.balance);
+																	console.log('Seller\'s balance has changed to ' + sellerData.balance);
 																},
 																error: function(error){
 																	console.log('Couldn\'t update seller\'s balance');
@@ -473,60 +497,64 @@ $(document).ready(function(){
 							});
 						}
 					});
-				},
-				error: function(error){
-					console.log('failed');
-				}
-			});
+},
+error: function(error){
+	console.log('failed');
+}
+});
 		}); // Initial ajax ends
 	} // Open product function ends
 
 	// Gives different layout if user is logged in our out
-	function listingPrivledges(sellerId){
-		console.log(sellerId);
-		console.log(sessionStorage.getItem("userID"));
-		// If the user who is logged in has listed the viewed product
+	function listingPrivledges(sellerId, data){
+		let status = data.status;
 		if((sessionStorage['username']) && (sellerId == sessionStorage.getItem("userID"))){
 			// Adds question form
-			document.getElementById('questionForm').innerHTML = 
-			`<form>
-			<div class="question-form row form-group bg-secondary py-3 col-12">
+			document.getElementById('questionForm').innerHTML =
+			`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
 			<h3>Ask a Question</h3>
 			<textarea class="form-control" id="newQuestion" rows="3"></textarea>
-			<div class="col">
-			<button id="" class="btn btn-primary mt-3 float-right">Ask Question</button>
-			</div>
-			</div>
-			</form>`;
+			<div class="col-12">
+			<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
+			</div></div>`;
 			// Adds buttons
-			document.getElementById('dynamicBtnContainer').innerHTML = 
+			document.getElementById('dynamicBtnContainer').innerHTML =
 			`<div class="alert alert-primary col-12 text-center" role="alert">This is your product</div>
-			<div class="col-md-6">
-			<button id="editProduct" data-toggle="modal" data-target="#updateProductModal" class="btn btn-outline-success btn-block">Edit product</button>
+			<div class="col-lg-6 col-md-12">
+			<button id="editProduct" class="btn btn-outline-success btn-block" data-toggle="modal" data-target="#updateProductModal">Edit product</button>
 			</div>
-			<div class="col-md-6">
+			<div class="col-lg-6 col-md-12">
 			<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
 			</div>`;
 		}
-		// If the user is logged in BUT has not listed the item
+		else if((sessionStorage['username']) && (status == 'sold')){
+			// Adds question form
+			document.getElementById('questionForm').innerHTML =
+			`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
+			<h3>Ask a Question</h3>
+			<textarea class="form-control" id="newQuestion" rows="3"></textarea>
+			<div class="col-12">
+			<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
+			</div></div>`;
+			// Adds buttons
+			document.getElementById('dynamicBtnContainer').innerHTML =
+			`<div class="alert alert-danger col-12 text-center" role="alert">This product has been sold</div>`;
+		}
 		else if(sessionStorage['username']){
 			// Adds question form
 			document.getElementById('questionForm').innerHTML =
-			`<form>
-			<div class="question-form row form-group bg-secondary py-3 col-12">
+			`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
 			<h3>Ask a Question</h3>
 			<textarea class="form-control" id="newQuestion" rows="3"></textarea>
-			<div class="col">
-			<button id="" class="btn btn-primary mt-3 float-right">Ask Question</button>
-			</div>
-			</div>
-			</form>`;
+			<div class="col-12">
+			<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
+			</div></div>`;
 			// Adds buttons
 			document.getElementById('dynamicBtnContainer').innerHTML =
-			`<div class="col-md-6">
+			`<div class="col-lg-6 col-md-12">
 			<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
 			</div>
-			<div class="col-md-6">
+			<div class="col-lg-6 col-md-12">
 			<button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
 			</div>`;
 		}
@@ -534,7 +562,7 @@ $(document).ready(function(){
 		else{
 			// Adds warning to login or register
 			document.getElementById('questionForm').innerHTML =
-			`<div class="bg-secondary p-3">
+			`<div class="bg-light p-3">
 			<h4 class="text-light">Please log in or register to ask a question</h4>
 			</div>`;
 			// Adds buttons
@@ -543,6 +571,11 @@ $(document).ready(function(){
 			<button id="registerAccountProductPageBtn" class="btn btn-outline-primary btn-block">Register an account</button>
 			</div>`;
 		}
+		$("#submitQuestionBtn").click(function(){
+			let newQuestion = $("#newQuestion").val();
+			addComment(newQuestion, data);
+		});
+		displayComments(data);
 	}
 	// --- Product details end ---
 
@@ -606,7 +639,6 @@ $(document).ready(function(){
 						$("#productPage").show();
 						$("#filterContainer").show();
 						showAllProducts();
-						listingPrivledges();
 					}
 				},
 				error:function(){
@@ -775,6 +807,7 @@ $(document).ready(function(){
 				},
 				success : function(data){
 					console.log(data)
+					showMyProducts("selling");
 					$('#addProductModal').modal('hide');
 					swal({
 						title: 'Success!',
@@ -795,6 +828,11 @@ $(document).ready(function(){
 	$("#myAccountButton").click(function(){
 		addProfileDetails();
 		showMyProducts("selling");
+		let list = document.querySelectorAll(".account-info__sidebar__list-item");
+		for(var i = 0; i < list.length; i++){
+			list[i].classList.remove("account-info__sidebar__list-item--active");
+		}
+		list[0].classList.add("account-info__sidebar__list-item--active")
 		$("#productCards").hide();
 		$('#productPage').hide();
 		$("#account").show();
@@ -822,12 +860,15 @@ $(document).ready(function(){
 
 	$("#viewSelling").click(function(){
 		showMyProducts("selling");
+		document.getElementById("myProductCards").scrollIntoView();
 	})
 	$("#viewSold").click(function(){
 		showMyProducts("sold");
+		document.getElementById("myProductCards").scrollIntoView();
 	})
 	$("#viewBought").click(function(){
 		showMyProducts("bought");
+		document.getElementById("myProductCards").scrollIntoView();
 	})
 	//Load my cards
 	function showMyProducts(group){
@@ -877,6 +918,7 @@ $(document).ready(function(){
 
 	$("#viewWatchlist").click(function(){
 		showMyWatchlist();
+		document.getElementById("myProductCards").scrollIntoView();
 	})
 	//Load my watchlist
 	function showMyWatchlist(){
@@ -917,15 +959,6 @@ $(document).ready(function(){
 							console.log('no good');
 						}
 					})
-					// if(data[i].sellerId == sessionStorage.getItem("userID") && data[i].status === "listed"){
-					// 	let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
-					// 	<img class="card-img-top" src="${data[i].image}" alt="Image">`;
-					// 	card += `<div class="card-body">
-					// 	<h3 class="card-title"> ${data[i].title}</h3>
-					// 	<h4 class="card-text">$${data[i].price}</h4>
-					// 	</div></div>`;
-					// 	document.getElementById('myProductCards').innerHTML += card;
-					// }
 				}
 				openProduct();
 			},
@@ -953,7 +986,7 @@ $(document).ready(function(){
 		});//ajax
 	});
 
-	$("#saveProductBtn").click(function(){
+	$("#saveProfileBtn").click(function(){
 		let fname = $("#editFirstName").val();
 		let lname = $("#editLastName").val();
 		let city = $("#editLocation").val();
@@ -988,10 +1021,6 @@ $(document).ready(function(){
 		});//ajax
 	});
 
-
-
-
-
 	// add and remove active list class on profile side bar
 	$(".account-info__sidebar__list-item").click(function(){
 		let list = document.querySelectorAll(".account-info__sidebar__list-item");
@@ -1000,5 +1029,114 @@ $(document).ready(function(){
 		}
 		$(this).addClass("account-info__sidebar__list-item--active")
 	});
+
+	function addComment(question, data){
+		$.ajax({
+			url :`${url}/addComment`,
+			type :'POST',
+			data:{
+				text : question,
+				time : new Date(),
+				userId : sessionStorage.getItem('userID'),
+				productId : data["_id"],
+				replies : []
+			},
+			success : function(comment){
+				console.log(comment);
+				displayComments(data);
+			},
+			error:function(){
+				console.log('error: cannot call api');
+			}
+		});//ajax
+	}
+
+	function displayComments(product){
+		$.ajax({
+			url: `${url}/comments`,
+			type: 'GET',
+			dataType :'json',
+			success: function(data){
+				console.log(data);
+				document.getElementById('qAndAPrintOut').innerHTML = "";
+				for (let i = 0; i < data.length; i++) {
+					$.ajax({
+						url: `${url}/users/u=${data[i].userId}`,
+						type: 'GET',
+						dataType :'json',
+						success: function(user){
+							let comUsername = user.username;
+							if(data[i].productId === product["_id"]){
+								let t = data[i].time;
+								// let time = `${t.getDate()}/${t.getMonth()}/${t.getYear()} ${t.getHours()}:${t.getMinutes()}` 
+								let card =`<div class="col-10 border p-2 pb-5 rounded my-2" id="${data[i]["_id"]}">
+								<p class="mb-0 text-primary font-weight-bold">${comUsername}<span class="text-muted ml-2 font-weight-normal">${data[i].time}</span></p>
+								<p class="card-text ml-2">${data[i].text}</p>`;
+								if(data[i].replies[0] != null){
+								for (let j = 0; j < data[i].replies.length; j++) {
+									$.ajax({
+										url: `${url}/users/u=${data[i].replies[j].userId}`,
+										type: 'GET',
+										dataType :'json',
+										success: function(replier){
+											let repUsername = replier.username;
+											card +=`<div class="col-10 border p-2 rounded my-2 float-right">
+											<p class="mb-0 text-primary font-weight-bold">${repUsername}<span class="text-muted ml-2 font-weight-normal">${data[i].replies[j].time}</span></p>
+											<p class="card-text ml-2">${data[i].replies[j].text}</p>
+											</div>`;
+										},
+										error: function(error) {
+											console.log('no good');
+										}
+									}) // ajax
+								}
+							}
+								card += `<div class="col-12 form-inline float-right">
+								<input type="text" class="form-control reply-input col-md-8 col-lg-9" name="reply-input" placeholder="Reply">
+								<button type="button" class="btn btn-primary col-md-4 col-lg-3 replyBtn">
+								Reply</button></div></div>`;
+								document.getElementById('qAndAPrintOut').innerHTML += card;
+								$(".replyBtn").click(function(e){
+									handleReply(e, product);
+								})
+							}
+						},
+						error: function(error) {
+							console.log('no good');
+						}
+					})
+				}
+			},
+			error: function(error) {
+				console.log('no good');
+			}
+		})
+	}
+
+	function handleReply(e, product){
+		let com = e.target.parentNode.parentNode.attributes[1].value;
+		let input = e.target.previousElementSibling.value;
+		let reply = {
+			"text" : input,
+			"time" : new Date(),
+			"userId" : sessionStorage.getItem("userID")
+		}
+		console.log(reply)
+		$.ajax({
+			url :`${url}/commentReply/c=${com}`,
+			type :'PATCH',
+			data:{
+				replies : reply
+			},
+			success : function(data){
+				console.log(data);
+				displayComments(data);
+			},
+			error:function(){
+				console.log('error: cannot call api');
+			}
+		});//ajax
+	}
+
 
 }); // document
