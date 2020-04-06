@@ -178,12 +178,94 @@ $(document).ready(function(){
 					}
 				}
 				openProduct();
+				// Add product to wishlist on click of '+' on product card
+				$('.watchlistCardBtn').click(function(e){
+					var prod = e.target.parentNode.attributes[1].value;
+					console.log(prod);
+					// Get product details
+					$.ajax({
+						url: `${url}/products/p=${prod}`,
+						type: 'GET',
+						dataType: 'json',
+						success: function(clickedProduct){
+							var sellerId = clickedProduct.sellerId;
+							// Get seller's details so that the seller doesn't add their listing to their account
+							$.ajax({
+								url: `${url}/users/u=${sellerId}`,
+								type: 'GET',
+								dataType: 'json',
+								success: function(sellerData){
+									// Get buyer's details
+									$.ajax({
+										url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+										type: 'GET',
+										data: 'json',
+										success: function(buyerData){
+											var newWatchlist = buyerData.watchlist;
+											var productToAdd = prod;
+											console.log(newWatchlist);
+											console.log(productToAdd);
+											console.log(buyerData.username);
+											// Adding product id to user's watchlist array
+											if((newWatchlist.indexOf(productToAdd) == -1) && (sellerId != sessionStorage.getItem("userID"))){
+												$.ajax({
+													url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
+													type: 'PATCH',
+													data: {
+														watchlist : productToAdd
+													},
+													success: function(updateBuyerWatchlist){
+														swal({
+															title: 'Added to watchlist',
+															text: `Successfully added ${clickedProduct.title} to your watchlist`,
+															icon: 'success',
+															button: 'Got it',
+															timer: 2500
+														});		
+													},
+													error: function(error){
+														alert('failed to add product to watchlist');
+													}
+												}); // ajax
+											} 
+											else{
+												swal({
+													title: 'Already added',
+													text: `${clickedProduct.title} is already on your watchlist`,
+													icon: 'info',
+													button: 'Got it',
+													timer: 2500
+												});	
+											}
+										},
+										error: function(error){
+											alert('failed to add to watchlist');
+										}
+									}); // Get buyer details end
+									swal({
+										title: 'Added to watchlist',
+										text: `Successfully added ${clickedProduct.title} to your watchlist`,
+										icon: 'success',
+										button: 'Got it',
+										timer: 2500
+									});
+								},
+								error: function(){
+									alert('Failded to get seller\'s details');
+								}
+							})
+						},
+						error: function(error){
+							alert('Could not find product');
+						}
+					}) // Get product details end
+				}); // Add to watchlist from home screen end
 			},
 			error: function(error) {
 				console.log('no good');
 			}
-		})
-	}
+		}) // ajax products end
+	} // Show all products end
 
 	// --- Product details ---
 	// Open product page
@@ -269,7 +351,7 @@ $(document).ready(function(){
 									let convertToNewKeywordArray = modifiedKeywordArray.split(' ');
 									// Updates product information
 									$.ajax({
-										url: url + '/updateProduct/p=' + clickedProduct,
+										url: `${url}/updateProduct/p=${clickedProduct}`,
 										type: 'PATCH',
 										dataType: {
 											title : newTitle,
@@ -388,6 +470,7 @@ $(document).ready(function(){
 									timer: 2500
 								});
 							});
+
 							// Confirmation pop up purchase item
 							$('#productPurchase').click(function(){
 								// Alert pop up
@@ -497,11 +580,11 @@ $(document).ready(function(){
 							});
 						}
 					});
-},
-error: function(error){
-	console.log('failed');
-}
-});
+				},
+				error: function(error){
+					console.log('failed');
+				}
+			});
 		}); // Initial ajax ends
 	} // Open product function ends
 
