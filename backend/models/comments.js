@@ -12,7 +12,16 @@ const commentSchema = new mongoose.Schema({
     type : mongoose.Schema.Types.ObjectId,
     ref : 'Product'
   },
-  replies : Array
+  replies : [ 
+    {                  
+      text : String,
+      time : Date,
+      userId :{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'User'
+      }
+    } 
+  ]
 });
 
 module.exports = mongoose.model('Comment', commentSchema);

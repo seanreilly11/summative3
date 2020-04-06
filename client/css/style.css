@@ -13,8 +13,8 @@ body{
     text-align: center;
 }
 
-.account-info__picture{
-	max-width: 250px;
+.account-info__picture img{
+	max-width: 150px;
 }
 
 .account-info__sidebar__list{
@@ -61,11 +61,13 @@ body{
 	background-color: linear-gradient(to bottom left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,.25) 100%);*/
 }
 
-
-
-
 @media (min-width: 576px){
 	.modal-dialog{
 		max-width: 600px;
+	}
+}
+@media (min-width: 800px){
+	.account-info__picture img{
+		max-width: 220px;
 	}
 }

@@ -142,7 +142,7 @@
 	<div class="container h-100 my-5" id="account">
 		<div class="row h-100 justify-content-center align-items-center">
 			<div class="col-9 row account-info border py-3 rounded-lg">
-				<div class="col-4 account-info__sidebar d-flex flex-column justify-content-center">
+				<div class="col-lg-4 col-md-6 col-sm-12 order-2 order-md-2 order-lg-1 account-info__sidebar d-flex flex-column justify-content-center">
 					<h5 class="account-info__sidebar__heading">Selling</h5>
 					<ul class="account-info__sidebar__list">
 						<li class="account-info__sidebar__list-item account-info__sidebar__list-item--active" id="viewSelling">Items I'm Selling</li>
@@ -154,16 +154,16 @@
 						<li class="account-info__sidebar__list-item" id="viewWatchlist">My watchlist</li>
 					</ul>
 				</div>
-				<div class="col account-info__picture">
+				<div class="col-lg-4 col-md-12 col-sm-12 order-1 order-md-1 order-lg-2 account-info__picture d-flex flex-column align-items-center justify-content-center">
 					<h3 class="text-center" id="profile-fullname"></h3>
 					<img src="images/avatar.png" alt="Profile avatar" class="w-100">
 				</div>
-				<div class="col-4 account-info__details text-right d-flex flex-column justify-content-center">
+				<div class="col-lg-4 col-md-6 col-sm-12 order-3 account-info__details text-left text-md-right d-flex flex-column justify-content-center">
 					<p class="mb-2">Username: <span id="profile-username"></span></p>
 					<p class="mb-2">Email: <span id="profile-email"></span></p>
 					<p class="mb-2">Location: <span id="profile-location"></span></p>
 					<p class="mb-3">Balance: <span id="profile-balance"></span></p>
-					<div class="row justify-content-end">
+					<div class="row justify-content-start justify-content-sm-end">
 						<button class="btn btn-primary mr-2" data-toggle="modal" data-target="#addProductModal" id="addListingBtn">Add Listing</button>
 						<button class="btn btn-outline-primary" data-toggle="modal" data-target="#editProfileModal" id="editProfileBtn">Edit Profile</button>
 					</div>

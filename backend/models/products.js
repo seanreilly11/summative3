@@ -17,7 +17,10 @@ const productSchema = new mongoose.Schema({
     ref : 'User'
   },
   category : String,
-  shipping : Array
+  shipping : {                  
+      pickup : Boolean,
+      deliver : Boolean
+    } 
 });
 
 module.exports = mongoose.model('Product', productSchema);

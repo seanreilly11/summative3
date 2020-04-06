@@ -223,18 +223,24 @@ $(document).ready(function(){
 							<h3 class="bg-light p-3">Questions and Answers</h3>
 							<div class="col-12" id="qAndAPrintOut"></div></div>`;
 							// Button, title, listing id and seller information
-							document.getElementById('productButtonContainer').innerHTML =
-							`<h3>${data.title}</h3>
+							let card = `<h3>${data.title}</h3>
 							<h4 class="small">Listing #: ${data._id}</h4>
 							<h4 class="text-success font-weight-bold my-4">$${data.price}</h4>
 							<div id="dynamicBtnContainer" class="row"></div>
 							<div class="mt-3">
-							<h5 class="small">Seller:</h5>
-							<h5>${sellerData.username}</h5>
-							<h6>${sellerData.location}</h6>
-							<h6>Shipping: </h6>
-							</div>`;
-
+							<h5 class="small mb-0">Seller:</h5>
+							<h4 class="mb-0">${sellerData.username}</h5>
+							<h6 class="mb-2">${sellerData.location}</h6>`;
+							if(data.shipping.pickup && data.shipping.deliver){
+								card += `<p class="mb-0">Shipping: Pick up and delivery available</p></div>`;
+							}
+							else if(data.shipping.pickup){
+								card += `<p class="mb-0">Shipping: Pick up only</p></div>`;
+							}
+							else if(data.shipping.deliver){
+								card += `<p class="mb-0">Shipping: Delivery only</p></div>`;
+							}
+							document.getElementById('productButtonContainer').innerHTML = card;
 							listingPrivledges(sellerId, data);
 
 							// Allows owner of listing to edit and delete the product
@@ -248,8 +254,8 @@ $(document).ready(function(){
 								$('#updateDescription').val(data.description);
 								$('#updateKeywords').val(newKeywordArray);
 								$('#updateImage').val(data.image);
-								$('#updateShipping-pick').val(data.shipping);
-								$('#updateShipping-deliver').val(data.shipping);
+								$('#updateShipping-pick').prop('checked', data.shipping.pickup);
+								$('#updateShipping-deliver').prop('checked', data.shipping.deliver);
 								console.log(clickedProduct);
 								// Updates listing after save changes has been clicked
 								$('#updateProductBtn').click(function(){
@@ -301,7 +307,7 @@ $(document).ready(function(){
 								swal({
 									title: `Delete ${data.title}`,
 									text: `Are you sure that you want to permentaly remove ${data.title} as a listing. This action cannot be undone!`,
-									icon: 'info',
+									icon: 'warning',
 									buttons: {
 										cancel: 'Cancel',
 										success: {
@@ -325,6 +331,9 @@ $(document).ready(function(){
 													button: 'Got it',
 													timer: 2500
 												});
+												$("#productPage").hide();
+												showAllProducts()
+												$("#productCards").show();
 											},
 											error: function(){
 												alert('Failed to delete listing');
@@ -508,7 +517,16 @@ error: function(error){
 	// Gives different layout if user is logged in our out
 	function listingPrivledges(sellerId, data){
 		let status = data.status;
-		if((sessionStorage['username']) && (sellerId == sessionStorage.getItem("userID"))){
+		if(status == 'sold'){
+			// Adds question form
+			document.getElementById('questionForm').innerHTML =
+			`<div class="alert alert-danger col-12 text-center" role="alert">
+			This product has been sold so questions are closed</div>`;
+			// Adds buttons
+			document.getElementById('dynamicBtnContainer').innerHTML =
+			`<div class="alert alert-danger col-12 text-center" role="alert">This product has been sold</div>`;
+		}
+		else if((sessionStorage['username']) && (sellerId == sessionStorage.getItem("userID"))){
 			// Adds question form
 			document.getElementById('questionForm').innerHTML =
 			`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
@@ -526,20 +544,7 @@ error: function(error){
 			<div class="col-lg-6 col-md-12">
 			<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
 			</div>`;
-		}
-		else if((sessionStorage['username']) && (status == 'sold')){
-			// Adds question form
-			document.getElementById('questionForm').innerHTML =
-			`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
-			<h3>Ask a Question</h3>
-			<textarea class="form-control" id="newQuestion" rows="3"></textarea>
-			<div class="col-12">
-			<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
-			</div></div>`;
-			// Adds buttons
-			document.getElementById('dynamicBtnContainer').innerHTML =
-			`<div class="alert alert-danger col-12 text-center" role="alert">This product has been sold</div>`;
-		}
+		} 
 		else if(sessionStorage['username']){
 			// Adds question form
 			document.getElementById('questionForm').innerHTML =
@@ -772,9 +777,6 @@ error: function(error){
 		let keywords = $('#addKeywords').val();
 		let pickup = $('#shipping-pick').is(":checked");
 		let deliver = $('#shipping-deliver').is(":checked");
-		let shipping = [];
-		if(pickup){shipping.push($('#shipping-pick').val());}
-		if(deliver){shipping.push($('#shipping-deliver').val());}
 		let keywordArray = keywords.split(' ');
 		let status = "listed";
 		price = price.toFixed(2);
@@ -803,7 +805,8 @@ error: function(error){
 					sellerId : seller,
 					buyerId : seller,
 					category : category,
-					shipping : shipping
+					pickup : pickup,
+					deliver : deliver
 				},
 				success : function(data){
 					console.log(data)
@@ -881,7 +884,7 @@ error: function(error){
 				document.getElementById('myProductCards').innerHTML = "";
 				for (let i = 0; i < data.length; i++) {
 					if(group === "selling" && data[i].sellerId == sessionStorage.getItem("userID") && data[i].status === "listed"){
-						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">
 						<div class="card-body">
 						<h3 class="card-title"> ${data[i].title}</h3>
@@ -890,20 +893,20 @@ error: function(error){
 						document.getElementById('myProductCards').innerHTML += card;
 					}
 					if(group === "sold" && data[i].sellerId == sessionStorage.getItem("userID") && data[i].status === "sold"){
-						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">
 						<div class="card-body">
 						<h3 class="card-title"> ${data[i].title}</h3>
-						<h4 class="card-text">$${data[i].price}</h4>
+						<div class="alert alert-danger col-12 text-center" role="alert">Sold</div>
 						</div></div>`;
 						document.getElementById('myProductCards').innerHTML += card;
 					}
 					if(group === "bought" && data[i].buyerId == sessionStorage.getItem("userID") && data[i].status === "sold"){
-						let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">
 						<div class="card-body">
 						<h3 class="card-title"> ${data[i].title}</h3>
-						<h4 class="card-text">$${data[i].price}</h4>
+						<div class="alert alert-success col-12 text-center" role="alert">Bought</div>
 						</div></div>`;
 						document.getElementById('myProductCards').innerHTML += card;
 					}
@@ -930,7 +933,8 @@ error: function(error){
 				console.log(userData);
 				document.getElementById('myProductCards').innerHTML = "";
 				if(userData.watchlist.length == 0){
-					document.getElementById('myProductCards').innerHTML = "You have no products added to your watchlist. Click the plus icon in the corner of a product to add it to your watchlist";
+					document.getElementById('myProductCards').innerHTML = 
+					'You have no products added to your watchlist. Click the plus icon in the corner of a product to add it to your watchlist or go to the product\'s page and click "add to watchlist"';
 				}
 				else{
 					$.ajax({
@@ -943,7 +947,7 @@ error: function(error){
 							for (let j = 0; j < userData.watchlist.length; j++) {
 								for (let i = 0; i < data.length; i++) {
 									if(data[i]["_id"] == userData.watchlist[j] && data[i].status === "listed"){
-										let card =`<div class="product-link position-relative card col-3" id="${data[i]["_id"]}">
+										let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 										<img class="card-img-top" src="${data[i].image}" alt="Image">
 										<div class="card-body">
 										<h3 class="card-title"> ${data[i].title}</h3>
@@ -1072,29 +1076,33 @@ error: function(error){
 								let card =`<div class="col-10 border p-2 pb-5 rounded my-2" id="${data[i]["_id"]}">
 								<p class="mb-0 text-primary font-weight-bold">${comUsername}<span class="text-muted ml-2 font-weight-normal">${data[i].time}</span></p>
 								<p class="card-text ml-2">${data[i].text}</p>`;
-								if(data[i].replies[0] != null){
-								for (let j = 0; j < data[i].replies.length; j++) {
-									$.ajax({
-										url: `${url}/users/u=${data[i].replies[j].userId}`,
-										type: 'GET',
-										dataType :'json',
-										success: function(replier){
-											let repUsername = replier.username;
-											card +=`<div class="col-10 border p-2 rounded my-2 float-right">
-											<p class="mb-0 text-primary font-weight-bold">${repUsername}<span class="text-muted ml-2 font-weight-normal">${data[i].replies[j].time}</span></p>
-											<p class="card-text ml-2">${data[i].replies[j].text}</p>
-											</div>`;
-										},
-										error: function(error) {
-											console.log('no good');
-										}
-									}) // ajax
+								if(!data[i].replies.includes(null)){
+									for (let j = 0; j < data[i].replies.length; j++) {
+										$.ajax({
+											url: `${url}/users/u=${data[i].replies[j].userId}`,
+											type: 'GET',
+											dataType :'json',
+											success: function(replier){
+												console.log(replier)
+												let repUsername = replier.username;
+												card +=`<div class="col-10 border p-2 rounded my-2 float-right">
+												<p class="mb-0 text-success font-weight-bold">${repUsername}<span class="text-muted ml-2 font-weight-normal">${data[i].replies[j].time}</span></p>
+												<p class="card-text ml-2">${data[i].replies[j].text}</p>
+												</div>`;
+												// console.log(card)
+												// document.getElementById('qAndAPrintOut').innerHTML += card;
+											},
+											error: function(error) {
+												console.log('no good');
+											}
+										}) // ajax
+									}
 								}
-							}
 								card += `<div class="col-12 form-inline float-right">
 								<input type="text" class="form-control reply-input col-md-8 col-lg-9" name="reply-input" placeholder="Reply">
 								<button type="button" class="btn btn-primary col-md-4 col-lg-3 replyBtn">
 								Reply</button></div></div>`;
+								console.log(card)
 								document.getElementById('qAndAPrintOut').innerHTML += card;
 								$(".replyBtn").click(function(e){
 									handleReply(e, product);
@@ -1116,17 +1124,13 @@ error: function(error){
 	function handleReply(e, product){
 		let com = e.target.parentNode.parentNode.attributes[1].value;
 		let input = e.target.previousElementSibling.value;
-		let reply = {
-			"text" : input,
-			"time" : new Date(),
-			"userId" : sessionStorage.getItem("userID")
-		}
-		console.log(reply)
 		$.ajax({
 			url :`${url}/commentReply/c=${com}`,
 			type :'PATCH',
 			data:{
-				replies : reply
+				text : input,
+				time : new Date(),
+				userId : sessionStorage.getItem("userID")
 			},
 			success : function(data){
 				console.log(data);
@@ -1137,6 +1141,4 @@ error: function(error){
 			}
 		});//ajax
 	}
-
-
 }); // document
