@@ -62,7 +62,7 @@ $(document).ready(function(){
 				for (var i = 0; i < data.length; i++) {
 					let cat = data[i].category.toLowerCase();
 					console.log(data[i].category, cat);
-					if (cat.includes(clickedCategory)) {
+					if (cat.includes(clickedCategory) & data[i].status == 'listed') {
 						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username']) {
@@ -99,17 +99,19 @@ $(document).ready(function(){
 					document.getElementById('productCards').innerHTML = " ";
 					for (var i = 0; i < data.length; i++) {
 						let products = data[i].price;
-						console.log(products);
-						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
-						if (sessionStorage['username']) {
-							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+						if (data[i].status == 'listed') {
+							console.log(products);
+							let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+							<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+							if (sessionStorage['username']) {
+								card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+							}
+							card += `<div class="card-body">
+							<h3 class="card-title"> ${data[i].title}</h3>
+							<h4 class="card-text">$${data[i].price}</h4>
+							</div></div>`;
+							document.getElementById('productCards').innerHTML += card;
 						}
-						card += `<div class="card-body">
-						<h3 class="card-title"> ${data[i].title}</h3>
-						<h4 class="card-text">$${data[i].price}</h4>
-						</div></div>`;
-						document.getElementById('productCards').innerHTML += card;
 					}
 				},
 				error: function(){
@@ -130,27 +132,51 @@ $(document).ready(function(){
 					document.getElementById('productCards').innerHTML = " ";
 					for (var i = 0; i < data.length; i++) {
 						let products = data[i].price;
-						console.log(products);
-						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
-						if (sessionStorage['username']) {
-							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+						if (data[i].status === 'listed') {
+							console.log(products);
+							let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+							<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+							if (sessionStorage['username']) {
+								card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+							}
+							card += `<div class="card-body">
+							<h3 class="card-title"> ${data[i].title}</h3>
+							<h4 class="card-text">$${data[i].price}</h4>
+							</div></div>`;
+							document.getElementById('productCards').innerHTML += card;
 						}
-						card += `<div class="card-body">
-						<h3 class="card-title"> ${data[i].title}</h3>
-						<h4 class="card-text">$${data[i].price}</h4>
-						</div></div>`;
-						document.getElementById('productCards').innerHTML += card;
 					}
 				},
 				error: function(){
 					console.log('cannot filter objects');
 				}
 		});//ajax end
-		} else if ($(this).val() == 'latest') {
+	} else if ($(this).val() === 'latest') {
 			console.log('latest listings selected');
+			$.ajax({
+				url: `${url}/products`,
+				type: 'GET',
+				dataType: 'json',
+				success: function(data){
+					showAllProducts();
+				},
+				error: function(){
+					console.log('cannot filter objects');
+				}
+			});
 		} else if ($(this).val() == 'oldest') {
 			console.log('oldest listings selected');
+			$.ajax({
+				url: `${url}/products`,
+				type: 'GET',
+				dataType: 'json',
+				success: function(data){
+					console.log(data.reverse());
+				},
+				error: function(){
+					console.log('cannot filter objects');
+				}
+			});
 		}
 	});
 
@@ -178,12 +204,94 @@ $(document).ready(function(){
 					}
 				}
 				openProduct();
+				// Add product to wishlist on click of '+' on product card
+				$('.watchlistCardBtn').click(function(e){
+					var prod = e.target.parentNode.attributes[1].value;
+					console.log(prod);
+					// Get product details
+					$.ajax({
+						url: `${url}/products/p=${prod}`,
+						type: 'GET',
+						dataType: 'json',
+						success: function(clickedProduct){
+							var sellerId = clickedProduct.sellerId;
+							// Get seller's details so that the seller doesn't add their listing to their account
+							$.ajax({
+								url: `${url}/users/u=${sellerId}`,
+								type: 'GET',
+								dataType: 'json',
+								success: function(sellerData){
+									// Get buyer's details
+									$.ajax({
+										url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+										type: 'GET',
+										data: 'json',
+										success: function(buyerData){
+											var newWatchlist = buyerData.watchlist;
+											var productToAdd = prod;
+											console.log(newWatchlist);
+											console.log(productToAdd);
+											console.log(buyerData.username);
+											// Adding product id to user's watchlist array
+											if((newWatchlist.indexOf(productToAdd) == -1) && (sellerId != sessionStorage.getItem("userID"))){
+												$.ajax({
+													url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
+													type: 'PATCH',
+													data: {
+														watchlist : productToAdd
+													},
+													success: function(updateBuyerWatchlist){
+														swal({
+															title: 'Added to watchlist',
+															text: `Successfully added ${clickedProduct.title} to your watchlist`,
+															icon: 'success',
+															button: 'Got it',
+															timer: 2500
+														});		
+													},
+													error: function(error){
+														alert('failed to add product to watchlist');
+													}
+												}); // ajax
+											} 
+											else{
+												swal({
+													title: 'Already added',
+													text: `${clickedProduct.title} is already on your watchlist`,
+													icon: 'info',
+													button: 'Got it',
+													timer: 2500
+												});	
+											}
+										},
+										error: function(error){
+											alert('failed to add to watchlist');
+										}
+									}); // Get buyer details end
+									swal({
+										title: 'Added to watchlist',
+										text: `Successfully added ${clickedProduct.title} to your watchlist`,
+										icon: 'success',
+										button: 'Got it',
+										timer: 2500
+									});
+								},
+								error: function(){
+									alert('Failded to get seller\'s details');
+								}
+							})
+						},
+						error: function(error){
+							alert('Could not find product');
+						}
+					}) // Get product details end
+				}); // Add to watchlist from home screen end
 			},
 			error: function(error) {
 				console.log('no good');
 			}
-		})
-	}
+		}) // ajax products end
+	} // Show all products end
 
 	// --- Product details ---
 	// Open product page
@@ -275,7 +383,7 @@ $(document).ready(function(){
 									let convertToNewKeywordArray = modifiedKeywordArray.split(' ');
 									// Updates product information
 									$.ajax({
-										url: url + '/updateProduct/p=' + clickedProduct,
+										url: `${url}/updateProduct/p=${clickedProduct}`,
 										type: 'PATCH',
 										dataType: {
 											title : newTitle,
@@ -368,13 +476,13 @@ $(document).ready(function(){
 														icon: 'success',
 														button: 'Got it',
 														timer: 2500
-													});		
+													});
 												},
 												error: function(error){
 													alert('failed to add product to watchlist');
 												}
 											}); // ajax
-										} 
+										}
 										else{
 											swal({
 												title: 'Already added',
@@ -382,7 +490,7 @@ $(document).ready(function(){
 												icon: 'info',
 												button: 'Got it',
 												timer: 2500
-											});	
+											});
 										}
 									},
 									error: function(error){
@@ -397,6 +505,7 @@ $(document).ready(function(){
 									timer: 2500
 								});
 							});
+
 							// Confirmation pop up purchase item
 							$('#productPurchase').click(function(){
 								// Alert pop up
@@ -472,7 +581,7 @@ $(document).ready(function(){
 																error: function(error){
 																	console.log('Couldn\'t update seller\'s balance');
 																}
-															});													
+															});
 														},
 														error: function(error){
 															alert('Unable to make purchase');
@@ -506,11 +615,11 @@ $(document).ready(function(){
 							});
 						}
 					});
-},
-error: function(error){
-	console.log('failed');
-}
-});
+				},
+				error: function(error){
+					console.log('failed');
+				}
+			});
 		}); // Initial ajax ends
 	} // Open product function ends
 
@@ -1072,7 +1181,7 @@ error: function(error){
 							let comUsername = user.username;
 							if(data[i].productId === product["_id"]){
 								let t = data[i].time;
-								// let time = `${t.getDate()}/${t.getMonth()}/${t.getYear()} ${t.getHours()}:${t.getMinutes()}` 
+								// let time = `${t.getDate()}/${t.getMonth()}/${t.getYear()} ${t.getHours()}:${t.getMinutes()}`
 								let card =`<div class="col-10 border p-2 pb-5 rounded my-2" id="${data[i]["_id"]}">
 								<p class="mb-0 text-primary font-weight-bold">${comUsername}<span class="text-muted ml-2 font-weight-normal">${data[i].time}</span></p>
 								<p class="card-text ml-2">${data[i].text}</p>`;
