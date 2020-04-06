@@ -335,19 +335,13 @@ $(document).ready(function(){
 								console.log(clickedProduct);
 								// Updates listing after save changes has been clicked
 								$('#updateProductBtn').click(function(){
-									let newTitle = document.getElementById('updateTitle').value;
-									// let newTitle = $('#updateTitle').val();
-									let newPrice = document.getElementById('updatePrice').value;
-									// let newPrice = $('#updatePrice').val();
-									let newCategory = document.getElementById('updateCategory').value;
-									// let newCategory = $('#updateCategory').val();
-									let newDescription = document.getElementById('updateDescription').value;
-									// let newDescription = $('#updateDescription').val();
-									let newImage = document.getElementById('updateImage').value;
-									// let newImage = $('#updateImage').val();
+									let newTitle = $('#updateTitle').val();
+									let newPrice = $('#updatePrice').val();
+									let newCategory = $('#updateCategory').val();
+									let newDescription = $('#updateDescription').val();
+									let newImage = $('#updateImage').val();
 									// Turns keywords into an array
-									let modifiedKeywordArray = document.getElementById('updateKeywords').value;
-									// let modifiedKeywordArray = $('#updateKeywords').val();
+									let modifiedKeywordArray = $('#updateKeywords').val();
 									let convertToNewKeywordArray = modifiedKeywordArray.split(' ');
 									// Updates product information
 									$.ajax({
