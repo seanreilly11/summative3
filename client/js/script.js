@@ -42,6 +42,44 @@ $(document).ready(function(){
 		}//error
 	});//ajax
 
+	//search
+	$('#searchButton').click(function(e){
+		e.preventDefault();
+		$.ajax({
+			url: `${url}/products`,
+			type: 'GET',
+			dataType: 'json',
+			success: function(data){
+				document.getElementById('productCards').innerHTML = " ";
+				let searchInput = $('#searchBar').val().toLowerCase();
+				console.log(searchInput);
+				for (var i = 0; i < data.length; i++) {
+					// console.log(data[i].keywords);
+					let searchTargetTitle = data[i].title.toLowerCase();
+					// let searchTargetKeyword = data[i].keywords.toLowerCase();
+					console.log(searchTargetTitle);
+					//After test products are deleted, do search for keywords also.
+						if (data[i].status == 'listed' &&	searchTargetTitle.includes(searchInput)) {
+							let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+							<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+							if (sessionStorage['username']) {
+								card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+							}
+							card += `<div class="card-body">
+							<h3 class="card-title"> ${data[i].title}</h3>
+							<h4 class="card-text">$${data[i].price}</h4>
+							</div></div>`;
+							document.getElementById('productCards').innerHTML += card;
+					}
+				}
+				openProduct();
+			},
+			error: function(){
+				console.log('cannot complete search');
+			}
+		})
+	});
+
 	//category filter
 	$('.btn-category').click(function(){
 		let clickedCategory = $(this).attr("id").slice(0, -6);
@@ -247,13 +285,13 @@ $(document).ready(function(){
 															icon: 'success',
 															button: 'Got it',
 															timer: 2500
-														});		
+														});
 													},
 													error: function(error){
 														alert('failed to add product to watchlist');
 													}
 												}); // ajax
-											} 
+											}
 											else{
 												swal({
 													title: 'Already added',
@@ -261,7 +299,7 @@ $(document).ready(function(){
 													icon: 'info',
 													button: 'Got it',
 													timer: 2500
-												});	
+												});
 											}
 										},
 										error: function(error){
@@ -655,7 +693,7 @@ $(document).ready(function(){
 			<div class="col-lg-6 col-md-12">
 			<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
 			</div>`;
-		} 
+		}
 		else if(sessionStorage['username']){
 			// Adds question form
 			document.getElementById('questionForm').innerHTML =
@@ -1043,7 +1081,7 @@ $(document).ready(function(){
 				console.log(userData);
 				document.getElementById('myProductCards').innerHTML = "";
 				if(userData.watchlist.length == 0){
-					document.getElementById('myProductCards').innerHTML = 
+					document.getElementById('myProductCards').innerHTML =
 					'You have no products added to your watchlist. Click the plus icon in the corner of a product to add it to your watchlist or go to the product\'s page and click "add to watchlist"';
 				}
 				else{
