@@ -380,7 +380,8 @@ $(document).ready(function(){
 									// Turns keywords into an array
 									let modifiedKeywordArray = document.getElementById('updateKeywords').value;
 									// let modifiedKeywordArray = $('#updateKeywords').val();
-									let convertToNewKeywordArray = modifiedKeywordArray.split(' ');
+									let newPickup = $('#updateShipping-pick').is(":checked");
+									let newDeliver = $('#updateShipping-deliver').is(":checked");
 									// Updates product information
 									$.ajax({
 										url: `${url}/updateProduct/p=${clickedProduct}`,
@@ -391,8 +392,9 @@ $(document).ready(function(){
 											price : newPrice,
 											image : newImage,
 											category : newCategory,
-											keywords : convertToNewKeywordArray,
-											shipping : data.shipping
+											keywords : modifiedKeywordArray,
+											pickup : newPickup,
+											deliver : newDeliver
 										},
 										success: function(){
 											swal({
@@ -886,7 +888,6 @@ $(document).ready(function(){
 		let keywords = $('#addKeywords').val();
 		let pickup = $('#shipping-pick').is(":checked");
 		let deliver = $('#shipping-deliver').is(":checked");
-		let keywordArray = keywords.split(' ');
 		let status = "listed";
 		price = price.toFixed(2);
 		let seller = sessionStorage.getItem("userID");
@@ -910,7 +911,7 @@ $(document).ready(function(){
 					price : price,
 					image : image,
 					status : status,
-					keywords : keywordArray,
+					keywords : keywords,
 					sellerId : seller,
 					buyerId : seller,
 					category : category,

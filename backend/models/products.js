@@ -7,7 +7,7 @@ const productSchema = new mongoose.Schema({
   price : Number,
   image : String,
   status : String,
-  keywords : Array,
+  keywords : String,
   sellerId :{
     type : mongoose.Schema.Types.ObjectId,
     ref : 'User'

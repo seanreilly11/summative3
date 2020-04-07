@@ -106,13 +106,12 @@ app.patch('/updateProduct/p=:id', (req,res)=>{
 			image : req.body.image,
 			keywords : req.body.keywords,
 			category : req.body.category,
-			shipping : req.body.shipping
-			// $set : {
-			// 	shipping : {
-			// 		pickup : req.body.pickup,
-			// 		deliver : req.body.deliver
-			// 	}
-			// }
+			$set : {
+				shipping : {
+					pickup : req.body.pickup,
+					deliver : req.body.deliver
+				}
+			}
 		};
 		Product.updateOne({_id:idParam}, updatedProduct).then(result=>{
 			res.send(result);
