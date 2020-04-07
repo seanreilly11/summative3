@@ -182,8 +182,8 @@ $(document).ready(function(){
 
 	//Load cards
 	function showAllProducts(){
+		// Get's buyer's watchlist from users
 		var buyerWatchlist = [];
-		// Get's buyer's details
 		$.ajax({
 			url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
 			type: 'GET',
@@ -202,8 +202,8 @@ $(document).ready(function(){
 			success: function(data){
 				console.log(data);
 				document.getElementById('productCards').innerHTML = "";
-				
-				var presentInWatchlist = false;
+				// Assumes that the item is in watchlist to not trigger adding a + to cards
+				var notPresentInWatchlist = false;
 				outerloop:
 				for (let i = 0; i < data.length; i++) {
 					if(data[i].status === "listed"){
@@ -211,9 +211,11 @@ $(document).ready(function(){
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						
 						if (sessionStorage['username']) {
+							// loops through both products and user's watchlist and compares
 							innerLoop:
 							for(let j = 0; j < buyerWatchlist.length; j++){
 								var buyerWatchlistItem = buyerWatchlist[j];
+								// Finds if the user has an item in their watchlist already
 								if(buyerWatchlistItem == data[i]._id){
 									console.log(`${buyerWatchlistItem} exsists`);
 									card += `<div class="watchlistCardBtn" title="Remove from watchlist">-</div>
@@ -222,16 +224,14 @@ $(document).ready(function(){
 									<h4 class="card-text">$${data[i].price}</h4>
 									</div></div>`;
 									document.getElementById('productCards').innerHTML += card;
+									// Moves on to the next item after printing card
 									continue outerloop;
 								}
-								presentInWatchlist = true;
-								continue innerLoop;
-								// else if(buyerWatchlist[j] !== data[i]._id){
-								// else{
-								// 	card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
-								// }
+								// If the item is not already in the watchlist, triggers conditional statement outside of inner loop
+								notPresentInWatchlist = true;
 							}
-							if(presentInWatchlist){
+							// Conditional statement that shows the user a + if product is not on watchlist
+							if(notPresentInWatchlist){
 								card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
 							}
 						}
