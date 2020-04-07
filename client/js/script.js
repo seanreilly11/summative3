@@ -42,6 +42,44 @@ $(document).ready(function(){
 		}//error
 	});//ajax
 
+	//search
+	$('#searchButton').click(function(e){
+		e.preventDefault();
+		$.ajax({
+			url: `${url}/products`,
+			type: 'GET',
+			dataType: 'json',
+			success: function(data){
+				document.getElementById('productCards').innerHTML = " ";
+				let searchInput = $('#searchBar').val().toLowerCase();
+				console.log(searchInput);
+				for (var i = 0; i < data.length; i++) {
+					// console.log(data[i].keywords);
+					let searchTargetTitle = data[i].title.toLowerCase();
+					// let searchTargetKeyword = data[i].keywords.toLowerCase();
+					console.log(searchTargetTitle);
+					//After test products are deleted, do search for keywords also.
+						if (data[i].status == 'listed' &&	searchTargetTitle.includes(searchInput)) {
+							let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+							<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+							if (sessionStorage['username']) {
+								card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+							}
+							card += `<div class="card-body">
+							<h3 class="card-title"> ${data[i].title}</h3>
+							<h4 class="card-text">$${data[i].price}</h4>
+							</div></div>`;
+							document.getElementById('productCards').innerHTML += card;
+					}
+				}
+				openProduct();
+			},
+			error: function(){
+				console.log('cannot complete search');
+			}
+		})
+	});
+
 	//category filter
 	$('.btn-category').click(function(){
 		let clickedCategory = $(this).attr("id").slice(0, -6);
@@ -208,9 +246,8 @@ $(document).ready(function(){
 				for (let i = 0; i < data.length; i++) {
 					if(data[i].status === "listed"){
 						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
-						
-						if (sessionStorage['username']) {
+						<img class="card-img-top" src="${data[i].image}" alt="Image">`;		
+						if (sessionStorage['username'] && sessionStorage.getItem("userID") != data[i].sellerId)) {
 							// loops through both products and user's watchlist and compares
 							innerLoop:
 							for(let j = 0; j < buyerWatchlist.length; j++){
@@ -287,13 +324,13 @@ $(document).ready(function(){
 															icon: 'success',
 															button: 'Got it',
 															timer: 2500
-														});		
+														});
 													},
 													error: function(error){
 														alert('failed to add product to watchlist');
 													}
 												}); // ajax
-											} 
+											}
 											else{
 												swal({
 													title: 'Already added',
@@ -301,7 +338,7 @@ $(document).ready(function(){
 													icon: 'info',
 													button: 'Got it',
 													timer: 2500
-												});	
+												});
 											}
 										},
 										error: function(error){
@@ -379,13 +416,13 @@ $(document).ready(function(){
 							<h5 class="small mb-0">Seller:</h5>
 							<h4 class="mb-0">${sellerData.username}</h5>
 							<h6 class="mb-2">${sellerData.location}</h6>`;
-							if((data.shipping.pickup === true) && (data.shipping.deliver === true)){
+							if((data.shipping.pickup) && (data.shipping.deliver)){
 								card += `<p class="mb-0">Shipping: Pick up and delivery available</p></div>`;
 							}
-							else if(data.shipping.pickup === true){
+							else if(data.shipping.pickup){
 								card += `<p class="mb-0">Shipping: Pick up only</p></div>`;
 							}
-							else if(data.shipping.deliver === true){
+							else if(data.shipping.deliver){
 								card += `<p class="mb-0">Shipping: Delivery only</p></div>`;
 							}
 							document.getElementById('productButtonContainer').innerHTML = card;
@@ -687,7 +724,7 @@ $(document).ready(function(){
 			<div class="col-lg-6 col-md-12">
 			<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
 			</div>`;
-		} 
+		}
 		else if(sessionStorage['username']){
 			// Adds question form
 			document.getElementById('questionForm').innerHTML =
@@ -1075,7 +1112,7 @@ $(document).ready(function(){
 				console.log(userData);
 				document.getElementById('myProductCards').innerHTML = "";
 				if(userData.watchlist.length == 0){
-					document.getElementById('myProductCards').innerHTML = 
+					document.getElementById('myProductCards').innerHTML =
 					'You have no products added to your watchlist. Click the plus icon in the corner of a product to add it to your watchlist or go to the product\'s page and click "add to watchlist"';
 				}
 				else{
@@ -1176,7 +1213,7 @@ $(document).ready(function(){
 		$(this).addClass("account-info__sidebar__list-item--active")
 	});
 
-	function addComment(question, data){
+	function addComment(question, product){
 		$.ajax({
 			url :`${url}/addComment`,
 			type :'POST',
@@ -1184,12 +1221,12 @@ $(document).ready(function(){
 				text : question,
 				time : new Date(),
 				userId : sessionStorage.getItem('userID'),
-				productId : data["_id"],
+				productId : product["_id"],
 				replies : []
 			},
 			success : function(comment){
 				console.log(comment);
-				displayComments(data);
+				displayComments(product);
 			},
 			error:function(){
 				console.log('error: cannot call api');
@@ -1214,10 +1251,12 @@ $(document).ready(function(){
 							let comUsername = user.username;
 							if(data[i].productId === product["_id"]){
 								let t = data[i].time;
+								let count = 0;
 								// let time = `${t.getDate()}/${t.getMonth()}/${t.getYear()} ${t.getHours()}:${t.getMinutes()}`
-								let card =`<div class="col-10 border p-2 pb-5 rounded my-2" id="${data[i]["_id"]}">
+								let card =`<div class="col-10 border px-2 pt-2 rounded my-2 dynamic-height" id="${data[i]["_id"]}">
 								<p class="mb-0 text-primary font-weight-bold">${comUsername}<span class="text-muted ml-2 font-weight-normal">${data[i].time}</span></p>
-								<p class="card-text ml-2">${data[i].text}</p>`;
+								<p class="card-text ml-2">${data[i].text}</p>
+								<div class="comment-replies w-100" id="comment-${data[i]["_id"]}">`;
 								if(!data[i].replies.includes(null)){
 									for (let j = 0; j < data[i].replies.length; j++) {
 										$.ajax({
@@ -1225,14 +1264,15 @@ $(document).ready(function(){
 											type: 'GET',
 											dataType :'json',
 											success: function(replier){
-												console.log(replier)
 												let repUsername = replier.username;
-												card +=`<div class="col-10 border p-2 rounded my-2 float-right">
+												let reply =`<div class="col-11 border p-2 rounded mb-2 float-right">
 												<p class="mb-0 text-success font-weight-bold">${repUsername}<span class="text-muted ml-2 font-weight-normal">${data[i].replies[j].time}</span></p>
 												<p class="card-text ml-2">${data[i].replies[j].text}</p>
 												</div>`;
-												// console.log(card)
-												// document.getElementById('qAndAPrintOut').innerHTML += card;
+												count++;
+												$("#"+data[i]["_id"]).css("padding-bottom",calcPadding(count));
+												let target = `comment-${data[i]["_id"]}`;
+												document.getElementById(target).innerHTML += reply;
 											},
 											error: function(error) {
 												console.log('no good');
@@ -1240,11 +1280,20 @@ $(document).ready(function(){
 										}) // ajax
 									}
 								}
-								card += `<div class="col-12 form-inline float-right">
+								card += `</div><div class="col-12 form-inline float-right">
 								<input type="text" class="form-control reply-input col-md-8 col-lg-9" name="reply-input" placeholder="Reply">
 								<button type="button" class="btn btn-primary col-md-4 col-lg-3 replyBtn">
 								Reply</button></div></div>`;
-								console.log(card)
+								function calcPadding(x){
+									let pb = x * 5 + 3;
+									pb += "rem";
+									return pb;
+								}
+								
+								if(count == 0){
+									console.log(count)
+									$(".dynamic-height").css("padding-bottom","3rem");
+								}
 								document.getElementById('qAndAPrintOut').innerHTML += card;
 								$(".replyBtn").click(function(e){
 									handleReply(e, product);
@@ -1276,7 +1325,7 @@ $(document).ready(function(){
 			},
 			success : function(data){
 				console.log(data);
-				displayComments(data);
+				displayComments(product);
 			},
 			error:function(){
 				console.log('error: cannot call api');
