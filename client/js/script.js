@@ -247,7 +247,7 @@ $(document).ready(function(){
 					if(data[i].status === "listed"){
 						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;		
-						if (sessionStorage['username'] && sessionStorage.getItem("userID") != data[i].sellerId)) {
+						if (sessionStorage['username'] && sessionStorage.getItem("userID") != data[i].sellerId) {
 							// loops through both products and user's watchlist and compares
 							innerLoop:
 							for(let j = 0; j < buyerWatchlist.length; j++){
