@@ -52,6 +52,7 @@ body{
 	cursor: pointer;
 	border-radius: 10px 0 10px 10px;
 	transition: background-color .35s ease-in-out;
+	z-index: 2;
 }
 
 .watchlistCardBtn:hover{

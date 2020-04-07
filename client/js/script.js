@@ -208,6 +208,7 @@ $(document).ready(function(){
 				$('.watchlistCardBtn').click(function(e){
 					var prod = e.target.parentNode.attributes[1].value;
 					console.log(prod);
+					e.stopPropagation();
 					// Get product details
 					$.ajax({
 						url: `${url}/products/p=${prod}`,
@@ -339,13 +340,13 @@ $(document).ready(function(){
 							<h5 class="small mb-0">Seller:</h5>
 							<h4 class="mb-0">${sellerData.username}</h5>
 							<h6 class="mb-2">${sellerData.location}</h6>`;
-							if(data.shipping.pickup && data.shipping.deliver){
+							if((data.shipping.pickup === true) && (data.shipping.deliver === true)){
 								card += `<p class="mb-0">Shipping: Pick up and delivery available</p></div>`;
 							}
-							else if(data.shipping.pickup){
+							else if(data.shipping.pickup === true){
 								card += `<p class="mb-0">Shipping: Pick up only</p></div>`;
 							}
-							else if(data.shipping.deliver){
+							else if(data.shipping.deliver === true){
 								card += `<p class="mb-0">Shipping: Delivery only</p></div>`;
 							}
 							document.getElementById('productButtonContainer').innerHTML = card;
@@ -353,31 +354,22 @@ $(document).ready(function(){
 
 							// Allows owner of listing to edit and delete the product
 							$('#editProduct').click(function(){
-								let oldKeywords = data.keywords;
-								let newKeywordArray = oldKeywords.join(' ');
 								// Outputs exsiting product information
 								$('#updateTitle').val(data.title);
 								$('#updatePrice').val(data.price);
 								$('#updateCategory').val(data.category);
 								$('#updateDescription').val(data.description);
-								$('#updateKeywords').val(newKeywordArray);
+								$('#updateKeywords').val(data.keywords);
 								$('#updateImage').val(data.image);
 								$('#updateShipping-pick').prop('checked', data.shipping.pickup);
 								$('#updateShipping-deliver').prop('checked', data.shipping.deliver);
-								console.log(clickedProduct);
 								// Updates listing after save changes has been clicked
 								$('#updateProductBtn').click(function(){
-									let newTitle = document.getElementById('updateTitle').value;
-									// let newTitle = $('#updateTitle').val();
-									let newPrice = document.getElementById('updatePrice').value;
-									// let newPrice = $('#updatePrice').val();
-									let newCategory = document.getElementById('updateCategory').value;
-									// let newCategory = $('#updateCategory').val();
-									let newDescription = document.getElementById('updateDescription').value;
-									// let newDescription = $('#updateDescription').val();
-									let newImage = document.getElementById('updateImage').value;
-									// let newImage = $('#updateImage').val();
-									// Turns keywords into an array
+									let newTitle = $('#updateTitle').val();
+									let newPrice = $('#updatePrice').val();
+									let newCategory = $('#updateCategory').val();
+									let newDescription = $('#updateDescription').val();
+									let newImage = $('#updateImage').val();
 									let modifiedKeywordArray = document.getElementById('updateKeywords').value;
 									// let modifiedKeywordArray = $('#updateKeywords').val();
 									let newPickup = $('#updateShipping-pick').is(":checked");
@@ -386,7 +378,8 @@ $(document).ready(function(){
 									$.ajax({
 										url: `${url}/updateProduct/p=${clickedProduct}`,
 										type: 'PATCH',
-										dataType: {
+										dataType: 'json',
+										data: {
 											title : newTitle,
 											description : newDescription,
 											price : newPrice,
