@@ -59,18 +59,21 @@ app.get('/products/p=:id', (req,res)=>{
 //Add Products.
 app.post('/addProduct/', (req,res)=>{
 	const dbProduct = new Product({
-	 _id : new mongoose.Types.ObjectId,
-	 title : req.body.title,
-	 description : req.body.description,
-	 price : req.body.price,
-	 image : req.body.image,
-	 status : req.body.status,
-	 keywords : req.body.keywords,
-	 sellerId : req.body.sellerId,
-	 buyerId : req.body.buyerId,
-	 category : req.body.category,
-	 shipping : req.body.shipping
- });
+		_id : new mongoose.Types.ObjectId,
+		title : req.body.title,
+		description : req.body.description,
+		price : req.body.price,
+		image : req.body.image,
+		status : req.body.status,
+		keywords : req.body.keywords,
+		sellerId : req.body.sellerId,
+		buyerId : req.body.buyerId,
+		category : req.body.category,
+		shipping : {
+			pickup : req.body.pickup,
+			deliver : req.body.deliver
+		}
+	});
 	//save to database and notify the user accordingly
 	dbProduct.save().then(result =>{
 		res.send(result);
@@ -103,7 +106,12 @@ app.patch('/updateProduct/p=:id', (req,res)=>{
 			image : req.body.image,
 			keywords : req.body.keywords,
 			category : req.body.category,
-			shipping : req.body.shipping
+			$set : {
+				shipping : {
+					pickup : req.body.pickup,
+					deliver : req.body.deliver
+				}
+			}
 		};
 		Product.updateOne({_id:idParam}, updatedProduct).then(result=>{
 			res.send(result);
@@ -165,13 +173,13 @@ app.get('/comments/p=:id', (req,res)=>{
 //Add comment
 app.post('/addComment/', (req,res)=>{
 	const dbComment = new Comment({
-	 _id : new mongoose.Types.ObjectId,
-	 text : req.body.text,
-	 time : req.body.time,
-	 userId : req.body.userId,
-	 productId : req.body.productId,
-	 replies : req.body.replies
- });
+		_id : new mongoose.Types.ObjectId,
+		text : req.body.text,
+		time : req.body.time,
+		userId : req.body.userId,
+		productId : req.body.productId,
+		replies : req.body.replies
+	});
 	//save to database and notify the user accordingly
 	dbComment.save().then(result =>{
 		res.send(result);
@@ -196,7 +204,13 @@ app.patch('/commentReply/c=:id', (req,res)=>{
 	const idParam = req.params.id;
 	Comment.findById(idParam, (err,result)=>{
 		const updatedComment = {
-			$push : {replies : req.body.replies}
+			$push : {
+				replies : {
+					text : req.body.text,
+					time : req.body.time,
+					userId : req.body.userId
+				}
+			}
 		};
 		Comment.updateOne({_id:idParam}, updatedComment).then(result=>{
 			res.send(result);
