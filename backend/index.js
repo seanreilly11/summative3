@@ -339,7 +339,20 @@ app.patch('/updateWatchlist/u=:id', (req,res)=>{
 			res.send(result);
 		}).catch(err=> res.send(err));
 	}).catch(err=>res.send("Not found"))
-}); // update user
+}); // update watchlist
+
+// remove from watchlist
+app.patch('/removeWatchlist/u=:id', (req,res)=>{
+	const idParam = req.params.id;
+	User.findById(idParam, (err,result)=>{
+		const updatedWatchlist = {
+			$pull : {watchlist : req.body.watchlist}
+		};
+		User.updateOne({_id:idParam}, updatedWatchlist).then(result=>{
+			res.send(result);
+		}).catch(err=> res.send(err));
+	}).catch(err=>res.send("Not found"))
+}); // remove from watchlist
 
 // delete a user
 app.delete('/deleteUser/u=:id', (req,res)=>{
