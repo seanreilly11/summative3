@@ -1156,6 +1156,10 @@ $(document).ready(function(){
 
 
 	$("#editProfileBtn").click(function(){
+		$('#editPasswordSection').hide();
+		$('#editPasswordButton').click(function(){
+			$('#editPasswordSection').slideDown()
+		});
 		$.ajax({
 			url :`${url}/users/u=${sessionStorage.getItem('userID')}`,
 			type :'GET',
@@ -1165,6 +1169,7 @@ $(document).ready(function(){
 				$("#editLastName").val(data.lastName);
 				$("#editLocation").val(data.location);
 				$("#editEmail").val(data.email);
+				$("#newPassword").val(data.password)
 			},//success
 			error:function(){
 				console.log('error: cannot call api');
@@ -1172,11 +1177,15 @@ $(document).ready(function(){
 		});//ajax
 	});
 
+
+
+
 	$("#saveProfileBtn").click(function(){
 		let fname = $("#editFirstName").val();
 		let lname = $("#editLastName").val();
 		let city = $("#editLocation").val();
 		let email = $("#editEmail").val();
+		let password = $("#newPassword").val()
 		$.ajax({
 			url :`${url}/updateUser/u=${sessionStorage.getItem('userID')}`,
 			type :'PATCH',
@@ -1184,7 +1193,8 @@ $(document).ready(function(){
 				firstName : fname,
 				lastName : lname,
 				email : email,
-				location : city
+				location : city,
+				password : password
 			},
 			success : function(data){
 				$('#editProfileModal').modal('hide');
