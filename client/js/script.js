@@ -248,7 +248,7 @@ $(document).ready(function(){
 				for (let i = 0; i < data.length; i++) {
 					if(data[i].status === "listed"){
 						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-						<img class="card-img-top" src="${data[i].image}" alt="Image">`;		
+						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username'] && sessionStorage.getItem("userID") != data[i].sellerId) {
 							// loops through both products and user's watchlist and compares
 							innerLoop:
@@ -861,6 +861,7 @@ $(document).ready(function(){
 		$('#registerForm').show();
 	});
 
+
 	$('#registerAccountProductPageBtn').click(function(){
 		$("#productCards").hide();
 		$("#productPage").hide();
@@ -1191,8 +1192,7 @@ $(document).ready(function(){
 					title: 'Success!',
 					text: `Your profile details have been updated`,
 					icon: 'success',
-					button: 'Okay!',
-					timer: 2500
+					button: 'Confirm'
 				});
 				sessionStorage.setItem('userFName',fname);
 				sessionStorage.setItem('userLName',lname);
@@ -1204,6 +1204,49 @@ $(document).ready(function(){
 				console.log('error: cannot call api');
 			}//error
 		});//ajax
+	});
+
+	$('#deleteAccountButton').click(function(){
+		$('#editProfileModal').modal('hide');
+		swal({
+			title: `Are you sure you want to delete your profile?`,
+			text: `This action cannot be undone!`,
+			icon: 'warning',
+			buttons: {
+				cancel: 'Cancel',
+				success: {
+					text: 'Delete Profile',
+					value: 'delete',
+				},
+			},
+		})
+		.then((value) => {
+			switch (value) {
+				case 'delete':
+				$.ajax({
+					url: `${url}/deleteUser/u=${sessionStorage.getItem('userID')}`,
+					type: 'DELETE',
+					data: 'json',
+					success: function(){
+						swal({
+							title: 'Your profile has been deleted',
+							text: `Successfully deleted`,
+							icon: 'success',
+							button: 'Got it'
+							// timer: 2500
+						});
+						sessionStorage.clear();
+						setTimeout(location.reload.bind(location), 2500);
+						$("#productPage").hide();
+						showAllProducts()
+						$("#productCards").show();
+					},
+					error: function(){
+						alert('Failed to delete user');
+					}
+				});
+			}
+		});
 	});
 
 	// add and remove active list class on profile side bar
@@ -1291,7 +1334,7 @@ $(document).ready(function(){
 									pb += "rem";
 									return pb;
 								}
-								
+
 								if(count == 0){
 									console.log(count)
 									$(".dynamic-height").css("padding-bottom","3rem");
