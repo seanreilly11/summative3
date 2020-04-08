@@ -66,6 +66,10 @@ body{
 	.modal-dialog{
 		max-width: 600px;
 	}
+	.product-btn-container{
+		position: sticky;
+		top: 1rem;
+	}
 }
 @media (min-width: 800px){
 	.account-info__picture img{
