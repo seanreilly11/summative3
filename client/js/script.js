@@ -25,7 +25,8 @@ $(document).ready(function(){
 		$('#registerForm').hide();
 		showAllProducts();
 		$("#productCards").show();
-		$('#productPage').toggle();
+		$('#productPage').hide();
+		$("#filterBar").show();
 	});
 
 	//get url and port from config.json
@@ -59,17 +60,17 @@ $(document).ready(function(){
 					// let searchTargetKeyword = data[i].keywords.toLowerCase();
 					console.log(searchTargetTitle);
 					//After test products are deleted, do search for keywords also.
-						if (data[i].status == 'listed' &&	searchTargetTitle.includes(searchInput)) {
-							let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-							<img class="card-img-top" src="${data[i].image}" alt="Image">`;
-							if (sessionStorage['username']) {
-								card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
-							}
-							card += `<div class="card-body">
-							<h3 class="card-title"> ${data[i].title}</h3>
-							<h4 class="card-text">$${data[i].price}</h4>
-							</div></div>`;
-							document.getElementById('productCards').innerHTML += card;
+					if (data[i].status == 'listed' &&	searchTargetTitle.includes(searchInput)) {
+						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+						if (sessionStorage['username']) {
+							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+						}
+						card += `<div class="card-body">
+						<h3 class="card-title"> ${data[i].title}</h3>
+						<h4 class="card-text">$${data[i].price}</h4>
+						</div></div>`;
+						document.getElementById('productCards').innerHTML += card;
 					}
 				}
 				openProduct();
@@ -189,7 +190,7 @@ $(document).ready(function(){
 					console.log('cannot filter objects');
 				}
 		});//ajax end
-	} else if ($(this).val() === 'latest') {
+		} else if ($(this).val() === 'latest') {
 			console.log('latest listings selected');
 			$.ajax({
 				url: `${url}/products`,
@@ -688,11 +689,11 @@ $(document).ready(function(){
 							});
 						}
 					});
-				},
-				error: function(error){
-					console.log('failed');
-				}
-			});
+},
+error: function(error){
+	console.log('failed');
+}
+});
 		}); // Initial ajax ends
 	} // Open product function ends
 
@@ -750,7 +751,7 @@ $(document).ready(function(){
 			// Adds warning to login or register
 			document.getElementById('questionForm').innerHTML =
 			`<div class="bg-light p-3">
-			<h4 class="text-light">Please log in or register to ask a question</h4>
+			<h4 class="text-dark">Please log in or register to ask a question</h4>
 			</div>`;
 			// Adds buttons
 			document.getElementById('dynamicBtnContainer').innerHTML =
@@ -825,6 +826,7 @@ $(document).ready(function(){
 						$('#registerForm').hide();
 						$("#productPage").show();
 						$("#filterContainer").show();
+						openProduct();
 						showAllProducts();
 					}
 				},
@@ -1274,7 +1276,6 @@ $(document).ready(function(){
 			type :'POST',
 			data:{
 				text : question,
-				time : new Date(),
 				userId : sessionStorage.getItem('userID'),
 				productId : product["_id"],
 				replies : []
@@ -1304,12 +1305,16 @@ $(document).ready(function(){
 						dataType :'json',
 						success: function(user){
 							let comUsername = user.username;
-							if(data[i].productId === product["_id"]){
-								let t = data[i].time;
+							if(data[i].productId === product["_id"]){					
 								let count = 0;
-								// let time = `${t.getDate()}/${t.getMonth()}/${t.getYear()} ${t.getHours()}:${t.getMinutes()}`
-								let card =`<div class="col-10 border px-2 pt-2 rounded my-2 dynamic-height" id="${data[i]["_id"]}">
-								<p class="mb-0 text-primary font-weight-bold">${comUsername}<span class="text-muted ml-2 font-weight-normal">${data[i].time}</span></p>
+								let card = "";
+								if(data[i].replies.length == 0){
+									card += `<div class="col-10 border p-2 pb-5 rounded my-2" id="${data[i]["_id"]}">`;
+								}
+								else{
+									card += `<div class="col-10 border px-2 pt-2 rounded my-2" id="${data[i]["_id"]}">`;
+								}
+								card += `<p class="mb-0 text-primary font-weight-bold">${comUsername}<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i])}</span></p>
 								<p class="card-text ml-2">${data[i].text}</p>
 								<div class="comment-replies w-100" id="comment-${data[i]["_id"]}">`;
 								if(!data[i].replies.includes(null)){
@@ -1320,10 +1325,14 @@ $(document).ready(function(){
 											dataType :'json',
 											success: function(replier){
 												let repUsername = replier.username;
-												let reply =`<div class="col-11 border p-2 rounded mb-2 float-right">
-												<p class="mb-0 text-success font-weight-bold">${repUsername}<span class="text-muted ml-2 font-weight-normal">${data[i].replies[j].time}</span></p>
-												<p class="card-text ml-2">${data[i].replies[j].text}</p>
-												</div>`;
+												let reply =`<div class="col-11 border p-2 rounded mb-2 float-right">`;
+												if(user.username === repUsername){
+													reply += `<p class="mb-0 text-primary font-weight-bold">${repUsername}<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i].replies[j])}</span></p>`;
+												}
+												if(user.username != repUsername){
+													reply += `<p class="mb-0 text-success font-weight-bold">${repUsername}<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i].replies[j])}</span></p>`;
+												}
+												reply += `<p class="card-text ml-2">${data[i].replies[j].text}</p></div>`;
 												count++;
 												$("#"+data[i]["_id"]).css("padding-bottom",calcPadding(count));
 												let target = `comment-${data[i]["_id"]}`;
@@ -1335,19 +1344,16 @@ $(document).ready(function(){
 										}) // ajax
 									}
 								}
-								card += `</div><div class="col-12 form-inline float-right">
-								<input type="text" class="form-control reply-input col-md-8 col-lg-9" name="reply-input" placeholder="Reply">
-								<button type="button" class="btn btn-primary col-md-4 col-lg-3 replyBtn">
-								Reply</button></div></div>`;
+								card += `</div><div class="col-12 form-inline float-right">`;
+								if(sessionStorage.getItem("username")){
+									card += `<input type="text" class="form-control reply-input col-md-8 col-lg-9" name="reply-input" placeholder="Reply">
+									<button type="button" class="btn btn-primary col-md-4 col-lg-3 replyBtn">Reply</button>`;
+								}
+								card += `</div></div>`;
 								function calcPadding(x){
-									let pb = x * 5 + 3;
+									let pb = x * 4.6 + 3;
 									pb += "rem";
 									return pb;
-								}
-
-								if(count == 0){
-									console.log(count)
-									$(".dynamic-height").css("padding-bottom","3rem");
 								}
 								document.getElementById('qAndAPrintOut').innerHTML += card;
 								$(".replyBtn").click(function(e){
@@ -1370,21 +1376,53 @@ $(document).ready(function(){
 	function handleReply(e, product){
 		let com = e.target.parentNode.parentNode.attributes[1].value;
 		let input = e.target.previousElementSibling.value;
-		$.ajax({
-			url :`${url}/commentReply/c=${com}`,
-			type :'PATCH',
-			data:{
-				text : input,
-				time : new Date(),
-				userId : sessionStorage.getItem("userID")
-			},
-			success : function(data){
-				console.log(data);
-				displayComments(product);
-			},
-			error:function(){
-				console.log('error: cannot call api');
-			}
-		});//ajax
+		if(input != ""){
+			$.ajax({
+				url :`${url}/commentReply/c=${com}`,
+				type :'PATCH',
+				data:{
+					text : input,
+					time : new Date(),
+					userId : sessionStorage.getItem("userID")
+				},
+				success : function(data){
+					console.log(data);
+					displayComments(product);
+				},
+				error:function(){
+					console.log('error: cannot call api');
+				}
+			});//ajax
+		}
+	}
+
+	function getTimeAgo(data){
+		// comment time values
+		let t = data.time;
+		let date = new Date(Date.parse(t));
+		const DAY_IN_MS = 86400000;
+		let day = date.getDate();
+		let month = date.getMonth() + 1;
+		let year = date.getFullYear();
+		let hours = date.getHours();
+		let minutes = date.getMinutes();	
+		// comparison values
+		const today = new Date();
+		const yesterday = new Date(today - DAY_IN_MS);
+		const seconds = Math.round((today - date) / 1000);
+		const minutes2 = Math.round(seconds / 60);
+		const isToday = today.toDateString() === date.toDateString();
+		const isYesterday = yesterday.toDateString() === date.toDateString();
+		const isThisYear = today.getFullYear() === date.getFullYear();
+
+		if (minutes < 10) {	minutes = `0${minutes}`;}
+
+		if (seconds < 10) { return 'Just now';} 
+		else if (seconds < 60) { return `${seconds} seconds ago`; } 
+		else if (seconds < 100) { return 'About a minute ago'; } 
+		else if (minutes2 < 60) { return `${minutes2} minutes ago`; }
+		else if (isToday) { return `Today at ${hours}:${minutes}`; } 
+		else if (isYesterday) { return `Yesterday at ${hours}:${minutes}`; } 
+		else { return `${day}/${month}/${year} ${hours}:${minutes}`; } 	
 	}
 }); // document
