@@ -96,24 +96,79 @@ $(document).ready(function(){
 			type: 'GET',
 			dataType: 'json',
 			success: function(data){
+				// Get's buyer's watchlist from users
+				var buyerWatchlist = [];
 				document.getElementById('productCards').innerHTML = " ";
-				for (var i = 0; i < data.length; i++) {
-					let cat = data[i].category.toLowerCase();
-					console.log(data[i].category, cat);
-					if (cat.includes(clickedCategory) & data[i].status == 'listed') {
-						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
-						if (sessionStorage['username']) {
-							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+				if(sessionStorage.getItem('userID')){
+					$.ajax({
+						url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+						type: 'GET',
+						dataType: 'json',
+						success: function(buyerData){
+							buyerWatchlist = buyerData.watchlist;
+							var notPresentInWatchlist = false;
+							outerloop:
+							for (var i = 0; i < data.length; i++){
+								let cat = data[i].category.toLowerCase();
+								console.log(data[i].category, cat);
+								if (cat.includes(clickedCategory) & data[i].status == 'listed'){
+									let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+									<img class="card-img-top" src="${data[i].image}" alt="Image">`;		
+									if (sessionStorage['username'] && sessionStorage.getItem("userID") != data[i].sellerId) {
+										// loops through both products and user's watchlist and compares
+										for(let j = 0; j < buyerWatchlist.length; j++){
+											var buyerWatchlistItem = buyerWatchlist[j];
+											// Finds if the user has an item in their watchlist already
+											if(buyerWatchlistItem == data[i]._id){
+												console.log(`${buyerWatchlistItem} exsists`);
+												card += `<div class="watchlistCardBtn" title="Remove from watchlist">-</div>
+												<div class="card-body">
+												<h3 class="card-title"> ${data[i].title}</h3>
+												<h4 class="card-text">$${data[i].price}</h4>
+												</div></div>`;
+												document.getElementById('productCards').innerHTML += card;
+												// Moves on to the next item after printing card
+												continue outerloop;
+											}
+											// If the item is not already in the watchlist, triggers conditional statement outside of inner loop
+											notPresentInWatchlist = true;
+										}
+										// Conditional statement that shows the user a + if product is not on watchlist
+										if(notPresentInWatchlist){
+											card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+										}
+									}
+									card += `<div class="card-body">
+									<h3 class="card-title"> ${data[i].title}</h3>
+									<h4 class="card-text">$${data[i].price}</h4>
+									</div></div>`;
+									document.getElementById('productCards').innerHTML += card;
+								}
+							}
+							openProduct();
+							addToWatchlistSymbol();
+						},
+						error: function(error){
+							console.log('Couldnt load watchlist while sorting');
 						}
-						card += `<div class="card-body">
-						<h3 class="card-title"> ${data[i].title}</h3>
-						<h4 class="card-text">$${data[i].price}</h4>
-						</div></div>`;
-						document.getElementById('productCards').innerHTML += card;
-					}
+					})
 				}
-				openProduct();
+				else{
+					for (var i = 0; i < data.length; i++) {
+						let cat = data[i].category.toLowerCase();
+						console.log(data[i].category, cat);
+						if (cat.includes(clickedCategory) & data[i].status == 'listed') {
+							let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+							<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+							card += `<div class="card-body">
+							<h3 class="card-title"> ${data[i].title}</h3>
+							<h4 class="card-text">$${data[i].price}</h4>
+							</div></div>`;
+							document.getElementById('productCards').innerHTML += card;
+						}
+					}
+					openProduct();
+				}
 			},
 			error: function(){
 				console.log('cannot get category');
@@ -134,23 +189,7 @@ $(document).ready(function(){
 						return a.price - b.price;
 					};
 					data.sort(compare);
-					document.getElementById('productCards').innerHTML = " ";
-					for (var i = 0; i < data.length; i++) {
-						let products = data[i].price;
-						if (data[i].status == 'listed') {
-							console.log(products);
-							let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-							<img class="card-img-top" src="${data[i].image}" alt="Image">`;
-							if (sessionStorage['username']) {
-								card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
-							}
-							card += `<div class="card-body">
-							<h3 class="card-title"> ${data[i].title}</h3>
-							<h4 class="card-text">$${data[i].price}</h4>
-							</div></div>`;
-							document.getElementById('productCards').innerHTML += card;
-						}
-					}
+					createCard(data);
 				},
 				error: function(){
 					console.log('cannot filter objects');
@@ -167,23 +206,7 @@ $(document).ready(function(){
 						return b.price - a.price;
 					};
 					data.sort(compare);
-					document.getElementById('productCards').innerHTML = " ";
-					for (var i = 0; i < data.length; i++) {
-						let products = data[i].price;
-						if (data[i].status === 'listed') {
-							console.log(products);
-							let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-							<img class="card-img-top" src="${data[i].image}" alt="Image">`;
-							if (sessionStorage['username']) {
-								card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
-							}
-							card += `<div class="card-body">
-							<h3 class="card-title"> ${data[i].title}</h3>
-							<h4 class="card-text">$${data[i].price}</h4>
-							</div></div>`;
-							document.getElementById('productCards').innerHTML += card;
-						}
-					}
+					createCard(data);
 				},
 				error: function(){
 					console.log('cannot filter objects');
@@ -196,7 +219,7 @@ $(document).ready(function(){
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
-					showAllProducts();
+					createCard(data);
 				},
 				error: function(){
 					console.log('cannot filter objects');
@@ -218,8 +241,8 @@ $(document).ready(function(){
 		}
 	});
 
-	//Load cards
-	function showAllProducts(){
+	// --- Create Cards ---
+	function createCard(a){
 		// Get's buyer's watchlist from users
 		var buyerWatchlist = [];
 		if(sessionStorage.getItem('userID')){
@@ -229,142 +252,171 @@ $(document).ready(function(){
 				dataType: 'json',
 				success: function(buyerData){
 					buyerWatchlist = buyerData.watchlist;
+					console.log(buyerWatchlist);
+					console.log(buyerWatchlist);
+					console.log(a);
+					document.getElementById('productCards').innerHTML = "";
+					// Assumes that the item is in watchlist to not trigger adding a + to cards
+					var notPresentInWatchlist = false;
+					outerloop:
+					for (let i = 0; i < a.length; i++) {
+						if(a[i].status === "listed"){
+							let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${a[i]["_id"]}">
+							<img class="card-img-top" src="${a[i].image}" alt="Image">`;		
+							if (sessionStorage['username'] && sessionStorage.getItem("userID") != a[i].sellerId) {
+								// loops through both products and user's watchlist and compares
+								for(let j = 0; j < buyerWatchlist.length; j++){
+									var buyerWatchlistItem = buyerWatchlist[j];
+									// Finds if the user has an item in their watchlist already
+									if(buyerWatchlistItem == a[i]._id){
+										console.log(`${buyerWatchlistItem} exsists`);
+										card += `<div class="watchlistCardBtn" title="Remove from watchlist">-</div>
+										<div class="card-body">
+										<h3 class="card-title"> ${a[i].title}</h3>
+										<h4 class="card-text">$${a[i].price}</h4>
+										</div></div>`;
+										document.getElementById('productCards').innerHTML += card;
+										// Moves on to the next item after printing card
+										continue outerloop;
+									}
+									// If the item is not already in the watchlist, triggers conditional statement outside of inner loop
+									notPresentInWatchlist = true;
+								}
+								// Conditional statement that shows the user a + if product is not on watchlist
+								if(notPresentInWatchlist){
+									card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+								}
+							}
+							card += `<div class="card-body">
+							<h3 class="card-title"> ${a[i].title}</h3>
+							<h4 class="card-text">$${a[i].price}</h4>
+							</div></div>`;
+							document.getElementById('productCards').innerHTML += card;
+						}
+					}
+					openProduct();
+					addToWatchlistSymbol(a);
 				},
 				error: function(error){
 					alert('Failed to get buyer\'s details');
 				}
 			});
 		}
+		else{
+			document.getElementById('productCards').innerHTML = " ";
+			for (var i = 0; i < a.length; i++) {
+				if (a[i].status == 'listed') {
+					let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${a[i]["_id"]}">
+					<img class="card-img-top" src="${a[i].image}" alt="Image">`;
+					card += `<div class="card-body">
+					<h3 class="card-title"> ${a[i].title}</h3>
+					<h4 class="card-text">$${a[i].price}</h4>
+					</div></div>`;
+					document.getElementById('productCards').innerHTML += card;
+				}
+			}
+			openProduct();
+		}
+	} // Create card ends
+
+	// --- Add to watchlist button on cards ---
+	function addToWatchlistSymbol(a){
+		// Add product to wishlist on click of '+' on product card
+		$('.watchlistCardBtn').click(function(e){
+			var action;
+			console.log();
+			var prod = e.target.parentNode.attributes[1].value;
+			console.log(prod);
+			e.stopPropagation();
+			// Get product details
+			$.ajax({
+				url: `${url}/products/p=${prod}`,
+				type: 'GET',
+				dataType: 'json',
+				success: function(clickedProduct){
+					var sellerId = clickedProduct.sellerId;
+					// Get seller's details so that the seller doesn't add their listing to their account
+					$.ajax({
+						url: `${url}/users/u=${sellerId}`,
+						type: 'GET',
+						dataType: 'json',
+						success: function(sellerData){
+							// Get buyer's details
+							$.ajax({
+								url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+								type: 'GET',
+								data: 'json',
+								success: function(buyerData){
+									var newWatchlist = buyerData.watchlist;
+									var productToAdd = prod;
+									console.log(newWatchlist);
+									console.log(productToAdd);
+									console.log(buyerData.username);
+									// Adding product id to user's watchlist array
+									if((newWatchlist.indexOf(productToAdd) == -1) && (sellerId != sessionStorage.getItem("userID"))){
+										$.ajax({
+											url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
+											type: 'PATCH',
+											data: {
+												watchlist : productToAdd
+											},
+											success: function(updateBuyerWatchlist){
+												swal({
+													title: 'Added to watchlist',
+													text: `Successfully added ${clickedProduct.title} to your watchlist`,
+													icon: 'success',
+													button: 'Got it',
+													timer: 2500
+												});
+											},
+											error: function(error){
+												alert('failed to add product to watchlist');
+											}
+										}); // ajax
+									}
+									else{
+										swal({
+											title: 'Already added',
+											text: `${clickedProduct.title} is already on your watchlist`,
+											icon: 'info',
+											button: 'Got it',
+											timer: 2500
+										});
+									}
+								},
+								error: function(error){
+									alert('failed to add to watchlist');
+								}
+							}); // Get buyer details end
+							swal({
+								title: 'Added to watchlist',
+								text: `Successfully added ${clickedProduct.title} to your watchlist`,
+								icon: 'success',
+								button: 'Got it',
+								timer: 2500
+							});
+						},
+						error: function(){
+							alert('Failded to get seller\'s details');
+						}
+					})
+				},
+				error: function(error){
+					alert('Could not find product');
+				}
+			}) // Get product details end
+		}); 
+	} // Add to watchlist from home screen end
+
+	//Load all cards
+	function showAllProducts(){
+		
 		$.ajax({
 			url: `${url}/products`,
 			type: 'GET',
 			dataType :'json',
 			success: function(data){
-				console.log(data);
-				document.getElementById('productCards').innerHTML = "";
-				// Assumes that the item is in watchlist to not trigger adding a + to cards
-				var notPresentInWatchlist = false;
-				outerloop:
-				for (let i = 0; i < data.length; i++) {
-					if(data[i].status === "listed"){
-						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-						<img class="card-img-top" src="${data[i].image}" alt="Image">`;		
-						if (sessionStorage['username'] && sessionStorage.getItem("userID") != data[i].sellerId) {
-							// loops through both products and user's watchlist and compares
-							innerLoop:
-							for(let j = 0; j < buyerWatchlist.length; j++){
-								var buyerWatchlistItem = buyerWatchlist[j];
-								// Finds if the user has an item in their watchlist already
-								if(buyerWatchlistItem == data[i]._id){
-									console.log(`${buyerWatchlistItem} exsists`);
-									card += `<div class="watchlistCardBtn" title="Remove from watchlist">-</div>
-									<div class="card-body">
-									<h3 class="card-title"> ${data[i].title}</h3>
-									<h4 class="card-text">$${data[i].price}</h4>
-									</div></div>`;
-									document.getElementById('productCards').innerHTML += card;
-									// Moves on to the next item after printing card
-									continue outerloop;
-								}
-								// If the item is not already in the watchlist, triggers conditional statement outside of inner loop
-								notPresentInWatchlist = true;
-							}
-							// Conditional statement that shows the user a + if product is not on watchlist
-							if(notPresentInWatchlist){
-								card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
-							}
-						}
-						card += `<div class="card-body">
-						<h3 class="card-title"> ${data[i].title}</h3>
-						<h4 class="card-text">$${data[i].price}</h4>
-						</div></div>`;
-						document.getElementById('productCards').innerHTML += card;
-					}
-				}
-				openProduct();
-				// Add product to wishlist on click of '+' on product card
-				$('.watchlistCardBtn').click(function(e){
-					var prod = e.target.parentNode.attributes[1].value;
-					console.log(prod);
-					e.stopPropagation();
-					// Get product details
-					$.ajax({
-						url: `${url}/products/p=${prod}`,
-						type: 'GET',
-						dataType: 'json',
-						success: function(clickedProduct){
-							var sellerId = clickedProduct.sellerId;
-							// Get seller's details so that the seller doesn't add their listing to their account
-							$.ajax({
-								url: `${url}/users/u=${sellerId}`,
-								type: 'GET',
-								dataType: 'json',
-								success: function(sellerData){
-									// Get buyer's details
-									$.ajax({
-										url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
-										type: 'GET',
-										data: 'json',
-										success: function(buyerData){
-											var newWatchlist = buyerData.watchlist;
-											var productToAdd = prod;
-											console.log(newWatchlist);
-											console.log(productToAdd);
-											console.log(buyerData.username);
-											// Adding product id to user's watchlist array
-											if((newWatchlist.indexOf(productToAdd) == -1) && (sellerId != sessionStorage.getItem("userID"))){
-												$.ajax({
-													url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
-													type: 'PATCH',
-													data: {
-														watchlist : productToAdd
-													},
-													success: function(updateBuyerWatchlist){
-														swal({
-															title: 'Added to watchlist',
-															text: `Successfully added ${clickedProduct.title} to your watchlist`,
-															icon: 'success',
-															button: 'Got it',
-															timer: 2500
-														});
-													},
-													error: function(error){
-														alert('failed to add product to watchlist');
-													}
-												}); // ajax
-											}
-											else{
-												swal({
-													title: 'Already added',
-													text: `${clickedProduct.title} is already on your watchlist`,
-													icon: 'info',
-													button: 'Got it',
-													timer: 2500
-												});
-											}
-										},
-										error: function(error){
-											alert('failed to add to watchlist');
-										}
-									}); // Get buyer details end
-									swal({
-										title: 'Added to watchlist',
-										text: `Successfully added ${clickedProduct.title} to your watchlist`,
-										icon: 'success',
-										button: 'Got it',
-										timer: 2500
-									});
-								},
-								error: function(){
-									alert('Failded to get seller\'s details');
-								}
-							})
-						},
-						error: function(error){
-							alert('Could not find product');
-						}
-					}) // Get product details end
-				}); // Add to watchlist from home screen end
+				createCard(data);
 			},
 			error: function(error) {
 				console.log('no good');
