@@ -220,6 +220,21 @@ $(document).ready(function(){
 
 	//Load cards
 	function showAllProducts(){
+		// Get's buyer's watchlist from users
+		var buyerWatchlist = [];
+		if(sessionStorage.getItem('userID')){
+			$.ajax({
+				url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+				type: 'GET',
+				dataType: 'json',
+				success: function(buyerData){
+					buyerWatchlist = buyerData.watchlist;
+				},
+				error: function(error){
+					alert('Failed to get buyer\'s details');
+				}
+			});
+		}
 		$.ajax({
 			url: `${url}/products`,
 			type: 'GET',
