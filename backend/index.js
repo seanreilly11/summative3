@@ -302,31 +302,19 @@ app.post('/login', (req,res)=>{
 app.patch('/updateUser/u=:id', (req,res)=>{
 	const idParam = req.params.id;
 	User.findById(idParam, (err,result)=>{
+		const hash = bcryptjs.hashSync(req.body.password);
 		const updatedUser = {
 			firstName : req.body.firstName,
 			lastName : req.body.lastName,
 			email : req.body.email,
-			location : req.body.location
-		};
-		User.updateOne({_id:idParam}, updatedUser).then(result=>{
-			res.send(result);
-		}).catch(err=> res.send(err));
-	}).catch(err=>res.send("Not found"))
-}); // update user
-
-// update password
-app.patch('/updatePassword/u=:id', (req,res)=>{
-	const idParam = req.params.id;
-	User.findById(idParam, (err,result)=>{
-		const hash = bcryptjs.hashSync(req.body.password);
-		const updatedUser = {
+			location : req.body.location,
 			password : hash
 		};
 		User.updateOne({_id:idParam}, updatedUser).then(result=>{
 			res.send(result);
 		}).catch(err=> res.send(err));
 	}).catch(err=>res.send("Not found"))
-}); // update password
+}); // update user
 
 // update watchlist
 app.patch('/updateWatchlist/u=:id', (req,res)=>{
