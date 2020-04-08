@@ -249,7 +249,7 @@ $(document).ready(function(){
 				for (let i = 0; i < data.length; i++) {
 					if(data[i].status === "listed"){
 						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-						<img class="card-img-top" src="${data[i].image}" alt="Image">`;		
+						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username'] && sessionStorage.getItem("userID") != data[i].sellerId) {
 							// loops through both products and user's watchlist and compares
 							innerLoop:
@@ -863,6 +863,7 @@ error: function(error){
 		$('#registerForm').show();
 	});
 
+
 	$('#registerAccountProductPageBtn').click(function(){
 		$("#productCards").hide();
 		$("#productPage").hide();
@@ -1157,6 +1158,10 @@ error: function(error){
 
 
 	$("#editProfileBtn").click(function(){
+		$('#editPasswordSection').hide();
+		$('#editPasswordButton').click(function(){
+			$('#editPasswordSection').slideDown()
+		});
 		$.ajax({
 			url :`${url}/users/u=${sessionStorage.getItem('userID')}`,
 			type :'GET',
@@ -1166,6 +1171,7 @@ error: function(error){
 				$("#editLastName").val(data.lastName);
 				$("#editLocation").val(data.location);
 				$("#editEmail").val(data.email);
+				$("#newPassword").val(data.password)
 			},//success
 			error:function(){
 				console.log('error: cannot call api');
@@ -1173,11 +1179,15 @@ error: function(error){
 		});//ajax
 	});
 
+
+
+
 	$("#saveProfileBtn").click(function(){
 		let fname = $("#editFirstName").val();
 		let lname = $("#editLastName").val();
 		let city = $("#editLocation").val();
 		let email = $("#editEmail").val();
+		let password = $("#newPassword").val()
 		$.ajax({
 			url :`${url}/updateUser/u=${sessionStorage.getItem('userID')}`,
 			type :'PATCH',
@@ -1185,7 +1195,8 @@ error: function(error){
 				firstName : fname,
 				lastName : lname,
 				email : email,
-				location : city
+				location : city,
+				password : password
 			},
 			success : function(data){
 				$('#editProfileModal').modal('hide');
@@ -1193,8 +1204,7 @@ error: function(error){
 					title: 'Success!',
 					text: `Your profile details have been updated`,
 					icon: 'success',
-					button: 'Okay!',
-					timer: 2500
+					button: 'Confirm'
 				});
 				sessionStorage.setItem('userFName',fname);
 				sessionStorage.setItem('userLName',lname);
@@ -1206,6 +1216,49 @@ error: function(error){
 				console.log('error: cannot call api');
 			}//error
 		});//ajax
+	});
+
+	$('#deleteAccountButton').click(function(){
+		$('#editProfileModal').modal('hide');
+		swal({
+			title: `Are you sure you want to delete your profile?`,
+			text: `This action cannot be undone!`,
+			icon: 'warning',
+			buttons: {
+				cancel: 'Cancel',
+				success: {
+					text: 'Delete Profile',
+					value: 'delete',
+				},
+			},
+		})
+		.then((value) => {
+			switch (value) {
+				case 'delete':
+				$.ajax({
+					url: `${url}/deleteUser/u=${sessionStorage.getItem('userID')}`,
+					type: 'DELETE',
+					data: 'json',
+					success: function(){
+						swal({
+							title: 'Your profile has been deleted',
+							text: `Successfully deleted`,
+							icon: 'success',
+							button: 'Got it'
+							// timer: 2500
+						});
+						sessionStorage.clear();
+						setTimeout(location.reload.bind(location), 2500);
+						$("#productPage").hide();
+						showAllProducts()
+						$("#productCards").show();
+					},
+					error: function(){
+						alert('Failed to delete user');
+					}
+				});
+			}
+		});
 	});
 
 	// add and remove active list class on profile side bar
@@ -1302,11 +1355,6 @@ error: function(error){
 									pb += "rem";
 									return pb;
 								}
-								// if(count == 0){
-									// $("#"+data[i]["_id"]).addClass("pb-5");
-									// document.getElementById(data[i]["_id"]).style.paddingBottom = 
-									// "3rem";
-								
 								document.getElementById('qAndAPrintOut').innerHTML += card;
 								$(".replyBtn").click(function(e){
 									handleReply(e, product);

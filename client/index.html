@@ -316,10 +316,18 @@
 							<label for="editEmail">Email</label>
 							<input type="email" class="form-control" id="editEmail" name="editEmail">
 						</div>
+						<button type="button" class="btn btn-outline-primary" id="editPasswordButton">Change Password</button>
+						<div class="form-group" id="editPasswordSection">
+							<!-- <label for="currentPassword">Enter Current Password</label>
+							<input type="password" class="form-control" id="currentPassword" name="currentPassword"> -->
+							<label for="newPassword">Enter New Password</label>
+							<input type="password" class="form-control" id="newPassword" name="newPassword">
+						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-danger mr-auto" id="deleteAccountButton">Delete Account</button>
+					<button type="button" class="btn btn-secondary" id="closeAccountModal" data-dismiss="modal">Close</button>
 					<button type="button" class="btn btn-primary" id="saveProfileBtn">Save changes</button>
 				</div>
 			</div>
