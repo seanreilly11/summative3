@@ -662,26 +662,12 @@ $(document).ready(function(){
 											}); // ajax
 										}
 										else{
-											console.log('In conditional');
-											$.ajax({
-												url: `${url}/removeWatchlist/u=${sessionStorage.getItem('userID')}`,
-												type: 'PATCH',
-												data: {
-													watchlist: productToAdd
-												},
-												success: function(updateBuyerWatchlist){
-													console.log('In success');
-													swal({
-														title: 'Removed from Watchlist',
-														text: `Successfully removed ${data.title} from your watchlist`,
-														icon: 'success',
-														button: 'Got it',
-														timer: 2500
-													});
-												},
-												error: function(error){
-													alert('Unable to update watchlist');
-												}
+											swal({
+												title: 'Already added',
+												text: `${data.title} is already on your watchlist`,
+												icon: 'info',
+												button: 'Got it',
+												timer: 2500
 											});
 										}
 									},
@@ -845,6 +831,49 @@ $(document).ready(function(){
 			<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
 			</div>`;
 		}
+		// else if(sessionStorage['username']){
+		// 	// Adds question form
+		// 	document.getElementById('questionForm').innerHTML =
+		// 	`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
+		// 	<h3>Ask a Question</h3>
+		// 	<textarea class="form-control" id="newQuestion" rows="3"></textarea>
+		// 	<div class="col-12">
+		// 	<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
+		// 	</div></div>`;
+		// 	// Get buyer's watchlist
+		// 	$.ajax({
+		// 		url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+		// 		type: 'GET',
+		// 		data: 'json',
+		// 		success: function(buyerData){
+		// 			var buyerWatchlist = buyerData.watchlist;
+		// 			// If product is already in watchlist
+		// 			if(buyerWatchlist.indexOf(productId) > -1){
+		// 				// Adds buttons if not in watchlist already
+		// 				document.getElementById('dynamicBtnContainer').innerHTML =
+		// 				`<div class="col-lg-6 col-md-12">
+		// 				<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
+		// 				</div>
+		// 				<div class="col-lg-6 col-md-12">
+		// 				<button id="productAddToWatchList" class="btn btn-outline-danger btn-block">Remove watchlist</button>
+		// 				</div>`;
+		// 			}
+		// 			else{
+		// 				// Adds buttons if not in watchlist already
+		// 				document.getElementById('dynamicBtnContainer').innerHTML =
+		// 				`<div class="col-lg-6 col-md-12">
+		// 				<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
+		// 				</div>
+		// 				<div class="col-lg-6 col-md-12">
+		// 				<button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
+		// 				</div>`;
+		// 			}
+		// 		},
+		// 		error:function(error){
+		// 			alert('Unable to get buyer\'s details');
+		// 		}
+		// 	}); // buyer data ends
+		// }
 		else if(sessionStorage['username']){
 			// Adds question form
 			document.getElementById('questionForm').innerHTML =
@@ -854,39 +883,14 @@ $(document).ready(function(){
 			<div class="col-12">
 			<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
 			</div></div>`;
-			// Get buyer's watchlist
-			$.ajax({
-				url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
-				type: 'GET',
-				data: 'json',
-				success: function(buyerData){
-					var buyerWatchlist = buyerData.watchlist;
-					// If product is already in watchlist
-					if(buyerWatchlist.indexOf(productId) > -1){
-						// Adds buttons if not in watchlist already
-						document.getElementById('dynamicBtnContainer').innerHTML =
-						`<div class="col-lg-6 col-md-12">
-						<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
-						</div>
-						<div class="col-lg-6 col-md-12">
-						<button id="productAddToWatchList" class="btn btn-outline-danger btn-block">Remove watchlist</button>
-						</div>`;
-					}
-					else{
-						// Adds buttons if not in watchlist already
-						document.getElementById('dynamicBtnContainer').innerHTML =
-						`<div class="col-lg-6 col-md-12">
-						<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
-						</div>
-						<div class="col-lg-6 col-md-12">
-						<button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
-						</div>`;
-					}
-				},
-				error:function(error){
-					alert('Unable to get buyer\'s details');
-				}
-			}); // buyer data ends
+			// Adds buttons
+			document.getElementById('dynamicBtnContainer').innerHTML =
+			`<div class="col-lg-6 col-md-12">
+			<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
+			</div>
+			<div class="col-lg-6 col-md-12">
+			<button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
+			</div>`;
 		}
 		// If the user isn't logged in
 		else{
