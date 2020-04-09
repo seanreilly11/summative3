@@ -64,7 +64,7 @@ $(document).ready(function(){
 						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username']) {
-							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+							card += `<div class="btn-watchlist-card" title="Add to watchlist">+</div>`;
 						}
 						card += `<div class="card-body">
 						<h3 class="card-title"> ${data[i].title}</h3>
@@ -122,7 +122,7 @@ $(document).ready(function(){
 											// Finds if the user has an item in their watchlist already
 											if(buyerWatchlistItem == data[i]._id){
 												console.log(`${buyerWatchlistItem} exsists`);
-												card += `<div class="watchlistCardBtn" title="Remove from watchlist">-</div>
+												card += `<div class="btn-watchlist-card" title="Remove from watchlist">-</div>
 												<div class="card-body">
 												<h3 class="card-title"> ${data[i].title}</h3>
 												<h4 class="card-text">$${data[i].price}</h4>
@@ -271,7 +271,7 @@ $(document).ready(function(){
 									// Finds if the user has an item in their watchlist already
 									if(buyerWatchlistItem == a[i]._id){
 										console.log(`${buyerWatchlistItem} exsists`);
-										card += `<div class="watchlistCardBtn" title="Remove from watchlist">-</div>
+										card += `<div class="btn-watchlist-card" title="Remove from watchlist">-</div>
 										<div class="card-body">
 										<h3 class="card-title"> ${a[i].title}</h3>
 										<h4 class="card-text">$${a[i].price}</h4>
