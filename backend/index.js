@@ -175,7 +175,7 @@ app.post('/addComment/', (req,res)=>{
 	const dbComment = new Comment({
 		_id : new mongoose.Types.ObjectId,
 		text : req.body.text,
-		time : req.body.time,
+		time : new Date(),
 		userId : req.body.userId,
 		productId : req.body.productId,
 		replies : req.body.replies
