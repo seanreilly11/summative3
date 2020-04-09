@@ -135,7 +135,7 @@ $(document).ready(function(){
 											notPresentInWatchlist = true;
 										}
 										// Conditional statement that shows the user a + if product is not on watchlist
-										if(notPresentInWatchlist){
+										if((notPresentInWatchlist) || (buyerWatchlist.length === 0)){
 											card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
 										}
 									}
@@ -284,7 +284,7 @@ $(document).ready(function(){
 									notPresentInWatchlist = true;
 								}
 								// Conditional statement that shows the user a + if product is not on watchlist
-								if(notPresentInWatchlist){
+								if((notPresentInWatchlist) || (buyerWatchlist.length === 0)){
 									card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
 								}
 							}
