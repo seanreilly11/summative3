@@ -519,7 +519,7 @@ $(document).ready(function(){
 							<h4 class="text-success font-weight-bold my-4">$${data.price}</h4>
 							<div id="dynamicBtnContainer" class="row"></div>
 							<div class="mt-3">
-							<h5 class="small mb-0">Seller:</h5>
+							<h5 class="mb-0">Seller:</h5>
 							<h4 class="mb-0">${sellerData.username}</h5>
 							<h6 class="mb-2">${sellerData.location}</h6>`;
 							if((data.shipping.pickup) && (data.shipping.deliver)){
@@ -1442,14 +1442,27 @@ $(document).ready(function(){
 								let count = 0;
 								let card = "";
 								if(data[i].replies.length == 0){
-									card += `<div class="col-10 border p-2 pb-5 rounded my-2" id="${data[i]["_id"]}">`;
+									card += `<div class="col-12 col-md-10 border p-2 pb-5 rounded my-2" id="${data[i]["_id"]}">`;
 								}
 								else{
-									card += `<div class="col-10 border px-2 pt-2 rounded my-2" id="${data[i]["_id"]}">`;
+									card += `<div class="col-12 col-md-10 border px-2 pt-2 rounded my-2" id="${data[i]["_id"]}">`;
 								}
-								card += `<p class="mb-0 text-primary font-weight-bold">${comUsername}<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i])}</span></p>
-								<p class="card-text ml-2">${data[i].text}</p>
-								<div class="comment-replies w-100" id="comment-${data[i]["_id"]}">`;
+								if(user["_id"] === sessionStorage.getItem("userID")){
+									card += `<div class="d-flex justify-content-between"><p class="mb-0 text-primary font-weight-bold">${comUsername}
+									<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i])}</span></p>
+									<div><i class="comment-icon comment-edit text-secondary fas fa-edit"></i>
+									<i class="comment-icon comment-delete text-secondary ml-2 mr-3 fas fa-trash-alt" id="delete-${data[i]["_id"]}"></i></div></div>`;
+									$(".comment-icon").click(function(){
+														deleteReply(data[i].replies, $(this).attr("id"));
+														// console.log(data[i])
+													})
+								}
+								else{
+									card += `<p class="mb-0 text-primary font-weight-bold">${comUsername}
+									<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i])}</span></p>`;
+								}
+								card += `<p class="card-text ml-2">${data[i].text}</p>
+								<div class="comment-replies col-12" id="comment-${data[i]["_id"]}">`;
 								if(!data[i].replies.includes(null)){
 									for (let j = 0; j < data[i].replies.length; j++) {
 										$.ajax({
@@ -1459,17 +1472,35 @@ $(document).ready(function(){
 											success: function(replier){
 												let repUsername = replier.username;
 												let reply =`<div class="col-11 border p-2 rounded mb-2 float-right">`;
+												if(replier["_id"] === sessionStorage.getItem("userID")){
+													reply += `<div class="d-flex justify-content-between">`;
+												}
 												if(user.username === repUsername){
 													reply += `<p class="mb-0 text-primary font-weight-bold">${repUsername}<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i].replies[j])}</span></p>`;
 												}
-												if(user.username != repUsername){
+												if(replier["_id"] === product.sellerId){
 													reply += `<p class="mb-0 text-success font-weight-bold">${repUsername}<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i].replies[j])}</span></p>`;
 												}
+												if((replier["_id"] != product.sellerId) && (user.username != repUsername)){
+													reply += `<p class="mb-0 text-dark font-weight-bold">${repUsername}<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i].replies[j])}</span></p>`;
+												}
+												if(replier["_id"] === sessionStorage.getItem("userID")){
+													reply += `<div><i class="comment-icon comment-edit text-secondary fas fa-edit"></i>
+													<i class="comment-icon comment-delete text-secondary ml-2 mr-3 fas fa-trash-alt" id="delete-${data[i].replies[j]["_id"]}"></i></div></div>`;
+													$(".comment-icon").click(function(){
+														deleteReply(data[i].replies, $(this).attr("id"));
+														// console.log(data[i])
+													})
+												}
 												reply += `<p class="card-text ml-2">${data[i].replies[j].text}</p></div>`;
+
 												count++;
 												$("#"+data[i]["_id"]).css("padding-bottom",calcPadding(count));
+
 												let target = `comment-${data[i]["_id"]}`;
 												document.getElementById(target).innerHTML += reply;
+
+												
 											},
 											error: function(error) {
 												console.log('no good');
@@ -1479,8 +1510,8 @@ $(document).ready(function(){
 								}
 								card += `</div><div class="col-12 form-inline float-right">`;
 								if(sessionStorage.getItem("username")){
-									card += `<input type="text" class="form-control reply-input col-md-8 col-lg-9" name="reply-input" placeholder="Reply">
-									<button type="button" class="btn btn-primary col-md-4 col-lg-3 replyBtn">Reply</button>`;
+									card += `<input type="text" class="form-control reply-input col-8 col-md-9" name="reply-input" placeholder="Reply">
+									<button type="button" class="btn btn-primary col-4 col-md-3 replyBtn">Reply</button>`;
 								}
 								card += `</div></div>`;
 								function calcPadding(x){
@@ -1527,6 +1558,11 @@ $(document).ready(function(){
 				}
 			});//ajax
 		}
+	}
+
+	function deleteReply(data,id){
+		let reply = id.slice(7);
+		console.log(data)
 	}
 
 	function getTimeAgo(data){

@@ -68,6 +68,10 @@ body{
 	font-size: .8rem;
 }
 
+.comment-icon{
+	cursor: pointer;
+}
+
 @media (min-width: 576px){
 	.modal-dialog{
 		max-width: 600px;
