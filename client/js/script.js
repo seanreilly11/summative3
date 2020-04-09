@@ -815,6 +815,17 @@ error: function(error){
 			let newQuestion = $("#newQuestion").val();
 			addComment(newQuestion, data);
 		});
+		$('#registerAccountProductPageBtn').click(function(){
+			$("#productCards").hide();
+			$("#productPage").hide();
+			$('#registerUsername').val('');
+			$('#registerFirstName').val('');
+			$('#registerLastName').val('');
+			$('#registerLocation').val('');
+			$('#registerEmail').val('');
+			$('#registerPassword').val('');
+			$('#registerForm').show();
+		});
 		displayComments(data);
 	}
 	// --- Product details end ---
@@ -906,19 +917,6 @@ error: function(error){
 		$("#productCards").hide();
 		$("#productPage").hide();
 		$("#filterContainer").hide();
-		$('#registerUsername').val('');
-		$('#registerFirstName').val('');
-		$('#registerLastName').val('');
-		$('#registerLocation').val('');
-		$('#registerEmail').val('');
-		$('#registerPassword').val('');
-		$('#registerForm').show();
-	});
-
-
-	$('#registerAccountProductPageBtn').click(function(){
-		$("#productCards").hide();
-		$("#productPage").hide();
 		$('#registerUsername').val('');
 		$('#registerFirstName').val('');
 		$('#registerLastName').val('');
