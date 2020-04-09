@@ -441,27 +441,11 @@ $(document).ready(function(){
 												}
 											}); // ajax
 										}
-										else{
-											swal({
-												title: 'Already added',
-												text: `${clickedProduct.title} is already on your watchlist`,
-												icon: 'info',
-												button: 'Got it',
-												timer: 2500
-											});
-										}
 									},
 									error: function(error){
 										alert('failed to add to watchlist');
 									}
 								}); // Get buyer details end
-								swal({
-									title: 'Added to watchlist',
-									text: `Successfully added ${clickedProduct.title} to your watchlist`,
-									icon: 'success',
-									button: 'Got it',
-									timer: 2500
-								});
 							},
 							error: function(){
 								alert('Failded to get seller\'s details');
