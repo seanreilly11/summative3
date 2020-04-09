@@ -1158,10 +1158,6 @@ error: function(error){
 
 
 	$("#editProfileBtn").click(function(){
-		$('#editPasswordSection').hide();
-		$('#editPasswordButton').click(function(){
-			$('#editPasswordSection').slideDown()
-		});
 		$.ajax({
 			url :`${url}/users/u=${sessionStorage.getItem('userID')}`,
 			type :'GET',
@@ -1171,7 +1167,6 @@ error: function(error){
 				$("#editLastName").val(data.lastName);
 				$("#editLocation").val(data.location);
 				$("#editEmail").val(data.email);
-				$("#newPassword").val(data.password)
 			},//success
 			error:function(){
 				console.log('error: cannot call api');
@@ -1187,7 +1182,6 @@ error: function(error){
 		let lname = $("#editLastName").val();
 		let city = $("#editLocation").val();
 		let email = $("#editEmail").val();
-		let password = $("#newPassword").val()
 		$.ajax({
 			url :`${url}/updateUser/u=${sessionStorage.getItem('userID')}`,
 			type :'PATCH',
@@ -1195,8 +1189,7 @@ error: function(error){
 				firstName : fname,
 				lastName : lname,
 				email : email,
-				location : city,
-				password : password
+				location : city
 			},
 			success : function(data){
 				$('#editProfileModal').modal('hide');
@@ -1305,7 +1298,7 @@ error: function(error){
 						dataType :'json',
 						success: function(user){
 							let comUsername = user.username;
-							if(data[i].productId === product["_id"]){					
+							if(data[i].productId === product["_id"]){
 								let count = 0;
 								let card = "";
 								if(data[i].replies.length == 0){
@@ -1405,7 +1398,7 @@ error: function(error){
 		let month = date.getMonth() + 1;
 		let year = date.getFullYear();
 		let hours = date.getHours();
-		let minutes = date.getMinutes();	
+		let minutes = date.getMinutes();
 		// comparison values
 		const today = new Date();
 		const yesterday = new Date(today - DAY_IN_MS);
@@ -1417,12 +1410,12 @@ error: function(error){
 
 		if (minutes < 10) {	minutes = `0${minutes}`;}
 
-		if (seconds < 10) { return 'Just now';} 
-		else if (seconds < 60) { return `${seconds} seconds ago`; } 
-		else if (seconds < 100) { return 'About a minute ago'; } 
+		if (seconds < 10) { return 'Just now';}
+		else if (seconds < 60) { return `${seconds} seconds ago`; }
+		else if (seconds < 100) { return 'About a minute ago'; }
 		else if (minutes2 < 60) { return `${minutes2} minutes ago`; }
-		else if (isToday) { return `Today at ${hours}:${minutes}`; } 
-		else if (isYesterday) { return `Yesterday at ${hours}:${minutes}`; } 
-		else { return `${day}/${month}/${year} ${hours}:${minutes}`; } 	
+		else if (isToday) { return `Today at ${hours}:${minutes}`; }
+		else if (isYesterday) { return `Yesterday at ${hours}:${minutes}`; }
+		else { return `${day}/${month}/${year} ${hours}:${minutes}`; }
 	}
 }); // document
