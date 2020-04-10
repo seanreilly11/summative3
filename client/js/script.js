@@ -114,7 +114,7 @@ $(document).ready(function(){
 								console.log(data[i].category, cat);
 								if (cat.includes(clickedCategory) & data[i].status == 'listed'){
 									let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-									<img class="card-img-top" src="${data[i].image}" alt="Image">`;		
+									<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 									if (sessionStorage['username'] && sessionStorage.getItem("userID") != data[i].sellerId) {
 										// loops through both products and user's watchlist and compares
 										for(let j = 0; j < buyerWatchlist.length; j++){
@@ -263,7 +263,7 @@ $(document).ready(function(){
 					for (let i = 0; i < a.length; i++) {
 						if(a[i].status === "listed"){
 							let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${a[i]["_id"]}">
-							<img class="card-img-top" src="${a[i].image}" alt="Image">`;		
+							<img class="card-img-top" src="${a[i].image}" alt="Image">`;
 							if (sessionStorage['username'] && sessionStorage.getItem("userID") != a[i].sellerId) {
 								// loops through both products and user's watchlist and compares
 								for(let j = 0; j < buyerWatchlist.length; j++){
@@ -382,7 +382,7 @@ $(document).ready(function(){
 									error: function(error){
 										alert('Failed to get buyer\'s details');
 									}
-								}); // Get buyer's details end	
+								}); // Get buyer's details end
 							},
 							error: function(error){
 								alert('Failed to get seller\'s details');
@@ -457,12 +457,12 @@ $(document).ready(function(){
 					}
 				}) // Get product details end
 			}
-		}); 
+		});
 	} // Add to watchlist from home screen end
 
 	//Load all cards
 	function showAllProducts(){
-		
+
 		$.ajax({
 			url: `${url}/products`,
 			type: 'GET',
@@ -1372,19 +1372,43 @@ $(document).ready(function(){
 					url: `${url}/deleteUser/u=${sessionStorage.getItem('userID')}`,
 					type: 'DELETE',
 					data: 'json',
-					success: function(){
+					success: function(data){
 						swal({
 							title: 'Your profile has been deleted',
 							text: `Successfully deleted`,
 							icon: 'success',
 							button: 'Got it'
-							// timer: 2500
+						})
+						$.ajax({
+							url: `${url}/products/`,
+							type: 'GET',
+							data: 'json',
+							success: function(products){
+								for (let i = 0; i < products.length; i++) {
+									if (products[i].sellerId == sessionStorage.getItem('userID')) {
+										$.ajax({
+											url: `${url}/deleteProduct/p=${products[i]._id}`,
+											type: 'DELETE',
+											data: 'json',
+											success: function(){
+												console.log('delete the thing');
+											},
+											error: function(){
+												alert('Failed to delete products');
+											}
+										});
+									}
+								}
+								sessionStorage.clear();
+								setTimeout(location.reload.bind(location), 2500);
+								$("#productPage").hide();
+								showAllProducts()
+								$("#productCards").show();
+							},
+							error: function(){
+								alert('Failed to delete products');
+							}
 						});
-						sessionStorage.clear();
-						setTimeout(location.reload.bind(location), 2500);
-						$("#productPage").hide();
-						showAllProducts()
-						$("#productCards").show();
 					},
 					error: function(){
 						alert('Failed to delete user');
