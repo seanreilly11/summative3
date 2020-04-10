@@ -64,7 +64,7 @@ $(document).ready(function(){
 						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username']) {
-							card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+							card += `<div class="btn-watchlist-card" title="Add to watchlist">+</div>`;
 						}
 						card += `<div class="card-body">
 						<h3 class="card-title"> ${data[i].title}</h3>
@@ -122,7 +122,7 @@ $(document).ready(function(){
 											// Finds if the user has an item in their watchlist already
 											if(buyerWatchlistItem == data[i]._id){
 												console.log(`${buyerWatchlistItem} exsists`);
-												card += `<div class="watchlistCardBtn" title="Remove from watchlist">-</div>
+												card += `<div class="btn-watchlist-card" title="Remove from watchlist">-</div>
 												<div class="card-body">
 												<h3 class="card-title"> ${data[i].title}</h3>
 												<h4 class="card-text">$${data[i].price}</h4>
@@ -136,7 +136,7 @@ $(document).ready(function(){
 										}
 										// Conditional statement that shows the user a + if product is not on watchlist
 										if((notPresentInWatchlist) || (buyerWatchlist.length === 0)){
-											card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+											card += `<div class="btn-watchlist-card" title="Add to watchlist">+</div>`;
 										}
 									}
 									card += `<div class="card-body">
@@ -271,7 +271,7 @@ $(document).ready(function(){
 									// Finds if the user has an item in their watchlist already
 									if(buyerWatchlistItem == a[i]._id){
 										console.log(`${buyerWatchlistItem} exsists`);
-										card += `<div class="watchlistCardBtn" title="Remove from watchlist">-</div>
+										card += `<div class="btn-watchlist-card" title="Remove from watchlist">-</div>
 										<div class="card-body">
 										<h3 class="card-title"> ${a[i].title}</h3>
 										<h4 class="card-text">$${a[i].price}</h4>
@@ -285,7 +285,7 @@ $(document).ready(function(){
 								}
 								// Conditional statement that shows the user a + if product is not on watchlist
 								if((notPresentInWatchlist) || (buyerWatchlist.length === 0)){
-									card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+									card += `<div class="btn-watchlist-card" title="Add to watchlist">+</div>`;
 								}
 							}
 							card += `<div class="card-body">
@@ -323,7 +323,7 @@ $(document).ready(function(){
 	// --- Add to watchlist button on cards ---
 	function addToWatchlistSymbol(a){
 		// Add product to wishlist on click of '+' on product card
-		$('.watchlistCardBtn').click(function(e){
+		$('.btn-watchlist-card').click(function(e){
 			// Get value of watchlist icon on home screen
 			var action = $(this).text();
 			console.log(action);
@@ -476,6 +476,91 @@ $(document).ready(function(){
 		}) // ajax products end
 	} // Show all products end
 
+	// --- Add and remove from watchlist on product page ---
+	function productWatchlist(a){
+		console.log('Clicked watchlist button');
+		// Gets buyer's data
+		$('#productAddToWatchList').click(function(){
+			$.ajax({
+				url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+				type: 'GET',
+				data: 'json',
+				success: function(buyerData){
+					var newWatchlist = buyerData.watchlist;
+					var productToAdd = a['_id'];
+					var sellerId = a.sellerId;
+					// Adding product id to user's watchlist array
+					if(newWatchlist.indexOf(productToAdd) == -1){
+						$.ajax({
+							url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
+							type: 'PATCH',
+							data: {
+								watchlist : productToAdd
+							},
+							success: function(updateBuyerWatchlist){
+								swal({
+									title: 'Added to watchlist',
+									text: `Successfully added ${a.title} to your watchlist`,
+									icon: 'success',
+									button: 'Got it',
+									timer: 2500
+								});
+							},
+							error: function(error){
+								alert('failed to add product to watchlist');
+							}
+						}); // ajax
+					}
+				},
+				error: function(error){
+					alert('failed to add to watchlist');
+				}
+			});
+		})
+
+		// Remove from watchlist
+		$('#productRemoveFromWatchList').click(function(){
+			console.log('Remove button clicked');
+			// Get buyer's details
+			$.ajax({
+				url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+				type: 'GET',
+				data: 'json',
+				success: function(buyerData){
+					var newWatchlist = buyerData.watchlist;
+					var productToRemove = a._id;
+					console.log(newWatchlist);
+					console.log(productToRemove);
+					// Adding product id to user's watchlist array
+					$.ajax({
+						url: `${url}/removeWatchlist/u=${sessionStorage.getItem('userID')}`,
+						type: 'PATCH',
+						data: {
+							watchlist : productToRemove
+						},
+						success: function(){
+							swal({
+								title: 'Removed from watchlist',
+								text: `Successfully removed ${a.title} from your watchlist`,
+								icon: 'success',
+								button: 'Got it',
+								timer: 2500
+							})
+						},
+						error: function(error){
+							alert('Failed to remove from watchlist');
+						}
+					});
+				},
+				error: function(error){
+					alert('Failed to get buyer\'s details');
+				}
+			}); // Get buyer's details end	
+		});
+	}
+
+	
+
 	// --- Product details ---
 	// Open product page
 	function openProduct(){
@@ -483,6 +568,10 @@ $(document).ready(function(){
 			let sellerId, sellerUsername;
 			let clickedProduct = this.id;
 			console.log(clickedProduct);
+			$('.watchlist-btn').click(function(){
+				console.log('Clicked!');
+			});
+			
 
 			// Hides list of products
 			$('#account').hide();
@@ -499,11 +588,11 @@ $(document).ready(function(){
 					console.log(data);
 					// Gets seller's information
 					sellerId = data.sellerId;
+					
 					$.ajax({
 						url: `${url}/users/u=${sellerId}`,
 						type: 'GET',
 						dataType: 'json',
-						// Couldn't figure out how to get user name displayed so calling ajax inside ajax. May not be proper practice
 						success: function(sellerData){
 							// Image, description, question section
 							document.getElementById('productInformation').innerHTML =
@@ -532,7 +621,7 @@ $(document).ready(function(){
 								card += `<p class="mb-0">Shipping: Delivery only</p></div>`;
 							}
 							document.getElementById('productButtonContainer').innerHTML = card;
-							listingPrivledges(sellerId, data);
+							listingPrivledges(sellerData, data);
 
 							// Allows owner of listing to edit and delete the product
 							$('#editProduct').click(function(){
@@ -628,59 +717,59 @@ $(document).ready(function(){
 								});
 							});
 
-							// Confirmation pop up add to watchlist
-							$('#productAddToWatchList').click(function(){
-								console.log('Clicked watchlist button');
-								// Gets buyer's data
-								$.ajax({
-									url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
-									type: 'GET',
-									data: 'json',
-									success: function(buyerData){
-										var newWatchlist = buyerData.watchlist;
-										var productToAdd = data['_id'];
-										// Adding product id to user's watchlist array
-										if((newWatchlist.indexOf(productToAdd) == -1) && (sellerId != sessionStorage.getItem("userID"))){
-											$.ajax({
-												url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
-												type: 'PATCH',
-												data: {
-													watchlist : productToAdd
-												},
-												success: function(updateBuyerWatchlist){
-													swal({
-														title: 'Added to watchlist',
-														text: `Successfully added ${data.title} to your watchlist`,
-														icon: 'success',
-														button: 'Got it',
-														timer: 2500
-													});
-												},
-												error: function(error){
-													alert('failed to add product to watchlist');
-												}
-											}); // ajax
-										}
-										else{
-											swal({
-												title: 'Already added',
-												text: `${data.title} is already on your watchlist`,
-												icon: 'info',
-												button: 'Got it',
-												timer: 2500
-											});
-										}
-									},
-									error: function(error){
-										alert('failed to add to watchlist');
-									}
-								});
-							});
+							// // Confirmation pop up add to watchlist
+							// $('#productAddToWatchList').click(function(){
+							// 	console.log('Clicked watchlist button');
+							// 	// Gets buyer's data
+							// 	$.ajax({
+							// 		url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+							// 		type: 'GET',
+							// 		data: 'json',
+							// 		success: function(buyerData){
+							// 			var newWatchlist = buyerData.watchlist;
+							// 			var productToAdd = data['_id'];
+							// 			// Adding product id to user's watchlist array
+							// 			if((newWatchlist.indexOf(productToAdd) == -1) && (sellerId != sessionStorage.getItem("userID"))){
+							// 				$.ajax({
+							// 					url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
+							// 					type: 'PATCH',
+							// 					data: {
+							// 						watchlist : productToAdd
+							// 					},
+							// 					success: function(updateBuyerWatchlist){
+							// 						swal({
+							// 							title: 'Added to watchlist',
+							// 							text: `Successfully added ${data.title} to your watchlist`,
+							// 							icon: 'success',
+							// 							button: 'Got it',
+							// 							timer: 2500
+							// 						});
+							// 					},
+							// 					error: function(error){
+							// 						alert('failed to add product to watchlist');
+							// 					}
+							// 				}); // ajax
+							// 			}
+							// 			else{
+							// 				swal({
+							// 					title: 'Already added',
+							// 					text: `${data.title} is already on your watchlist`,
+							// 					icon: 'info',
+							// 					button: 'Got it',
+							// 					timer: 2500
+							// 				});
+							// 			}
+							// 		},
+							// 		error: function(error){
+							// 			alert('failed to add to watchlist');
+							// 		}
+							// 	});
+							// });
 
-							// Remove from watchlist
-							$('#productRemoveFromWatchlist').click(function(){
-								console.log('Remove button clicked');
-							});
+							// // Remove from watchlist
+							// $('#productRemoveFromWatchlist').click(function(){
+							// 	console.log('Remove button clicked');
+							// });
 
 							// Confirmation pop up purchase item
 							$('#productPurchase').click(function(){
@@ -800,127 +889,130 @@ $(document).ready(function(){
 	} // Open product function ends
 
 	// Gives different layout if user is logged in our out
-	function listingPrivledges(sellerId, data, buyerData){
+	function listingPrivledges(sellerId, data){
 		let status = data.status;
 		let productId = data._id;
-		if(status == 'sold'){
-			// Adds question form
-			document.getElementById('questionForm').innerHTML =
-			`<div class="alert alert-danger col-12 text-center" role="alert">
-			This product has been sold so questions are closed</div>`;
-			// Adds buttons
-			document.getElementById('dynamicBtnContainer').innerHTML =
-			`<div class="alert alert-danger col-12 text-center" role="alert">This product has been sold</div>`;
-		}
-		else if((sessionStorage['username']) && (sellerId == sessionStorage.getItem("userID"))){
-			// Adds question form
-			document.getElementById('questionForm').innerHTML =
-			`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
-			<h3>Ask a Question</h3>
-			<textarea class="form-control" id="newQuestion" rows="3"></textarea>
-			<div class="col-12">
-			<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
-			</div></div>`;
-			// Adds buttons
-			document.getElementById('dynamicBtnContainer').innerHTML =
-			`<div class="alert alert-primary col-12 text-center" role="alert">This is your product</div>
-			<div class="col-lg-6 col-md-12">
-			<button id="editProduct" class="btn btn-outline-success btn-block" data-toggle="modal" data-target="#updateProductModal">Edit product</button>
-			</div>
-			<div class="col-lg-6 col-md-12">
-			<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
-			</div>`;
-		}
-		// else if(sessionStorage['username']){
-		// 	// Adds question form
-		// 	document.getElementById('questionForm').innerHTML =
-		// 	`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
-		// 	<h3>Ask a Question</h3>
-		// 	<textarea class="form-control" id="newQuestion" rows="3"></textarea>
-		// 	<div class="col-12">
-		// 	<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
-		// 	</div></div>`;
-		// 	// Get buyer's watchlist
-		// 	$.ajax({
-		// 		url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
-		// 		type: 'GET',
-		// 		data: 'json',
-		// 		success: function(buyerData){
-		// 			var buyerWatchlist = buyerData.watchlist;
-		// 			// If product is already in watchlist
-		// 			if(buyerWatchlist.indexOf(productId) > -1){
-		// 				// Adds buttons if not in watchlist already
-		// 				document.getElementById('dynamicBtnContainer').innerHTML =
-		// 				`<div class="col-lg-6 col-md-12">
-		// 				<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
-		// 				</div>
-		// 				<div class="col-lg-6 col-md-12">
-		// 				<button id="productAddToWatchList" class="btn btn-outline-danger btn-block">Remove watchlist</button>
-		// 				</div>`;
-		// 			}
-		// 			else{
-		// 				// Adds buttons if not in watchlist already
-		// 				document.getElementById('dynamicBtnContainer').innerHTML =
-		// 				`<div class="col-lg-6 col-md-12">
-		// 				<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
-		// 				</div>
-		// 				<div class="col-lg-6 col-md-12">
-		// 				<button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
-		// 				</div>`;
-		// 			}
-		// 		},
-		// 		error:function(error){
-		// 			alert('Unable to get buyer\'s details');
-		// 		}
-		// 	}); // buyer data ends
-		// }
-		else if(sessionStorage['username']){
-			// Adds question form
-			document.getElementById('questionForm').innerHTML =
-			`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
-			<h3>Ask a Question</h3>
-			<textarea class="form-control" id="newQuestion" rows="3"></textarea>
-			<div class="col-12">
-			<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
-			</div></div>`;
-			// Adds buttons
-			document.getElementById('dynamicBtnContainer').innerHTML =
-			`<div class="col-lg-6 col-md-12">
-			<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
-			</div>
-			<div class="col-lg-6 col-md-12">
-			<button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
-			</div>`;
-		}
-		// If the user isn't logged in
-		else{
-			// Adds warning to login or register
-			document.getElementById('questionForm').innerHTML =
-			`<div class="bg-light p-3">
-			<h4 class="text-dark">Please log in or register to ask a question</h4>
-			</div>`;
-			// Adds buttons
-			document.getElementById('dynamicBtnContainer').innerHTML =
-			`<div class="col-12">
-			<button id="registerAccountProductPageBtn" class="btn btn-outline-primary btn-block">Register an account</button>
-			</div>`;
-		}
-		$("#submitQuestionBtn").click(function(){
-			let newQuestion = $("#newQuestion").val();
-			addComment(newQuestion, data);
-		});
-		$('#registerAccountProductPageBtn').click(function(){
-			$("#productCards").hide();
-			$("#productPage").hide();
-			$('#registerUsername').val('');
-			$('#registerFirstName').val('');
-			$('#registerLastName').val('');
-			$('#registerLocation').val('');
-			$('#registerEmail').val('');
-			$('#registerPassword').val('');
-			$('#registerForm').show();
-		});
-		displayComments(data);
+		// Get buyer's watchlist
+		$.ajax({
+			url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+			type: 'GET',
+			data: 'json',
+			success: function(buyerData){
+				if(status == 'sold'){
+					// Adds question form
+					document.getElementById('questionForm').innerHTML =
+					`<div class="alert alert-danger col-12 text-center" role="alert">
+					This product has been sold so questions are closed</div>`;
+					// Adds buttons
+					document.getElementById('dynamicBtnContainer').innerHTML =
+					`<div class="alert alert-danger col-12 text-center" role="alert">This product has been sold</div>`;
+				}
+				else if((sessionStorage['username']) && (sellerId == sessionStorage.getItem("userID"))){
+					// Adds question form
+					document.getElementById('questionForm').innerHTML =
+					`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
+					<h3>Ask a Question</h3>
+					<textarea class="form-control" id="newQuestion" rows="3"></textarea>
+					<div class="col-12">
+					<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
+					</div></div>`;
+					// Adds buttons
+					document.getElementById('dynamicBtnContainer').innerHTML =
+					`<div class="alert alert-primary col-12 text-center" role="alert">This is your product</div>
+					<div class="col-lg-6 col-md-12">
+					<button id="editProduct" class="btn btn-outline-success btn-block" data-toggle="modal" data-target="#updateProductModal">Edit product</button>
+					</div>
+					<div class="col-lg-6 col-md-12">
+					<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
+					</div>`;
+				}
+				else if(sessionStorage['username']){
+					// Adds question form
+					document.getElementById('questionForm').innerHTML =
+					`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
+					<h3>Ask a Question</h3>
+					<textarea class="form-control" id="newQuestion" rows="3"></textarea>
+					<div class="col-12">
+					<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
+					</div></div>`;
+					var buyerWatchlist = buyerData.watchlist;
+					// If product is already in watchlist
+					if(buyerWatchlist.indexOf(productId) > -1){
+						// Adds buttons if not in watchlist already
+						document.getElementById('dynamicBtnContainer').innerHTML =
+						`<div class="col-lg-6 col-md-12">
+						<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
+						</div>
+						<div class="col-lg-6 col-md-12">
+						<button id="productRemoveFromWatchList" class="btn btn-outline-danger btn-block watchlist-btn">Remove watchlist</button>
+						</div>`;
+						productWatchlist(data);
+					}
+					else{
+					console.log('testing');
+						// Adds buttons if not in watchlist already
+						document.getElementById('dynamicBtnContainer').innerHTML =
+						`<div class="col-lg-6 col-md-12">
+						<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
+						</div>
+						<div class="col-lg-6 col-md-12">
+						<button id="productAddToWatchList" class="btn btn-outline-primary btn-block watchlist-btn">Add watchlist</button>
+						</div>`;
+						productWatchlist(data);
+					}
+				}
+				// else if(sessionStorage['username']){
+					// Adds question form
+					// document.getElementById('questionForm').innerHTML =
+					// `<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
+					// <h3>Ask a Question</h3>
+					// <textarea class="form-control" id="newQuestion" rows="3"></textarea>
+					// <div class="col-12">
+					// <button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
+					// </div></div>`;
+					// Adds buttons
+					// document.getElementById('dynamicBtnContainer').innerHTML =
+					// `<div class="col-lg-6 col-md-12">
+					// <button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
+					// </div>
+					// <div class="col-lg-6 col-md-12">
+					// <button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
+					// </div>`;
+				// }
+				// If the user isn't logged in
+				else{
+					// Adds warning to login or register
+					document.getElementById('questionForm').innerHTML =
+					`<div class="bg-light p-3">
+					<h4 class="text-dark">Please log in or register to ask a question</h4>
+					</div>`;
+					// Adds buttons
+					document.getElementById('dynamicBtnContainer').innerHTML =
+					`<div class="col-12">
+					<button id="registerAccountProductPageBtn" class="btn btn-outline-primary btn-block">Register an account</button>
+					</div>`;
+				}
+				$("#submitQuestionBtn").click(function(){
+					let newQuestion = $("#newQuestion").val();
+					addComment(newQuestion, data);
+				});
+				$('#registerAccountProductPageBtn').click(function(){
+					$("#productCards").hide();
+					$("#productPage").hide();
+					$('#registerUsername').val('');
+					$('#registerFirstName').val('');
+					$('#registerLastName').val('');
+					$('#registerLocation').val('');
+					$('#registerEmail').val('');
+					$('#registerPassword').val('');
+					$('#registerForm').show();
+				});
+				displayComments(data);
+			},
+			error:function(error){
+				alert('Unable to get buyer\'s details');
+			}
+		}); // buyer data ends
 	}
 	// --- Product details end ---
 
