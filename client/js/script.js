@@ -96,6 +96,7 @@ $(document).ready(function(){
 		let clickedCategory = $(this).attr("id").slice(0, -6);
 		let btnCategory = $(this).attr("id");
 		$('#account').hide();
+		$('#registerForm').hide();
 		$("#productCards").show();
 		$("#filterBar").show();
 		$('#productPage').hide();
@@ -924,6 +925,9 @@ error: function(error){
 		$('#registerAccountProductPageBtn').click(function(){
 			$("#productCards").hide();
 			$("#productPage").hide();
+			resetCategory();
+			$("#categories").hide();
+			$("#searchNav").hide();
 			$('#registerUsername').val('');
 			$('#registerFirstName').val('');
 			$('#registerLastName').val('');
