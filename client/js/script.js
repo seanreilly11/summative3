@@ -20,7 +20,9 @@ $(document).ready(function(){
 		$('#navLoggedOut').show();
 	}
 
+	// home button
 	$(".navbar-brand").click(function(){
+		resetCategory();
 		$("#account").hide();
 		$('#registerForm').hide();
 		showAllProducts();
@@ -43,7 +45,7 @@ $(document).ready(function(){
 		}//error
 	});//ajax
 
-	//search
+	//search function
 	$('#searchButton').click(function(e){
 		e.preventDefault();
 		$.ajax({
@@ -81,12 +83,18 @@ $(document).ready(function(){
 		})
 	});
 
+	// resets category buttons to default colour
+	function resetCategory(){
+		let categories = document.querySelectorAll(".btn-category");
+		for(let c=0; c<categories.length; c++){
+			$("#"+categories[c].id).removeClass('btn-secondary').addClass('btn-outline-secondary');
+		}
+	}
+
 	//category filter
 	$('.btn-category').click(function(){
 		let clickedCategory = $(this).attr("id").slice(0, -6);
 		let btnCategory = $(this).attr("id");
-		console.log(btnCategory);
-		console.log(clickedCategory);
 		$('#account').hide();
 		$("#productCards").show();
 		$("#filterBar").show();
@@ -111,7 +119,6 @@ $(document).ready(function(){
 							outerloop:
 							for (var i = 0; i < data.length; i++){
 								let cat = data[i].category.toLowerCase();
-								console.log(data[i].category, cat);
 								if (cat.includes(clickedCategory) & data[i].status == 'listed'){
 									let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 									<img class="card-img-top" src="${data[i].image}" alt="Image">`;		
@@ -179,6 +186,7 @@ $(document).ready(function(){
 
 	//price filter
 	$('#filterSelect').on('change', function(){
+		resetCategory();
 		if ($(this).val() == 'low') {
 			console.log('low to high price selected');
 			$.ajax({
@@ -371,7 +379,7 @@ $(document).ready(function(){
 													timer: 2500
 												}).then(function(){
 													location.reload();
-													}
+												}
 												);
 											},
 											error: function(error){
@@ -433,7 +441,7 @@ $(document).ready(function(){
 														timer: 2500
 													}).then(function(){
 														location.reload();
-														}
+													}
 													);
 												},
 												error: function(error){
@@ -497,6 +505,14 @@ $(document).ready(function(){
 				dataType: 'json',
 				success: function(data){
 					console.log(data);
+					let category = data.category.toLowerCase();
+					let categories = document.querySelectorAll(".btn-category");
+					for(let c=0; c<categories.length; c++){
+						let thisCategory = categories[c].id.slice(0, -6);
+						if(category.includes(thisCategory)){
+							$("#"+categories[c].id).removeClass('btn-outline-secondary').addClass('btn-secondary').siblings().removeClass('btn-secondary').addClass('btn-outline-secondary');
+						}
+					}
 					// Gets seller's information
 					sellerId = data.sellerId;
 					$.ajax({
@@ -805,11 +821,11 @@ $(document).ready(function(){
 							});
 						}
 					});
-				},
-				error: function(error){
-					console.log('failed');
-				}
-			});
+},
+error: function(error){
+	console.log('failed');
+}
+});
 		}); // Initial ajax ends
 	} // Open product function ends
 
@@ -995,6 +1011,7 @@ $(document).ready(function(){
 		sessionStorage.clear();
 		$('#navLoggedIn').hide();
 		$('#navLoggedOut').show();
+		resetCategory();
 		$("#account").hide();
 		$('#loginUsername').val("");
 		$('#loginPassword').val("");
@@ -1007,6 +1024,7 @@ $(document).ready(function(){
 		$("#productCards").hide();
 		$("#productPage").hide();
 		$("#filterContainer").hide();
+		resetCategory();
 		$('#registerUsername').val('');
 		$('#registerFirstName').val('');
 		$('#registerLastName').val('');
@@ -1152,9 +1170,11 @@ $(document).ready(function(){
 		} // else
 	});//add product form
 
+	// show account page
 	$("#myAccountButton").click(function(){
 		addProfileDetails();
 		showMyProducts("selling");
+		// reset side bar indentation and show selling products
 		let list = document.querySelectorAll(".account-info__sidebar__list-item");
 		for(var i = 0; i < list.length; i++){
 			list[i].classList.remove("account-info__sidebar__list-item--active");
@@ -1162,6 +1182,7 @@ $(document).ready(function(){
 		list[0].classList.add("account-info__sidebar__list-item--active")
 		$("#productCards").hide();
 		$('#productPage').hide();
+		resetCategory();
 		$("#account").show();
 		$('#filterBar').hide();
 	})
@@ -1197,7 +1218,8 @@ $(document).ready(function(){
 		showMyProducts("bought");
 		document.getElementById("myProductCards").scrollIntoView();
 	})
-	//Load my cards
+
+	//Load my cards on account page
 	function showMyProducts(group){
 		$.ajax({
 			url: `${url}/products`,
@@ -1247,7 +1269,8 @@ $(document).ready(function(){
 		showMyWatchlist();
 		document.getElementById("myProductCards").scrollIntoView();
 	})
-	//Load my watchlist
+
+	//Load my watchlist on account page
 	function showMyWatchlist(){
 		$.ajax({
 			url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
@@ -1296,7 +1319,7 @@ $(document).ready(function(){
 		})
 	}
 
-
+	// shows and prefills user details to edit
 	$("#editProfileBtn").click(function(){
 		$.ajax({
 			url :`${url}/users/u=${sessionStorage.getItem('userID')}`,
@@ -1314,9 +1337,7 @@ $(document).ready(function(){
 		});//ajax
 	});
 
-
-
-
+	// edits profile details
 	$("#saveProfileBtn").click(function(){
 		let fname = $("#editFirstName").val();
 		let lname = $("#editLastName").val();
@@ -1351,6 +1372,7 @@ $(document).ready(function(){
 		});//ajax
 	});
 
+	// delete user's account
 	$('#deleteAccountButton').click(function(){
 		$('#editProfileModal').modal('hide');
 		swal({
@@ -1403,6 +1425,7 @@ $(document).ready(function(){
 		$(this).addClass("account-info__sidebar__list-item--active")
 	});
 
+	//add comment to post
 	function addComment(question, product){
 		$.ajax({
 			url :`${url}/addComment`,
@@ -1423,6 +1446,7 @@ $(document).ready(function(){
 		});//ajax
 	}
 
+	// shows all comments and replies
 	function displayComments(product){
 		$.ajax({
 			url: `${url}/comments`,
@@ -1447,22 +1471,10 @@ $(document).ready(function(){
 								else{
 									card += `<div class="col-12 col-md-10 border px-2 pt-2 rounded my-2" id="${data[i]["_id"]}">`;
 								}
-								if(user["_id"] === sessionStorage.getItem("userID")){
-									card += `<div class="d-flex justify-content-between"><p class="mb-0 text-primary font-weight-bold">${comUsername}
+								card += `<p class="mb-0 text-primary font-weight-bold">${comUsername}
 									<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i])}</span></p>
-									<div><i class="comment-icon comment-edit text-secondary fas fa-edit"></i>
-									<i class="comment-icon comment-delete text-secondary ml-2 mr-3 fas fa-trash-alt" id="delete-${data[i]["_id"]}"></i></div></div>`;
-									$(".comment-icon").click(function(){
-														deleteReply(data[i].replies, $(this).attr("id"));
-														// console.log(data[i])
-													})
-								}
-								else{
-									card += `<p class="mb-0 text-primary font-weight-bold">${comUsername}
-									<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i])}</span></p>`;
-								}
-								card += `<p class="card-text ml-2">${data[i].text}</p>
-								<div class="comment-replies col-12" id="comment-${data[i]["_id"]}">`;
+									<p class="card-text ml-2">${data[i].text}</p>
+									<div class="comment-replies col-12" id="comment-${data[i]["_id"]}">`;
 								if(!data[i].replies.includes(null)){
 									for (let j = 0; j < data[i].replies.length; j++) {
 										$.ajax({
@@ -1472,9 +1484,6 @@ $(document).ready(function(){
 											success: function(replier){
 												let repUsername = replier.username;
 												let reply =`<div class="col-11 border p-2 rounded mb-2 float-right">`;
-												if(replier["_id"] === sessionStorage.getItem("userID")){
-													reply += `<div class="d-flex justify-content-between">`;
-												}
 												if(user.username === repUsername){
 													reply += `<p class="mb-0 text-primary font-weight-bold">${repUsername}<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i].replies[j])}</span></p>`;
 												}
@@ -1484,14 +1493,6 @@ $(document).ready(function(){
 												if((replier["_id"] != product.sellerId) && (user.username != repUsername)){
 													reply += `<p class="mb-0 text-dark font-weight-bold">${repUsername}<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i].replies[j])}</span></p>`;
 												}
-												if(replier["_id"] === sessionStorage.getItem("userID")){
-													reply += `<div><i class="comment-icon comment-edit text-secondary fas fa-edit"></i>
-													<i class="comment-icon comment-delete text-secondary ml-2 mr-3 fas fa-trash-alt" id="delete-${data[i].replies[j]["_id"]}"></i></div></div>`;
-													$(".comment-icon").click(function(){
-														deleteReply(data[i].replies, $(this).attr("id"));
-														// console.log(data[i])
-													})
-												}
 												reply += `<p class="card-text ml-2">${data[i].replies[j].text}</p></div>`;
 
 												count++;
@@ -1499,8 +1500,6 @@ $(document).ready(function(){
 
 												let target = `comment-${data[i]["_id"]}`;
 												document.getElementById(target).innerHTML += reply;
-
-												
 											},
 											error: function(error) {
 												console.log('no good');
@@ -1537,6 +1536,7 @@ $(document).ready(function(){
 		})
 	}
 
+	// add reply to comments replies
 	function handleReply(e, product){
 		let com = e.target.parentNode.parentNode.attributes[1].value;
 		let input = e.target.previousElementSibling.value;
@@ -1556,15 +1556,11 @@ $(document).ready(function(){
 				error:function(){
 					console.log('error: cannot call api');
 				}
-			});//ajax
+				});//ajax
 		}
 	}
 
-	function deleteReply(data,id){
-		let reply = id.slice(7);
-		console.log(data)
-	}
-
+	// displays time since comment or reply was posted
 	function getTimeAgo(data){
 		// comment time values
 		let t = data.time;
@@ -1582,7 +1578,6 @@ $(document).ready(function(){
 		const minutes2 = Math.round(seconds / 60);
 		const isToday = today.toDateString() === date.toDateString();
 		const isYesterday = yesterday.toDateString() === date.toDateString();
-		const isThisYear = today.getFullYear() === date.getFullYear();
 
 		if (minutes < 10) {	minutes = `0${minutes}`;}
 
