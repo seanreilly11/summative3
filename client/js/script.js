@@ -513,6 +513,7 @@ $(document).ready(function(){
 								<div class="col-lg-6 col-md-12">
 								<button id="productRemoveFromWatchList" class="btn btn-outline-danger btn-block watchlist-btn">Remove watchlist</button>
 								</div>`;
+								productWatchlist(a);
 							},
 							error: function(error){
 								alert('failed to add product to watchlist');
@@ -560,6 +561,7 @@ $(document).ready(function(){
 							<div class="col-lg-6 col-md-12">
 							<button id="productAddToWatchList" class="btn btn-outline-primary btn-block watchlist-btn">Add watchlist</button>
 							</div>`;
+							productWatchlist(a);
 						},
 						error: function(error){
 							alert('Failed to remove from watchlist');
@@ -1279,7 +1281,7 @@ $(document).ready(function(){
 	$("#viewWatchlist").click(function(){
 		showMyWatchlist();
 		document.getElementById("myProductCards").scrollIntoView();
-	})
+	});
 	//Load my watchlist
 	function showMyWatchlist(){
 		$.ajax({
@@ -1305,6 +1307,7 @@ $(document).ready(function(){
 								for (let i = 0; i < data.length; i++) {
 									if(data[i]["_id"] == userData.watchlist[j] && data[i].status === "listed"){
 										let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+										<div class="btn-watchlist-card" title="Remove from watchlist">-</div>
 										<img class="card-img-top" src="${data[i].image}" alt="Image">
 										<div class="card-body">
 										<h3 class="card-title"> ${data[i].title}</h3>
@@ -1327,6 +1330,79 @@ $(document).ready(function(){
 				console.log('no good');
 			}
 		})
+		// Add product to wishlist on click of '+' on product card
+		$('.btn-watchlist-card').click(function(e){
+			// Get value of watchlist icon on home screen
+			var action = $(this).text();
+			console.log(action);
+			var prod = e.target.parentNode.attributes[1].value;
+			console.log(prod);
+			e.stopPropagation();
+			if(action === '-'){
+				console.log('entered condition');
+				// Get product details
+				$.ajax({
+					url: `${url}/products/p=${prod}`,
+					type: 'GET',
+					dataType: 'json',
+					success: function(clickedProduct){
+						var sellerId = clickedProduct.sellerId;
+						// Get seller's details so that the seller doesn't add their listing to their account
+						$.ajax({
+							url: `${url}/users/u=${sellerId}`,
+							type: 'GET',
+							dataType: 'json',
+							success: function(sellerData){
+								// Get buyer's details
+								$.ajax({
+									url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+									type: 'GET',
+									data: 'json',
+									success: function(buyerData){
+										var newWatchlist = buyerData.watchlist;
+										var productToRemove = prod;
+										console.log(newWatchlist);
+										console.log(productToRemove);
+										// Adding product id to user's watchlist array
+										$.ajax({
+											url: `${url}/removeWatchlist/u=${sessionStorage.getItem('userID')}`,
+											type: 'PATCH',
+											data: {
+												watchlist : productToRemove
+											},
+											success: function(){
+												swal({
+													title: 'Removed from watchlist',
+													text: `Successfully removed ${clickedProduct.title} from your watchlist`,
+													icon: 'success',
+													button: 'Got it',
+													timer: 2500
+												}).then(function(){
+													location.reload();
+													}
+												);
+											},
+											error: function(error){
+												alert('Failed to remove from watchlist');
+											}
+										});
+									},
+									error: function(error){
+										alert('Failed to get buyer\'s details');
+									}
+								}); // Get buyer's details end	
+							},
+							error: function(error){
+								alert('Failed to get seller\'s details');
+							}
+						}); // Get seller's details end
+					},
+					error: function(error){
+						alert('Failed to get product details');
+					}
+				}); // Get product details end
+			}
+		});
 	}
 
 
