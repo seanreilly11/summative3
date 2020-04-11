@@ -505,6 +505,14 @@ $(document).ready(function(){
 									button: 'Got it',
 									timer: 2500
 								});
+								// Adds buttons if not in watchlist already
+								document.getElementById('dynamicBtnContainer').innerHTML =
+								`<div class="col-lg-6 col-md-12">
+								<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
+								</div>
+								<div class="col-lg-6 col-md-12">
+								<button id="productRemoveFromWatchList" class="btn btn-outline-danger btn-block watchlist-btn">Remove watchlist</button>
+								</div>`;
 							},
 							error: function(error){
 								alert('failed to add product to watchlist');
@@ -517,7 +525,6 @@ $(document).ready(function(){
 				}
 			});
 		})
-
 		// Remove from watchlist
 		$('#productRemoveFromWatchList').click(function(){
 			console.log('Remove button clicked');
@@ -545,7 +552,14 @@ $(document).ready(function(){
 								icon: 'success',
 								button: 'Got it',
 								timer: 2500
-							})
+							});
+							document.getElementById('dynamicBtnContainer').innerHTML =
+							`<div class="col-lg-6 col-md-12">
+							<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
+							</div>
+							<div class="col-lg-6 col-md-12">
+							<button id="productAddToWatchList" class="btn btn-outline-primary btn-block watchlist-btn">Add watchlist</button>
+							</div>`;
 						},
 						error: function(error){
 							alert('Failed to remove from watchlist');
@@ -558,8 +572,6 @@ $(document).ready(function(){
 			}); // Get buyer's details end	
 		});
 	}
-
-	
 
 	// --- Product details ---
 	// Open product page
@@ -622,7 +634,6 @@ $(document).ready(function(){
 							}
 							document.getElementById('productButtonContainer').innerHTML = card;
 							listingPrivledges(sellerData, data);
-
 							// Allows owner of listing to edit and delete the product
 							$('#editProduct').click(function(){
 								// Outputs exsiting product information
@@ -716,61 +727,6 @@ $(document).ready(function(){
 									}
 								});
 							});
-
-							// // Confirmation pop up add to watchlist
-							// $('#productAddToWatchList').click(function(){
-							// 	console.log('Clicked watchlist button');
-							// 	// Gets buyer's data
-							// 	$.ajax({
-							// 		url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
-							// 		type: 'GET',
-							// 		data: 'json',
-							// 		success: function(buyerData){
-							// 			var newWatchlist = buyerData.watchlist;
-							// 			var productToAdd = data['_id'];
-							// 			// Adding product id to user's watchlist array
-							// 			if((newWatchlist.indexOf(productToAdd) == -1) && (sellerId != sessionStorage.getItem("userID"))){
-							// 				$.ajax({
-							// 					url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
-							// 					type: 'PATCH',
-							// 					data: {
-							// 						watchlist : productToAdd
-							// 					},
-							// 					success: function(updateBuyerWatchlist){
-							// 						swal({
-							// 							title: 'Added to watchlist',
-							// 							text: `Successfully added ${data.title} to your watchlist`,
-							// 							icon: 'success',
-							// 							button: 'Got it',
-							// 							timer: 2500
-							// 						});
-							// 					},
-							// 					error: function(error){
-							// 						alert('failed to add product to watchlist');
-							// 					}
-							// 				}); // ajax
-							// 			}
-							// 			else{
-							// 				swal({
-							// 					title: 'Already added',
-							// 					text: `${data.title} is already on your watchlist`,
-							// 					icon: 'info',
-							// 					button: 'Got it',
-							// 					timer: 2500
-							// 				});
-							// 			}
-							// 		},
-							// 		error: function(error){
-							// 			alert('failed to add to watchlist');
-							// 		}
-							// 	});
-							// });
-
-							// // Remove from watchlist
-							// $('#productRemoveFromWatchlist').click(function(){
-							// 	console.log('Remove button clicked');
-							// });
-
 							// Confirmation pop up purchase item
 							$('#productPurchase').click(function(){
 								// Alert pop up
@@ -949,7 +905,6 @@ $(document).ready(function(){
 						productWatchlist(data);
 					}
 					else{
-					console.log('testing');
 						// Adds buttons if not in watchlist already
 						document.getElementById('dynamicBtnContainer').innerHTML =
 						`<div class="col-lg-6 col-md-12">
@@ -961,24 +916,6 @@ $(document).ready(function(){
 						productWatchlist(data);
 					}
 				}
-				// else if(sessionStorage['username']){
-					// Adds question form
-					// document.getElementById('questionForm').innerHTML =
-					// `<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
-					// <h3>Ask a Question</h3>
-					// <textarea class="form-control" id="newQuestion" rows="3"></textarea>
-					// <div class="col-12">
-					// <button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
-					// </div></div>`;
-					// Adds buttons
-					// document.getElementById('dynamicBtnContainer').innerHTML =
-					// `<div class="col-lg-6 col-md-12">
-					// <button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
-					// </div>
-					// <div class="col-lg-6 col-md-12">
-					// <button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
-					// </div>`;
-				// }
 				// If the user isn't logged in
 				else{
 					// Adds warning to login or register
