@@ -575,17 +575,223 @@ $(document).ready(function(){
 		});
 	}
 
+	// --- Edit and delete product ---
+	function editAndDeleteProduct(data){
+		// Allows owner of listing to edit and delete the product
+		$('#editProduct').click(function(){
+			// Outputs exsiting product information
+			$('#updateTitle').val(data.title);
+			$('#updatePrice').val(data.price);
+			$('#updateCategory').val(data.category);
+			$('#updateDescription').val(data.description);
+			$('#updateKeywords').val(data.keywords);
+			$('#updateImage').val(data.image);
+			$('#updateShipping-pick').prop('checked', data.shipping.pickup);
+			$('#updateShipping-deliver').prop('checked', data.shipping.deliver);
+			// Updates listing after save changes has been clicked
+			$('#updateProductBtn').click(function(){
+				console.log('Save updates');
+				let newTitle = $('#updateTitle').val();
+				let newPrice = $('#updatePrice').val();
+				let newCategory = $('#updateCategory').val();
+				let newDescription = $('#updateDescription').val();
+				let newImage = $('#updateImage').val();
+				let modifiedKeywordArray = document.getElementById('updateKeywords').value;
+				// let modifiedKeywordArray = $('#updateKeywords').val();
+				let newPickup = $('#updateShipping-pick').is(":checked");
+				let newDeliver = $('#updateShipping-deliver').is(":checked");
+				// Updates product information
+				$.ajax({
+					url: `${url}/updateProduct/p=${data._id}`,
+					type: 'PATCH',
+					dataType: 'json',
+					data: {
+						title : newTitle,
+						description : newDescription,
+						price : newPrice,
+						image : newImage,
+						category : newCategory,
+						keywords : modifiedKeywordArray,
+						pickup : newPickup,
+						deliver : newDeliver
+					},
+					success: function(updatedData){
+						swal({
+							title: 'Listing Updated',
+							text: `Successfully updated ${data.title} with new details that you have entered`,
+							icon: 'success',
+							button: 'Got it',
+							timer: 2500
+						}).then(function(){
+							location.reload();
+						});
+					},
+					error: function(error){
+						alert('Could not update listing');
+					}
+				});
+			}); // Save changes end
+		}); // Edit listing
+		// Delete a listing
+		$('#deleteProduct').click(function(){
+			swal({
+				title: `Delete ${data.title}`,
+				text: `Are you sure that you want to permentaly remove ${data.title} as a listing. This action cannot be undone!`,
+				icon: 'warning',
+				buttons: {
+					cancel: 'Cancel',
+					success: {
+						text: 'Delete Listing',
+						value: 'delete',
+					},
+				},
+			})
+			.then((value) => {
+				switch (value) {
+					case 'delete':
+					$.ajax({
+						url: `${url}/deleteProduct/p=${data._id}`,
+						type: 'DELETE',
+						data: 'json',
+						success: function(){
+							swal({
+								title: 'Listing Deleted',
+								text: `Successfully deleted ${data.title}`,
+								icon: 'success',
+								button: 'Got it',
+								timer: 2500
+							});
+							$("#productPage").hide();
+							showAllProducts()
+							$("#productCards").show();
+						},
+						error: function(){
+							alert('Failed to delete listing');
+						}
+					});
+				}
+			});
+		});
+	} // Delete and edit listing end
+
+	// --- Buy now ---
+	function buyNow(data){
+		// Confirmation pop up purchase item
+		$('#productPurchase').click(function(){
+			// Alert pop up
+			swal({
+				title: `Purchase ${data.title}`,
+				text: `Are you sure you want to Purchase ${data.title} to for $${data.price}?`,
+				buttons: {
+					cancel: 'Cancel',
+					success: {
+						text: 'Purchase',
+						value: 'add',
+					},
+				},
+			})
+			// Add to purchased list method
+			.then((value) => {
+				switch (value) {
+					case 'add':
+					// Gets buyer's information
+					$.ajax({
+						url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+						type: 'GET',
+						data: 'json',
+						success: function(buyerData){
+							// Conditional statement to make sure that the user buying the product has enough in their account to do so
+							if(buyerData.balance > data.price){
+								// Edit product details
+								$.ajax({
+									url: `${url}/productSold/p=${data._id}`,
+									type: `PATCH`,
+									data: {
+										buyerId: `${sessionStorage.getItem('userID')}`,
+										status: 'sold'
+									},
+									success: function(updateBuyerBalance){
+										var updateBuyerWallet = buyerData.balance - data.price;
+										var updateSellerWallet = sellerData.balance + data.price;
+										$.ajax({
+											url: `${url}/products/p=${data._id}`,
+											type: 'GET',
+											data: 'json',
+											success: function(newProdData){
+												listingPrivledges(sellerId, newProdData);
+											},
+											error: function(error){
+												alert("Can't get product");
+											}
+										})
+										// Update buyer's wallet
+										$.ajax({
+											url: `${url}/updateBalance/u=${sessionStorage.getItem('userID')}`,
+											type: `PATCH`,
+											data: {
+												balance: updateBuyerWallet
+											},
+											success: function(){
+												console.log('Buyer\'s balance has changed to ' + buyerData.balance);
+											},
+											error: function(error){
+												console.log('Couldn\'t update buyer\'s balance');
+											}
+										});
+										// Update seller's wallet
+										$.ajax({
+											url: `${url}/updateBalance/u=${sellerData._id}`,
+											type: `PATCH`,
+											data: {
+												balance: updateSellerWallet
+											},
+											success: function(){
+												console.log('Seller\'s balance has changed to ' + sellerData.balance);
+											},
+											error: function(error){
+												console.log('Couldn\'t update seller\'s balance');
+											}
+										});
+									},
+									error: function(error){
+										alert('Unable to make purchase');
+									}
+								});
+							}
+							else{
+								swal({
+									title: `Insuficient funds`,
+									text: `Unable to purchase ${data.title} due to insuficient funds. Please add more credit to your account to be able to purchase this.`,
+									icon: `error`,
+									button: `Got it!`,
+									timer: 2500
+								});
+							}
+						},
+						error: function(error){
+							alert('Failed to get buyer\'s details');
+						}
+					});
+					swal({
+						title: `${data.title} has been purchased`,
+						text: `Successfully purchased ${data.title}, itemId #: ${data._id}`,
+						icon: 'success',
+						button: 'Got it',
+						timer: 2500
+					});
+					break;
+				}
+			});
+		});
+	}
+
 	// --- Product details ---
 	// Open product page
 	function openProduct(){
 		$('.product-link').click(function(){
 			let sellerId, sellerUsername;
 			let clickedProduct = this.id;
-			console.log(clickedProduct);
-			$('.watchlist-btn').click(function(){
-				console.log('Clicked!');
-			});
-			
+			console.log(clickedProduct);			
 
 			// Hides list of products
 			$('#account').hide();
@@ -635,207 +841,7 @@ $(document).ready(function(){
 								card += `<p class="mb-0">Shipping: Delivery only</p></div>`;
 							}
 							document.getElementById('productButtonContainer').innerHTML = card;
-							listingPrivledges(sellerData, data);
-							// Allows owner of listing to edit and delete the product
-							$('#editProduct').click(function(){
-								// Outputs exsiting product information
-								$('#updateTitle').val(data.title);
-								$('#updatePrice').val(data.price);
-								$('#updateCategory').val(data.category);
-								$('#updateDescription').val(data.description);
-								$('#updateKeywords').val(data.keywords);
-								$('#updateImage').val(data.image);
-								$('#updateShipping-pick').prop('checked', data.shipping.pickup);
-								$('#updateShipping-deliver').prop('checked', data.shipping.deliver);
-								// Updates listing after save changes has been clicked
-								$('#updateProductBtn').click(function(){
-									let newTitle = $('#updateTitle').val();
-									let newPrice = $('#updatePrice').val();
-									let newCategory = $('#updateCategory').val();
-									let newDescription = $('#updateDescription').val();
-									let newImage = $('#updateImage').val();
-									let modifiedKeywordArray = document.getElementById('updateKeywords').value;
-									// let modifiedKeywordArray = $('#updateKeywords').val();
-									let newPickup = $('#updateShipping-pick').is(":checked");
-									let newDeliver = $('#updateShipping-deliver').is(":checked");
-									// Updates product information
-									$.ajax({
-										url: `${url}/updateProduct/p=${clickedProduct}`,
-										type: 'PATCH',
-										dataType: 'json',
-										data: {
-											title : newTitle,
-											description : newDescription,
-											price : newPrice,
-											image : newImage,
-											category : newCategory,
-											keywords : modifiedKeywordArray,
-											pickup : newPickup,
-											deliver : newDeliver
-										},
-										success: function(){
-											swal({
-												title: 'Listing Updated',
-												text: `Successfully updated ${data.title} with new details that you have entered`,
-												icon: 'success',
-												button: 'Got it',
-												timer: 2500
-											});
-										},
-										error: function(error){
-											alert('Could not update listing');
-										}
-									});
-								}); // Save changes end
-							}); // Edit listing
-
-							// Delete a listing
-							$('#deleteProduct').click(function(){
-								swal({
-									title: `Delete ${data.title}`,
-									text: `Are you sure that you want to permentaly remove ${data.title} as a listing. This action cannot be undone!`,
-									icon: 'warning',
-									buttons: {
-										cancel: 'Cancel',
-										success: {
-											text: 'Delete Listing',
-											value: 'delete',
-										},
-									},
-								})
-								.then((value) => {
-									switch (value) {
-										case 'delete':
-										$.ajax({
-											url: `${url}/deleteProduct/p=${clickedProduct}`,
-											type: 'DELETE',
-											data: 'json',
-											success: function(){
-												swal({
-													title: 'Listing Deleted',
-													text: `Successfully deleted ${data.title}`,
-													icon: 'success',
-													button: 'Got it',
-													timer: 2500
-												});
-												$("#productPage").hide();
-												showAllProducts()
-												$("#productCards").show();
-											},
-											error: function(){
-												alert('Failed to delete listing');
-											}
-										});
-									}
-								});
-							});
-							// Confirmation pop up purchase item
-							$('#productPurchase').click(function(){
-								// Alert pop up
-								swal({
-									title: `Purchase ${data.title}`,
-									text: `Are you sure you want to Purchase ${data.title} to for $${data.price}?`,
-									buttons: {
-										cancel: 'Cancel',
-										success: {
-											text: 'Purchase',
-											value: 'add',
-										},
-									},
-								})
-								// Add to purchased list method
-								.then((value) => {
-									switch (value) {
-										case 'add':
-										// Gets buyer's information
-										$.ajax({
-											url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
-											type: 'GET',
-											data: 'json',
-											success: function(buyerData){
-												// Conditional statement to make sure that the user buying the product has enough in their account to do so
-												if(buyerData.balance > data.price){
-													// Edit product details
-													$.ajax({
-														url: `${url}/productSold/p=${data._id}`,
-														type: `PATCH`,
-														data: {
-															buyerId: `${sessionStorage.getItem('userID')}`,
-															status: 'sold'
-														},
-														success: function(updateBuyerBalance){
-															var updateBuyerWallet = buyerData.balance - data.price;
-															var updateSellerWallet = sellerData.balance + data.price;
-															$.ajax({
-																url: `${url}/products/p=${data._id}`,
-																type: 'GET',
-																data: 'json',
-																success: function(newProdData){
-																	listingPrivledges(sellerId, newProdData);
-																},
-																error: function(error){
-																	alert("Can't get product");
-																}
-															})
-															// Update buyer's wallet
-															$.ajax({
-																url: `${url}/updateBalance/u=${sessionStorage.getItem('userID')}`,
-																type: `PATCH`,
-																data: {
-																	balance: updateBuyerWallet
-																},
-																success: function(){
-																	console.log('Buyer\'s balance has changed to ' + buyerData.balance);
-																},
-																error: function(error){
-																	console.log('Couldn\'t update buyer\'s balance');
-																}
-															});
-															// Update seller's wallet
-															$.ajax({
-																url: `${url}/updateBalance/u=${sellerData._id}`,
-																type: `PATCH`,
-																data: {
-																	balance: updateSellerWallet
-																},
-																success: function(){
-																	console.log('Seller\'s balance has changed to ' + sellerData.balance);
-																},
-																error: function(error){
-																	console.log('Couldn\'t update seller\'s balance');
-																}
-															});
-														},
-														error: function(error){
-															alert('Unable to make purchase');
-														}
-													});
-												}
-												else{
-													swal({
-														title: `Insuficient funds`,
-														text: `Unable to purchase ${data.title} due to insuficient funds. Please add more credit to your account to be able to purchase this.`,
-														icon: `error`,
-														button: `Got it!`,
-														timer: 2500
-													});
-												}
-											},
-											error: function(error){
-												alert('Failed to get buyer\'s details');
-											}
-										});
-										swal({
-											title: `${data.title} has been purchased`,
-											text: `Successfully purchased ${data.title}, itemId #: ${data._id}`,
-											icon: 'success',
-											button: 'Got it',
-											timer: 2500
-										});
-										break;
-									}
-								});
-							});
+							listingPrivledges(sellerData, data);							
 						}
 					});
 				},
@@ -884,6 +890,7 @@ $(document).ready(function(){
 					<div class="col-lg-6 col-md-12">
 					<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
 					</div>`;
+					editAndDeleteProduct(data);
 				}
 				else if(sessionStorage['username']){
 					// Adds question form
@@ -906,6 +913,7 @@ $(document).ready(function(){
 						<button id="productRemoveFromWatchList" class="btn btn-outline-danger btn-block watchlist-btn">Remove watchlist</button>
 						</div>`;
 						productWatchlist(data);
+						buyNow(data);
 					}
 					else{
 						// Adds buttons if not in watchlist already
@@ -917,6 +925,7 @@ $(document).ready(function(){
 						<button id="productAddToWatchList" class="btn btn-outline-primary btn-block watchlist-btn">Add watchlist</button>
 						</div>`;
 						productWatchlist(data);
+						buyNow(data);
 					}
 				}
 				// If the user isn't logged in
