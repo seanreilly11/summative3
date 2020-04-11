@@ -850,6 +850,7 @@ $(document).ready(function(){
 	function listingPrivledges(sellerId, data){
 		let status = data.status;
 		let productId = data._id;
+		var sellerId = data.sellerId;
 		// Get buyer's watchlist
 		$.ajax({
 			url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
