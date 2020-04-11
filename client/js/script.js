@@ -144,7 +144,7 @@ $(document).ready(function(){
 										}
 										// Conditional statement that shows the user a + if product is not on watchlist
 										if((notPresentInWatchlist) || (buyerWatchlist.length === 0)){
-											card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+											card += `<div class="btn-watchlist-card" title="Add to watchlist">+</div>`;
 										}
 									}
 									card += `<div class="card-body">
@@ -294,7 +294,7 @@ $(document).ready(function(){
 								}
 								// Conditional statement that shows the user a + if product is not on watchlist
 								if((notPresentInWatchlist) || (buyerWatchlist.length === 0)){
-									card += `<div class="watchlistCardBtn" title="Add to watchlist">+</div>`;
+									card += `<div class="btn-watchlist-card" title="Add to watchlist">+</div>`;
 								}
 							}
 							card += `<div class="card-body">
@@ -332,7 +332,7 @@ $(document).ready(function(){
 	// --- Add to watchlist button on cards ---
 	function addToWatchlistSymbol(a){
 		// Add product to wishlist on click of '+' on product card
-		$('.watchlistCardBtn').click(function(e){
+		$('.btn-watchlist-card').click(function(e){
 			// Get value of watchlist icon on home screen
 			var action = $(this).text();
 			console.log(action);
@@ -485,13 +485,322 @@ $(document).ready(function(){
 		}) // ajax products end
 	} // Show all products end
 
+	// --- Add and remove from watchlist on product page ---
+	function productWatchlist(a){
+		console.log('Clicked watchlist button');
+		// Gets buyer's data
+		$('#productAddToWatchList').click(function(){
+			$.ajax({
+				url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+				type: 'GET',
+				data: 'json',
+				success: function(buyerData){
+					var newWatchlist = buyerData.watchlist;
+					var productToAdd = a['_id'];
+					var sellerId = a.sellerId;
+					// Adding product id to user's watchlist array
+					if(newWatchlist.indexOf(productToAdd) == -1){
+						$.ajax({
+							url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
+							type: 'PATCH',
+							data: {
+								watchlist : productToAdd
+							},
+							success: function(updateBuyerWatchlist){
+								swal({
+									title: 'Added to watchlist',
+									text: `Successfully added ${a.title} to your watchlist`,
+									icon: 'success',
+									button: 'Got it',
+									timer: 2500
+								});
+								// Adds buttons if not in watchlist already
+								document.getElementById('dynamicBtnContainer').innerHTML =
+								`<div class="col-lg-6 col-md-12">
+								<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
+								</div>
+								<div class="col-lg-6 col-md-12">
+								<button id="productRemoveFromWatchList" class="btn btn-outline-danger btn-block watchlist-btn">Remove watchlist</button>
+								</div>`;
+								productWatchlist(a);
+							},
+							error: function(error){
+								alert('failed to add product to watchlist');
+							}
+						}); // ajax
+					}
+				},
+				error: function(error){
+					alert('failed to add to watchlist');
+				}
+			});
+		})
+		// Remove from watchlist
+		$('#productRemoveFromWatchList').click(function(){
+			console.log('Remove button clicked');
+			// Get buyer's details
+			$.ajax({
+				url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+				type: 'GET',
+				data: 'json',
+				success: function(buyerData){
+					var newWatchlist = buyerData.watchlist;
+					var productToRemove = a._id;
+					console.log(newWatchlist);
+					console.log(productToRemove);
+					// Adding product id to user's watchlist array
+					$.ajax({
+						url: `${url}/removeWatchlist/u=${sessionStorage.getItem('userID')}`,
+						type: 'PATCH',
+						data: {
+							watchlist : productToRemove
+						},
+						success: function(){
+							swal({
+								title: 'Removed from watchlist',
+								text: `Successfully removed ${a.title} from your watchlist`,
+								icon: 'success',
+								button: 'Got it',
+								timer: 2500
+							});
+							document.getElementById('dynamicBtnContainer').innerHTML =
+							`<div class="col-lg-6 col-md-12">
+							<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
+							</div>
+							<div class="col-lg-6 col-md-12">
+							<button id="productAddToWatchList" class="btn btn-outline-primary btn-block watchlist-btn">Add watchlist</button>
+							</div>`;
+							productWatchlist(a);
+						},
+						error: function(error){
+							alert('Failed to remove from watchlist');
+						}
+					});
+				},
+				error: function(error){
+					alert('Failed to get buyer\'s details');
+				}
+			}); // Get buyer's details end	
+		});
+	}
+
+	// --- Edit and delete product ---
+	function editAndDeleteProduct(data){
+		// Allows owner of listing to edit and delete the product
+		$('#editProduct').click(function(){
+			// Outputs exsiting product information
+			$('#updateTitle').val(data.title);
+			$('#updatePrice').val(data.price);
+			$('#updateCategory').val(data.category);
+			$('#updateDescription').val(data.description);
+			$('#updateKeywords').val(data.keywords);
+			$('#updateImage').val(data.image);
+			$('#updateShipping-pick').prop('checked', data.shipping.pickup);
+			$('#updateShipping-deliver').prop('checked', data.shipping.deliver);
+			// Updates listing after save changes has been clicked
+			$('#updateProductBtn').click(function(){
+				console.log('Save updates');
+				let newTitle = $('#updateTitle').val();
+				let newPrice = $('#updatePrice').val();
+				let newCategory = $('#updateCategory').val();
+				let newDescription = $('#updateDescription').val();
+				let newImage = $('#updateImage').val();
+				let modifiedKeywordArray = document.getElementById('updateKeywords').value;
+				// let modifiedKeywordArray = $('#updateKeywords').val();
+				let newPickup = $('#updateShipping-pick').is(":checked");
+				let newDeliver = $('#updateShipping-deliver').is(":checked");
+				// Updates product information
+				$.ajax({
+					url: `${url}/updateProduct/p=${data._id}`,
+					type: 'PATCH',
+					dataType: 'json',
+					data: {
+						title : newTitle,
+						description : newDescription,
+						price : newPrice,
+						image : newImage,
+						category : newCategory,
+						keywords : modifiedKeywordArray,
+						pickup : newPickup,
+						deliver : newDeliver
+					},
+					success: function(updatedData){
+						swal({
+							title: 'Listing Updated',
+							text: `Successfully updated ${data.title} with new details that you have entered`,
+							icon: 'success',
+							button: 'Got it',
+							timer: 2500
+						}).then(function(){
+							location.reload();
+						});
+					},
+					error: function(error){
+						alert('Could not update listing');
+					}
+				});
+			}); // Save changes end
+		}); // Edit listing
+		// Delete a listing
+		$('#deleteProduct').click(function(){
+			swal({
+				title: `Delete ${data.title}`,
+				text: `Are you sure that you want to permentaly remove ${data.title} as a listing. This action cannot be undone!`,
+				icon: 'warning',
+				buttons: {
+					cancel: 'Cancel',
+					success: {
+						text: 'Delete Listing',
+						value: 'delete',
+					},
+				},
+			})
+			.then((value) => {
+				switch (value) {
+					case 'delete':
+					$.ajax({
+						url: `${url}/deleteProduct/p=${data._id}`,
+						type: 'DELETE',
+						data: 'json',
+						success: function(){
+							swal({
+								title: 'Listing Deleted',
+								text: `Successfully deleted ${data.title}`,
+								icon: 'success',
+								button: 'Got it',
+								timer: 2500
+							});
+							$("#productPage").hide();
+							showAllProducts()
+							$("#productCards").show();
+						},
+						error: function(){
+							alert('Failed to delete listing');
+						}
+					});
+				}
+			});
+		});
+	} // Delete and edit listing end
+
+	// --- Buy now ---
+	function buyNow(data){
+		// Confirmation pop up purchase item
+		$('#productPurchase').click(function(){
+			// Alert pop up
+			swal({
+				title: `Purchase ${data.title}`,
+				text: `Are you sure you want to Purchase ${data.title} to for $${data.price}?`,
+				buttons: {
+					cancel: 'Cancel',
+					success: {
+						text: 'Purchase',
+						value: 'add',
+					},
+				},
+			})
+			// Add to purchased list method
+			.then((value) => {
+				switch (value) {
+					case 'add':
+					// Gets buyer's information
+					$.ajax({
+						url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+						type: 'GET',
+						data: 'json',
+						success: function(buyerData){
+							// Conditional statement to make sure that the user buying the product has enough in their account to do so
+							if(buyerData.balance > data.price){
+								// Edit product details
+								$.ajax({
+									url: `${url}/productSold/p=${data._id}`,
+									type: `PATCH`,
+									data: {
+										buyerId: `${sessionStorage.getItem('userID')}`,
+										status: 'sold'
+									},
+									success: function(updateBuyerBalance){
+										var updateBuyerWallet = buyerData.balance - data.price;
+										var updateSellerWallet = sellerData.balance + data.price;
+										$.ajax({
+											url: `${url}/products/p=${data._id}`,
+											type: 'GET',
+											data: 'json',
+											success: function(newProdData){
+												listingPrivledges(sellerId, newProdData);
+											},
+											error: function(error){
+												alert("Can't get product");
+											}
+										})
+										// Update buyer's wallet
+										$.ajax({
+											url: `${url}/updateBalance/u=${sessionStorage.getItem('userID')}`,
+											type: `PATCH`,
+											data: {
+												balance: updateBuyerWallet
+											},
+											success: function(){
+												console.log('Buyer\'s balance has changed to ' + buyerData.balance);
+											},
+											error: function(error){
+												console.log('Couldn\'t update buyer\'s balance');
+											}
+										});
+										// Update seller's wallet
+										$.ajax({
+											url: `${url}/updateBalance/u=${sellerData._id}`,
+											type: `PATCH`,
+											data: {
+												balance: updateSellerWallet
+											},
+											success: function(){
+												console.log('Seller\'s balance has changed to ' + sellerData.balance);
+											},
+											error: function(error){
+												console.log('Couldn\'t update seller\'s balance');
+											}
+										});
+									},
+									error: function(error){
+										alert('Unable to make purchase');
+									}
+								});
+							}
+							else{
+								swal({
+									title: `Insuficient funds`,
+									text: `Unable to purchase ${data.title} due to insuficient funds. Please add more credit to your account to be able to purchase this.`,
+									icon: `error`,
+									button: `Got it!`,
+									timer: 2500
+								});
+							}
+						},
+						error: function(error){
+							alert('Failed to get buyer\'s details');
+						}
+					});
+					swal({
+						title: `${data.title} has been purchased`,
+						text: `Successfully purchased ${data.title}, itemId #: ${data._id}`,
+						icon: 'success',
+						button: 'Got it',
+						timer: 2500
+					});
+					break;
+				}
+			});
+		});
+	}
+
 	// --- Product details ---
 	// Open product page
 	function openProduct(){
 		$('.product-link').click(function(){
 			let sellerId, sellerUsername;
 			let clickedProduct = this.id;
-			console.log(clickedProduct);
+			console.log(clickedProduct);			
 
 			// Hides list of products
 			$('#account').hide();
@@ -516,11 +825,11 @@ $(document).ready(function(){
 					}
 					// Gets seller's information
 					sellerId = data.sellerId;
+					
 					$.ajax({
 						url: `${url}/users/u=${sellerId}`,
 						type: 'GET',
 						dataType: 'json',
-						// Couldn't figure out how to get user name displayed so calling ajax inside ajax. May not be proper practice
 						success: function(sellerData){
 							// Image, description, question section
 							document.getElementById('productInformation').innerHTML =
@@ -549,277 +858,7 @@ $(document).ready(function(){
 								card += `<p class="mb-0">Shipping: Delivery only</p></div>`;
 							}
 							document.getElementById('productButtonContainer').innerHTML = card;
-							listingPrivledges(sellerId, data);
-
-							// Allows owner of listing to edit and delete the product
-							$('#editProduct').click(function(){
-								// Outputs exsiting product information
-								$('#updateTitle').val(data.title);
-								$('#updatePrice').val(data.price);
-								$('#updateCategory').val(data.category);
-								$('#updateDescription').val(data.description);
-								$('#updateKeywords').val(data.keywords);
-								$('#updateImage').val(data.image);
-								$('#updateShipping-pick').prop('checked', data.shipping.pickup);
-								$('#updateShipping-deliver').prop('checked', data.shipping.deliver);
-								// Updates listing after save changes has been clicked
-								$('#updateProductBtn').click(function(){
-									let newTitle = $('#updateTitle').val();
-									let newPrice = $('#updatePrice').val();
-									let newCategory = $('#updateCategory').val();
-									let newDescription = $('#updateDescription').val();
-									let newImage = $('#updateImage').val();
-									let modifiedKeywordArray = document.getElementById('updateKeywords').value;
-									// let modifiedKeywordArray = $('#updateKeywords').val();
-									let newPickup = $('#updateShipping-pick').is(":checked");
-									let newDeliver = $('#updateShipping-deliver').is(":checked");
-									// Updates product information
-									$.ajax({
-										url: `${url}/updateProduct/p=${clickedProduct}`,
-										type: 'PATCH',
-										dataType: 'json',
-										data: {
-											title : newTitle,
-											description : newDescription,
-											price : newPrice,
-											image : newImage,
-											category : newCategory,
-											keywords : modifiedKeywordArray,
-											pickup : newPickup,
-											deliver : newDeliver
-										},
-										success: function(){
-											swal({
-												title: 'Listing Updated',
-												text: `Successfully updated ${data.title} with new details that you have entered`,
-												icon: 'success',
-												button: 'Got it',
-												timer: 2500
-											});
-										},
-										error: function(error){
-											alert('Could not update listing');
-										}
-									});
-								}); // Save changes end
-							}); // Edit listing
-
-							// Delete a listing
-							$('#deleteProduct').click(function(){
-								swal({
-									title: `Delete ${data.title}`,
-									text: `Are you sure that you want to permentaly remove ${data.title} as a listing. This action cannot be undone!`,
-									icon: 'warning',
-									buttons: {
-										cancel: 'Cancel',
-										success: {
-											text: 'Delete Listing',
-											value: 'delete',
-										},
-									},
-								})
-								.then((value) => {
-									switch (value) {
-										case 'delete':
-										$.ajax({
-											url: `${url}/deleteProduct/p=${clickedProduct}`,
-											type: 'DELETE',
-											data: 'json',
-											success: function(){
-												swal({
-													title: 'Listing Deleted',
-													text: `Successfully deleted ${data.title}`,
-													icon: 'success',
-													button: 'Got it',
-													timer: 2500
-												});
-												$("#productPage").hide();
-												showAllProducts()
-												$("#productCards").show();
-											},
-											error: function(){
-												alert('Failed to delete listing');
-											}
-										});
-									}
-								});
-							});
-
-							// Confirmation pop up add to watchlist
-							$('#productAddToWatchList').click(function(){
-								console.log('Clicked watchlist button');
-								// Gets buyer's data
-								$.ajax({
-									url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
-									type: 'GET',
-									data: 'json',
-									success: function(buyerData){
-										var newWatchlist = buyerData.watchlist;
-										var productToAdd = data['_id'];
-										// Adding product id to user's watchlist array
-										if((newWatchlist.indexOf(productToAdd) == -1) && (sellerId != sessionStorage.getItem("userID"))){
-											$.ajax({
-												url: `${url}/updateWatchlist/u=${sessionStorage.getItem('userID')}`,
-												type: 'PATCH',
-												data: {
-													watchlist : productToAdd
-												},
-												success: function(updateBuyerWatchlist){
-													swal({
-														title: 'Added to watchlist',
-														text: `Successfully added ${data.title} to your watchlist`,
-														icon: 'success',
-														button: 'Got it',
-														timer: 2500
-													});
-												},
-												error: function(error){
-													alert('failed to add product to watchlist');
-												}
-											}); // ajax
-										}
-										else{
-											console.log('In conditional');
-											$.ajax({
-												url: `${url}/removeWatchlist/u=${sessionStorage.getItem('userID')}`,
-												type: 'PATCH',
-												data: {
-													watchlist: productToAdd
-												},
-												success: function(updateBuyerWatchlist){
-													console.log('In success');
-													swal({
-														title: 'Removed from Watchlist',
-														text: `Successfully removed ${data.title} from your watchlist`,
-														icon: 'success',
-														button: 'Got it',
-														timer: 2500
-													});
-												},
-												error: function(error){
-													alert('Unable to update watchlist');
-												}
-											});
-										}
-									},
-									error: function(error){
-										alert('failed to add to watchlist');
-									}
-								});
-							});
-
-							// Remove from watchlist
-							$('#productRemoveFromWatchlist').click(function(){
-								console.log('Remove button clicked');
-							});
-
-							// Confirmation pop up purchase item
-							$('#productPurchase').click(function(){
-								// Alert pop up
-								swal({
-									title: `Purchase ${data.title}`,
-									text: `Are you sure you want to Purchase ${data.title} to for $${data.price}?`,
-									buttons: {
-										cancel: 'Cancel',
-										success: {
-											text: 'Purchase',
-											value: 'add',
-										},
-									},
-								})
-								// Add to purchased list method
-								.then((value) => {
-									switch (value) {
-										case 'add':
-										// Gets buyer's information
-										$.ajax({
-											url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
-											type: 'GET',
-											data: 'json',
-											success: function(buyerData){
-												// Conditional statement to make sure that the user buying the product has enough in their account to do so
-												if(buyerData.balance > data.price){
-													// Edit product details
-													$.ajax({
-														url: `${url}/productSold/p=${data._id}`,
-														type: `PATCH`,
-														data: {
-															buyerId: `${sessionStorage.getItem('userID')}`,
-															status: 'sold'
-														},
-														success: function(updateBuyerBalance){
-															var updateBuyerWallet = buyerData.balance - data.price;
-															var updateSellerWallet = sellerData.balance + data.price;
-															$.ajax({
-																url: `${url}/products/p=${data._id}`,
-																type: 'GET',
-																data: 'json',
-																success: function(newProdData){
-																	listingPrivledges(sellerId, newProdData);
-																},
-																error: function(error){
-																	alert("Can't get product");
-																}
-															})
-															// Update buyer's wallet
-															$.ajax({
-																url: `${url}/updateBalance/u=${sessionStorage.getItem('userID')}`,
-																type: `PATCH`,
-																data: {
-																	balance: updateBuyerWallet
-																},
-																success: function(){
-																	console.log('Buyer\'s balance has changed to ' + buyerData.balance);
-																},
-																error: function(error){
-																	console.log('Couldn\'t update buyer\'s balance');
-																}
-															});
-															// Update seller's wallet
-															$.ajax({
-																url: `${url}/updateBalance/u=${sellerData._id}`,
-																type: `PATCH`,
-																data: {
-																	balance: updateSellerWallet
-																},
-																success: function(){
-																	console.log('Seller\'s balance has changed to ' + sellerData.balance);
-																},
-																error: function(error){
-																	console.log('Couldn\'t update seller\'s balance');
-																}
-															});
-														},
-														error: function(error){
-															alert('Unable to make purchase');
-														}
-													});
-												}
-												else{
-													swal({
-														title: `Insuficient funds`,
-														text: `Unable to purchase ${data.title} due to insuficient funds. Please add more credit to your account to be able to purchase this.`,
-														icon: `error`,
-														button: `Got it!`,
-														timer: 2500
-													});
-												}
-											},
-											error: function(error){
-												alert('Failed to get buyer\'s details');
-											}
-										});
-										swal({
-											title: `${data.title} has been purchased`,
-											text: `Successfully purchased ${data.title}, itemId #: ${data._id}`,
-											icon: 'success',
-											button: 'Got it',
-											timer: 2500
-										});
-										break;
-									}
-								});
-							});
+							listingPrivledges(sellerData, data);							
 						}
 					});
 },
@@ -831,52 +870,54 @@ error: function(error){
 	} // Open product function ends
 
 	// Gives different layout if user is logged in our out
-	function listingPrivledges(sellerId, data, buyerData){
+	function listingPrivledges(sellerId, data){
 		let status = data.status;
 		let productId = data._id;
-		if(status == 'sold'){
-			// Adds question form
-			document.getElementById('questionForm').innerHTML =
-			`<div class="alert alert-danger col-12 text-center" role="alert">
-			This product has been sold so questions are closed</div>`;
-			// Adds buttons
-			document.getElementById('dynamicBtnContainer').innerHTML =
-			`<div class="alert alert-danger col-12 text-center" role="alert">This product has been sold</div>`;
-		}
-		else if((sessionStorage['username']) && (sellerId == sessionStorage.getItem("userID"))){
-			// Adds question form
-			document.getElementById('questionForm').innerHTML =
-			`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
-			<h3>Ask a Question</h3>
-			<textarea class="form-control" id="newQuestion" rows="3"></textarea>
-			<div class="col-12">
-			<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
-			</div></div>`;
-			// Adds buttons
-			document.getElementById('dynamicBtnContainer').innerHTML =
-			`<div class="alert alert-primary col-12 text-center" role="alert">This is your product</div>
-			<div class="col-lg-6 col-md-12">
-			<button id="editProduct" class="btn btn-outline-success btn-block" data-toggle="modal" data-target="#updateProductModal">Edit product</button>
-			</div>
-			<div class="col-lg-6 col-md-12">
-			<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
-			</div>`;
-		}
-		else if(sessionStorage['username']){
-			// Adds question form
-			document.getElementById('questionForm').innerHTML =
-			`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
-			<h3>Ask a Question</h3>
-			<textarea class="form-control" id="newQuestion" rows="3"></textarea>
-			<div class="col-12">
-			<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
-			</div></div>`;
-			// Get buyer's watchlist
-			$.ajax({
-				url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
-				type: 'GET',
-				data: 'json',
-				success: function(buyerData){
+		var sellerId = data.sellerId;
+		// Get buyer's watchlist
+		$.ajax({
+			url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
+			type: 'GET',
+			data: 'json',
+			success: function(buyerData){
+				if(status == 'sold'){
+					// Adds question form
+					document.getElementById('questionForm').innerHTML =
+					`<div class="alert alert-danger col-12 text-center" role="alert">
+					This product has been sold so questions are closed</div>`;
+					// Adds buttons
+					document.getElementById('dynamicBtnContainer').innerHTML =
+					`<div class="alert alert-danger col-12 text-center" role="alert">This product has been sold</div>`;
+				}
+				else if((sessionStorage['username']) && (sellerId == sessionStorage.getItem("userID"))){
+					// Adds question form
+					document.getElementById('questionForm').innerHTML =
+					`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
+					<h3>Ask a Question</h3>
+					<textarea class="form-control" id="newQuestion" rows="3"></textarea>
+					<div class="col-12">
+					<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
+					</div></div>`;
+					// Adds buttons
+					document.getElementById('dynamicBtnContainer').innerHTML =
+					`<div class="alert alert-primary col-12 text-center" role="alert">This is your product</div>
+					<div class="col-lg-6 col-md-12">
+					<button id="editProduct" class="btn btn-outline-success btn-block" data-toggle="modal" data-target="#updateProductModal">Edit product</button>
+					</div>
+					<div class="col-lg-6 col-md-12">
+					<button id="deleteProduct" class="btn btn-outline-danger btn-block">Delete product</button>
+					</div>`;
+					editAndDeleteProduct(data);
+				}
+				else if(sessionStorage['username']){
+					// Adds question form
+					document.getElementById('questionForm').innerHTML =
+					`<div class="question-form row mx-0 bg-light py-3 col-12 mb-5">
+					<h3>Ask a Question</h3>
+					<textarea class="form-control" id="newQuestion" rows="3"></textarea>
+					<div class="col-12">
+					<button type="button" id="submitQuestionBtn" class="btn btn-primary mt-3 float-right">Ask Question</button>
+					</div></div>`;
 					var buyerWatchlist = buyerData.watchlist;
 					// If product is already in watchlist
 					if(buyerWatchlist.indexOf(productId) > -1){
@@ -886,8 +927,10 @@ error: function(error){
 						<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
 						</div>
 						<div class="col-lg-6 col-md-12">
-						<button id="productAddToWatchList" class="btn btn-outline-danger btn-block">Remove watchlist</button>
+						<button id="productRemoveFromWatchList" class="btn btn-outline-danger btn-block watchlist-btn">Remove watchlist</button>
 						</div>`;
+						productWatchlist(data);
+						buyNow(data);
 					}
 					else{
 						// Adds buttons if not in watchlist already
@@ -896,47 +939,50 @@ error: function(error){
 						<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
 						</div>
 						<div class="col-lg-6 col-md-12">
-						<button id="productAddToWatchList" class="btn btn-outline-primary btn-block">Add watchlist</button>
+						<button id="productAddToWatchList" class="btn btn-outline-primary btn-block watchlist-btn">Add watchlist</button>
 						</div>`;
+						productWatchlist(data);
+						buyNow(data);
 					}
-				},
-				error:function(error){
-					alert('Unable to get buyer\'s details');
 				}
-			}); // buyer data ends
-		}
-		// If the user isn't logged in
-		else{
-			// Adds warning to login or register
-			document.getElementById('questionForm').innerHTML =
-			`<div class="bg-light p-3">
-			<h4 class="text-dark">Please log in or register to ask a question</h4>
-			</div>`;
-			// Adds buttons
-			document.getElementById('dynamicBtnContainer').innerHTML =
-			`<div class="col-12">
-			<button id="registerAccountProductPageBtn" class="btn btn-outline-primary btn-block">Register an account</button>
-			</div>`;
-		}
-		$("#submitQuestionBtn").click(function(){
-			let newQuestion = $("#newQuestion").val();
-			addComment(newQuestion, data);
-		});
-		$('#registerAccountProductPageBtn').click(function(){
-			$("#productCards").hide();
-			$("#productPage").hide();
-			resetCategory();
-			$("#categories").hide();
-			$("#searchNav").hide();
-			$('#registerUsername').val('');
-			$('#registerFirstName').val('');
-			$('#registerLastName').val('');
-			$('#registerLocation').val('');
-			$('#registerEmail').val('');
-			$('#registerPassword').val('');
-			$('#registerForm').show();
-		});
-		displayComments(data);
+        
+				// If the user isn't logged in
+				else{
+					// Adds warning to login or register
+					document.getElementById('questionForm').innerHTML =
+					`<div class="bg-light p-3">
+					<h4 class="text-dark">Please log in or register to ask a question</h4>
+					</div>`;
+					// Adds buttons
+					document.getElementById('dynamicBtnContainer').innerHTML =
+					`<div class="col-12">
+					<button id="registerAccountProductPageBtn" class="btn btn-outline-primary btn-block">Register an account</button>
+					</div>`;
+				}
+				$("#submitQuestionBtn").click(function(){
+					let newQuestion = $("#newQuestion").val();
+					addComment(newQuestion, data);
+				});
+				$('#registerAccountProductPageBtn').click(function(){
+					$("#productCards").hide();
+          $("#productPage").hide();
+          resetCategory();
+          $("#categories").hide();
+          $("#searchNav").hide();
+          $('#registerUsername').val('');
+          $('#registerFirstName').val('');
+          $('#registerLastName').val('');
+          $('#registerLocation').val('');
+          $('#registerEmail').val('');
+          $('#registerPassword').val('');
+          $('#registerForm').show();
+				});
+				displayComments(data);
+			},
+			error:function(error){
+				alert('Unable to get buyer\'s details');
+			}
+		}); // buyer data ends
 	}
 	// --- Product details end ---
 
@@ -1325,6 +1371,10 @@ error: function(error){
 
 	// shows and prefills user details to edit
 	$("#editProfileBtn").click(function(){
+		$('#editPasswordSection').hide();
+		$('#editPasswordButton').click(function(){
+			$('#editPasswordSection').slideDown()
+		});
 		$.ajax({
 			url :`${url}/users/u=${sessionStorage.getItem('userID')}`,
 			type :'GET',
@@ -1334,6 +1384,7 @@ error: function(error){
 				$("#editLastName").val(data.lastName);
 				$("#editLocation").val(data.location);
 				$("#editEmail").val(data.email);
+				$("#newPassword").val(data.password)
 			},//success
 			error:function(){
 				console.log('error: cannot call api');
@@ -1347,6 +1398,7 @@ error: function(error){
 		let lname = $("#editLastName").val();
 		let city = $("#editLocation").val();
 		let email = $("#editEmail").val();
+		let password = $("#newPassword").val()
 		$.ajax({
 			url :`${url}/updateUser/u=${sessionStorage.getItem('userID')}`,
 			type :'PATCH',
@@ -1354,7 +1406,8 @@ error: function(error){
 				firstName : fname,
 				lastName : lname,
 				email : email,
-				location : city
+				location : city,
+				password : password
 			},
 			success : function(data){
 				$('#editProfileModal').modal('hide');
@@ -1490,7 +1543,7 @@ error: function(error){
 						dataType :'json',
 						success: function(user){
 							let comUsername = user.username;
-							if(data[i].productId === product["_id"]){
+							if(data[i].productId === product["_id"]){					
 								let count = 0;
 								let card = "";
 								if(data[i].replies.length == 0){
@@ -1598,7 +1651,7 @@ error: function(error){
 		let month = date.getMonth() + 1;
 		let year = date.getFullYear();
 		let hours = date.getHours();
-		let minutes = date.getMinutes();
+		let minutes = date.getMinutes();	
 		// comparison values
 		const today = new Date();
 		const yesterday = new Date(today - DAY_IN_MS);
@@ -1609,12 +1662,12 @@ error: function(error){
 
 		if (minutes < 10) {	minutes = `0${minutes}`;}
 
-		if (seconds < 10) { return 'Just now';}
-		else if (seconds < 60) { return `${seconds} seconds ago`; }
-		else if (seconds < 100) { return 'About a minute ago'; }
+		if (seconds < 10) { return 'Just now';} 
+		else if (seconds < 60) { return `${seconds} seconds ago`; } 
+		else if (seconds < 100) { return 'About a minute ago'; } 
 		else if (minutes2 < 60) { return `${minutes2} minutes ago`; }
-		else if (isToday) { return `Today at ${hours}:${minutes}`; }
-		else if (isYesterday) { return `Yesterday at ${hours}:${minutes}`; }
-		else { return `${day}/${month}/${year} ${hours}:${minutes}`; }
+		else if (isToday) { return `Today at ${hours}:${minutes}`; } 
+		else if (isYesterday) { return `Yesterday at ${hours}:${minutes}`; } 
+		else { return `${day}/${month}/${year} ${hours}:${minutes}`; } 	
 	}
 }); // document
