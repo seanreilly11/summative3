@@ -21,7 +21,7 @@ module.exports = function(grunt) {
       },
     },
     jshint: {
-      all: ['Gruntfile.js', 'js/script.js'],
+      all: ['js/script.js'],
       options: {
         esversion: 6
       }
