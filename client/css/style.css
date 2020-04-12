@@ -58,6 +58,11 @@ body{
 	background-color: rgb(0,0,0,.3);
 }
 
+.btn-category{
+	display: block;
+	width: 100%;
+}
+
 .card-img-top{
 	width: auto;
 	max-height: 200px;
@@ -79,6 +84,16 @@ body{
 @media (min-width: 576px){
 	.modal-dialog{
 		max-width: 600px;
+	}
+	.btn-category{
+		display: inline;
+		width: auto;
+	}
+	#categoryDropDownBtn{
+		display: none;
+	}
+	#categories{
+		display: block;
 	}
 }
 @media (min-width: 768px){

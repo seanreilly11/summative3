@@ -36,8 +36,9 @@
 			<input id="searchBar" class="col-lg-11 col-sm-10 form-control bg-light border border-success" type="search" placeholder="Search" aria-label="Search">
 			<button id="searchButton" class="col-lg-1 col-sm-2 btn btn-light">Search</button>
 		</form>
-		<div id="categories">
-			<div class="categories-section p-3 bg-light d-flex justify-content-around row m-0">
+		<button id="categoryDropDownBtn" class="btn btn-block btn-primary my-1" data-toggle="collapse" data-target="#categories" aria-expanded="false" aria-controls="categories">Categories</button>
+		<div id="categories" class="collapse">
+			<div id="collapse" class="categories-section p-3 bg-light d-flex justify-content-around row m-0">
 				<button type="button" id="collectiblesButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Antiques/Collectibles</button>
 				<button type="button" id="booksButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Books</button>
 				<button type="button" id="clothingButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Clothing</button>
