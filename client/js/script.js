@@ -223,27 +223,13 @@ $(document).ready(function(){
 					console.log('cannot filter objects');
 				}
 		});//ajax end
-		} else if ($(this).val() === 'latest') {
-			console.log('latest listings selected');
+		} else if ($(this).val() === 'featured') {
 			$.ajax({
 				url: `${url}/products`,
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
 					createCard(data);
-				},
-				error: function(){
-					console.log('cannot filter objects');
-				}
-			});
-		} else if ($(this).val() == 'oldest') {
-			console.log('oldest listings selected');
-			$.ajax({
-				url: `${url}/products`,
-				type: 'GET',
-				dataType: 'json',
-				success: function(data){
-					console.log(data.reverse());
 				},
 				error: function(){
 					console.log('cannot filter objects');
@@ -1177,12 +1163,19 @@ error: function(error){
 		price = price.toFixed(2);
 		let seller = sessionStorage.getItem("userID");
 		let imageUrl = `https://drive.google.com/uc?id=${imageId}`;
-		console.log(imageId);
+		console.log(typeof(imageId));
 
 		if(imageId.includes("google") || imageId.includes("drive") || imageId.includes("open")){
+			swal({
+				title: 'Wrong image format',
+				text: 'Please only enter the image ID NOT the whole link',
+				icon: 'warning',
+				button: 'Got it',
+				timer: 2500
+			});
 			$("#wrongImageAlert").slideDown();
 		}
-		if (title == '' || price == '' || category == '' || desc == '' || imageId == '' || keywords == '' || (!pickup && !deliver)){
+		else if (title == '' || price == '' || category == '' || desc == '' || imageId == '' || keywords == '' || (!pickup && !deliver)){
 			swal({
 				title: 'Fill Out Details',
 				text: 'Please enter all details',
@@ -1190,7 +1183,6 @@ error: function(error){
 				button: 'Got it',
 				timer: 2500
 			});
-			console.log(imageId);
 		}
 		else {
 			$.ajax({
