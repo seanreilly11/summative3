@@ -13,8 +13,8 @@ module.exports = function(grunt) {
     },
     watch: { // will be all linting tools
       scripts: {
-        files: 'js/script.js',
-        tasks: ['jshint'],
+        files: ['js/script.js', 'css/style.css'],
+        tasks: ['jshint', 'csslint'],
         options: {
           interrupt: false,
         }
@@ -33,12 +33,12 @@ module.exports = function(grunt) {
           collapseWhitespace: true
         },
         files: {                                   // Dictionary of files
-          'dist/index.html': 'index.html'     // 'destination': 'source'
+          'index.min.html': 'index.html'     // 'destination': 'source'
         }
       },
       dev: {                                       // Another target
         files: {
-          'dist/index.html': 'index.html'
+          'index.min.html': 'index.html'
         }
       }
     },
@@ -49,7 +49,7 @@ module.exports = function(grunt) {
       },
       target: {
         files: {
-          'style.min.css': ['css/style.css']
+          'css/style.min.css': ['css/style.css']
         }
       }
     },
@@ -66,6 +66,18 @@ module.exports = function(grunt) {
         },
         src: ['css/style.css']
       }
+    },
+    imagemin: {
+        static: {
+            options: {
+                optimizationLevel: 3,
+                svgoPlugins: [{removeViewBox: false}],
+                use: [mozjpeg()] // Example plugin usage
+            },
+            files: {
+                'images/avatar.min.png': 'images/avatar.png'
+            }
+        }
     }
   });
 
@@ -80,5 +92,6 @@ module.exports = function(grunt) {
 
   // Default task(s).
   grunt.registerTask('default', ['watch']);
-
+  grunt.registerTask('bugs', ['csslint', 'jshint']);
+  grunt.registerTask('ugly', ['uglify', 'imagemin', 'htmlmin', 'cssmin']);
 };

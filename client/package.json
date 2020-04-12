@@ -17,6 +17,8 @@
     "mongoose": "^5.9.6"
   },
   "devDependencies": {
+    "grunt-contrib-csslint": "^2.0.0",
+    "grunt-contrib-cssmin": "^3.0.0",
     "grunt-contrib-htmlmin": "^3.1.0",
     "grunt-contrib-imagemin": "^3.1.0",
     "grunt-contrib-jshint": "^2.1.0",

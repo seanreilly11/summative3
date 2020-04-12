@@ -60,10 +60,10 @@ $(document).ready(function(){
 				for (var i = 0; i < data.length; i++) {
 					// console.log(data[i].keywords);
 					let searchTargetTitle = data[i].title.toLowerCase();
-					// let searchTargetKeyword = data[i].keywords.toLowerCase();
+					let searchTargetKeyword = data[i].keywords.toLowerCase();
 					console.log(searchTargetTitle);
 					//After test products are deleted, do search for keywords also.
-					if (data[i].status == 'listed' &&	searchTargetTitle.includes(searchInput)) {
+					if (data[i].status == 'listed' && (searchTargetTitle.includes(searchInput) || searchTargetKeyword.includes(searchInput))) {
 						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username']) {
@@ -77,12 +77,16 @@ $(document).ready(function(){
 					}
 				}
 				openProduct();
+				$('#account').hide();
+				$("#productCards").show();
+				$('#productPage').hide();
+				$("#filterBar").show();
 			},
 			error: function(){
 				console.log('cannot complete search');
 			}
-		})
-	});
+		});
+	}); // search function
 
 	// resets category buttons to default colour
 	function resetCategory(){
@@ -161,7 +165,7 @@ $(document).ready(function(){
 						error: function(error){
 							console.log('Couldnt load watchlist while sorting');
 						}
-					})
+					});
 				}
 				else{
 					for (var i = 0; i < data.length; i++) {
@@ -183,7 +187,7 @@ $(document).ready(function(){
 			error: function(){
 				console.log('cannot get category');
 			}
-		})
+		});
 	});
 
 	//price filter
@@ -198,7 +202,7 @@ $(document).ready(function(){
 				success: function(data){
 					function compare(a ,b){
 						return a.price - b.price;
-					};
+					}
 					data.sort(compare);
 					createCard(data);
 				},
@@ -215,7 +219,7 @@ $(document).ready(function(){
 				success: function(data){
 					function compare(a ,b){
 						return b.price - a.price;
-					};
+					}
 					data.sort(compare);
 					createCard(data);
 				},
@@ -249,9 +253,6 @@ $(document).ready(function(){
 				dataType: 'json',
 				success: function(buyerData){
 					buyerWatchlist = buyerData.watchlist;
-					console.log(buyerWatchlist);
-					console.log(buyerWatchlist);
-					console.log(a);
 					document.getElementById('productCards').innerHTML = "";
 					// Assumes that the item is in watchlist to not trigger adding a + to cards
 					var notPresentInWatchlist = false;
@@ -266,7 +267,6 @@ $(document).ready(function(){
 									var buyerWatchlistItem = buyerWatchlist[j];
 									// Finds if the user has an item in their watchlist already
 									if(buyerWatchlistItem == a[i]._id){
-										console.log(`${buyerWatchlistItem} exsists`);
 										card += `<div class="btn-watchlist-card" title="Remove from watchlist">-</div>
 										<div class="card-body">
 										<h3 class="card-title"> ${a[i].title}</h3>
@@ -322,12 +322,9 @@ $(document).ready(function(){
 		$('.btn-watchlist-card').click(function(e){
 			// Get value of watchlist icon on home screen
 			var action = $(this).text();
-			console.log(action);
 			var prod = e.target.parentNode.attributes[1].value;
-			console.log(prod);
 			e.stopPropagation();
 			if(action === '-'){
-				console.log('entered condition');
 				// Get product details
 				$.ajax({
 					url: `${url}/products/p=${prod}`,
@@ -349,8 +346,6 @@ $(document).ready(function(){
 									success: function(buyerData){
 										var newWatchlist = buyerData.watchlist;
 										var productToRemove = prod;
-										console.log(newWatchlist);
-										console.log(productToRemove);
 										// Adding product id to user's watchlist array
 										$.ajax({
 											url: `${url}/removeWatchlist/u=${sessionStorage.getItem('userID')}`,
@@ -446,19 +441,18 @@ $(document).ready(function(){
 							error: function(){
 								alert('Failded to get seller\'s details');
 							}
-						})
+						});
 					},
 					error: function(error){
 						alert('Could not find product');
 					}
-				}) // Get product details end
+				}); // Get product details end
 			}
 		});
 	} // Add to watchlist from home screen end
 
 	//Load all cards
 	function showAllProducts(){
-
 		$.ajax({
 			url: `${url}/products`,
 			type: 'GET',
@@ -467,14 +461,13 @@ $(document).ready(function(){
 				createCard(data);
 			},
 			error: function(error) {
-				console.log('no good');
+				console.log('can\' show products');
 			}
-		}) // ajax products end
+		}); // ajax products end
 	} // Show all products end
 
 	// --- Add and remove from watchlist on product page ---
 	function productWatchlist(a){
-		console.log('Clicked watchlist button');
 		// Gets buyer's data
 		$('#productAddToWatchList').click(function(){
 			$.ajax({
@@ -507,7 +500,7 @@ $(document).ready(function(){
 								<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
 								</div>
 								<div class="col-lg-6 col-md-12">
-								<button id="productRemoveFromWatchList" class="btn btn-outline-danger btn-block watchlist-btn">Remove watchlist</button>
+								<button id="productRemoveFromWatchList" class="btn btn-outline-danger btn-block watchlist-btn">Remove from watchlist</button>
 								</div>`;
 								productWatchlist(a);
 							},
@@ -521,10 +514,9 @@ $(document).ready(function(){
 					alert('failed to add to watchlist');
 				}
 			});
-		})
+		});
 		// Remove from watchlist
 		$('#productRemoveFromWatchList').click(function(){
-			console.log('Remove button clicked');
 			// Get buyer's details
 			$.ajax({
 				url: `${url}/users/u=${sessionStorage.getItem('userID')}`,
@@ -533,8 +525,6 @@ $(document).ready(function(){
 				success: function(buyerData){
 					var newWatchlist = buyerData.watchlist;
 					var productToRemove = a._id;
-					console.log(newWatchlist);
-					console.log(productToRemove);
 					// Adding product id to user's watchlist array
 					$.ajax({
 						url: `${url}/removeWatchlist/u=${sessionStorage.getItem('userID')}`,
@@ -555,7 +545,7 @@ $(document).ready(function(){
 							<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
 							</div>
 							<div class="col-lg-6 col-md-12">
-							<button id="productAddToWatchList" class="btn btn-outline-primary btn-block watchlist-btn">Add watchlist</button>
+							<button id="productAddToWatchList" class="btn btn-outline-primary btn-block watchlist-btn">Add to watchlist</button>
 							</div>`;
 							productWatchlist(a);
 						},
@@ -586,7 +576,6 @@ $(document).ready(function(){
 			$('#updateShipping-deliver').prop('checked', data.shipping.deliver);
 			// Updates listing after save changes has been clicked
 			$('#updateProductBtn').click(function(){
-				console.log('Save updates');
 				let newTitle = $('#updateTitle').val();
 				let newPrice = $('#updatePrice').val();
 				let newCategory = $('#updateCategory').val();
@@ -678,7 +667,7 @@ $(document).ready(function(){
 			// Alert pop up
 			swal({
 				title: `Purchase ${data.title}`,
-				text: `Are you sure you want to Purchase ${data.title} to for $${data.price}?`,
+				text: `Are you sure you want to purchase ${data.title} for $${data.price}?`,
 				buttons: {
 					cancel: 'Cancel',
 					success: {
@@ -720,7 +709,7 @@ $(document).ready(function(){
 											error: function(error){
 												alert("Can't get product");
 											}
-										})
+										});
 										// Update buyer's wallet
 										$.ajax({
 											url: `${url}/updateBalance/u=${sessionStorage.getItem('userID')}`,
@@ -758,7 +747,7 @@ $(document).ready(function(){
 							else{
 								swal({
 									title: `Insuficient funds`,
-									text: `Unable to purchase ${data.title} due to insuficient funds. Please add more credit to your account to be able to purchase this.`,
+									text: `Unable to purchase ${data.title} due to insufficient funds. Please add more credit to your account to be able to purchase this.`,
 									icon: `error`,
 									button: `Got it!`,
 									timer: 2500
@@ -771,7 +760,7 @@ $(document).ready(function(){
 					});
 					swal({
 						title: `${data.title} has been purchased`,
-						text: `Successfully purchased ${data.title}, itemId #: ${data._id}`,
+						text: `Successfully purchased ${data.title}, itemId #${data._id}`,
 						icon: 'success',
 						button: 'Got it',
 						timer: 2500
@@ -788,21 +777,17 @@ $(document).ready(function(){
 		$('.product-link').click(function(){
 			let sellerId, sellerUsername;
 			let clickedProduct = this.id;
-			console.log(clickedProduct);
-
 			// Hides list of products
 			$('#account').hide();
 			$('#productCards').hide();
 			$('#productPage').show();
 			$('#filterBar').hide();
-
 			// Creates product page dynamically
 			$.ajax({
 				url: `${url}/products/p=${clickedProduct}`,
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
-					console.log(data);
 					let category = data.category.toLowerCase();
 					let categories = document.querySelectorAll(".btn-category");
 					for(let c=0; c<categories.length; c++){
@@ -821,7 +806,8 @@ $(document).ready(function(){
 						success: function(sellerData){
 							// Image, description, question section
 							document.getElementById('productInformation').innerHTML =
-							`<img src="${data.image}" class="img-fluid" alt="${data.title}">
+							`<div class="d-flex justify-content-center align-items-center">
+							<img src="${data.image}" class="img-fluid" alt="${data.title}"></div>
 							<div class="product-description my-5">${data.description}</div>
 							<div class="col-12" id="questionForm"></div>
 							<div class="question-previous-questions col-12 mt-5">
@@ -849,11 +835,11 @@ $(document).ready(function(){
 							listingPrivledges(sellerData, data);
 						}
 					});
-},
-error: function(error){
-	console.log('failed');
-}
-});
+				},
+				error: function(error){
+					console.log('failed');
+				}
+			});
 		}); // Initial ajax ends
 	} // Open product function ends
 
@@ -915,7 +901,7 @@ error: function(error){
 						<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
 						</div>
 						<div class="col-lg-6 col-md-12">
-						<button id="productRemoveFromWatchList" class="btn btn-outline-danger btn-block watchlist-btn">Remove watchlist</button>
+						<button id="productRemoveFromWatchList" class="btn btn-outline-danger btn-block watchlist-btn">Remove from watchlist</button>
 						</div>`;
 						productWatchlist(data);
 						buyNow(data);
@@ -927,7 +913,7 @@ error: function(error){
 						<button id="productPurchase" class="btn btn-outline-success btn-block">Buy Now</button>
 						</div>
 						<div class="col-lg-6 col-md-12">
-						<button id="productAddToWatchList" class="btn btn-outline-primary btn-block watchlist-btn">Add watchlist</button>
+						<button id="productAddToWatchList" class="btn btn-outline-primary btn-block watchlist-btn">Add to watchlist</button>
 						</div>`;
 						productWatchlist(data);
 						buyNow(data);
@@ -947,31 +933,37 @@ error: function(error){
 					<button id="registerAccountProductPageBtn" class="btn btn-outline-primary btn-block">Register an account</button>
 					</div>`;
 				}
+
 				$("#submitQuestionBtn").click(function(){
 					let newQuestion = $("#newQuestion").val();
-					addComment(newQuestion, data);
+					$("#newQuestion").val("");
+					if(newQuestion != ""){
+						addComment(newQuestion, data);
+					}
 				});
+
 				$('#registerAccountProductPageBtn').click(function(){
 					$("#productCards").hide();
-          $("#productPage").hide();
-          resetCategory();
-          $("#categories").hide();
-          $("#searchNav").hide();
-          $('#registerUsername').val('');
-          $('#registerFirstName').val('');
-          $('#registerLastName').val('');
-          $('#registerLocation').val('');
-          $('#registerEmail').val('');
-          $('#registerPassword').val('');
-          $('#registerForm').show();
+					$("#productPage").hide();
+					resetCategory();
+					$("#categories").hide();
+					$("#searchNav").hide();
+					$('#registerUsername').val('');
+					$('#registerFirstName').val('');
+					$('#registerLastName').val('');
+					$('#registerLocation').val('');
+					$('#registerEmail').val('');
+					$('#registerPassword').val('');
+					$('#registerForm').show();
 				});
+
 				displayComments(data);
 			},
 			error:function(error){
 				alert('Unable to get buyer\'s details');
 			}
 		}); // buyer data ends
-	}
+}
 	// --- Product details end ---
 
 	//login
@@ -997,7 +989,6 @@ error: function(error){
 					password : password
 				},
 				success : function(user){
-					console.log(user);
 					if (user == 'User not found'){
 						swal({
 							title: 'Not a user',
@@ -1027,7 +1018,6 @@ error: function(error){
 						sessionStorage.setItem('userEmail',user['email']);
 						fullName = sessionStorage.getItem('userFName') + " " + sessionStorage.getItem('userLName');
 						document.getElementById("firstNameGreeting").innerHTML = sessionStorage.getItem('userFName');
-						console.log(sessionStorage);
 						$('#navLoggedIn').show();
 						$('#navLoggedOut').hide();
 						$('#registerForm').hide();
@@ -1047,9 +1037,10 @@ error: function(error){
 	// logout button
 	$('#logoutButton').click(function(){
 		sessionStorage.clear();
+		resetCategory();
+		showAllProducts();
 		$('#navLoggedIn').hide();
 		$('#navLoggedOut').show();
-		resetCategory();
 		$("#account").hide();
 		$('#loginUsername').val("");
 		$('#loginPassword').val("");
@@ -1059,10 +1050,10 @@ error: function(error){
 
 	// show register
 	$('#registerButton').click(function(){
+		resetCategory();
 		$("#productCards").hide();
 		$("#productPage").hide();
 		$("#filterContainer").hide();
-		resetCategory();
 		$('#registerUsername').val('');
 		$('#registerFirstName').val('');
 		$('#registerLastName').val('');
@@ -1106,10 +1097,9 @@ error: function(error){
 					location : location
 				},
 				success : function(user){
-					console.log(user);
 					if (user === "This username is already taken. Please try another one"){
 						swal({
-							title: 'error',
+							title: 'Username already taken',
 							text: 'There is already an account with this username. Please login or try again',
 							icon: 'warning',
 							button: 'Got it',
@@ -1126,6 +1116,7 @@ error: function(error){
 							button: 'Okay!',
 							timer: 2500
 						});
+						showAllProducts();
 					}
 				},
 				error:function(){
@@ -1147,7 +1138,7 @@ error: function(error){
 		$('#shipping-pick').prop("checked", false);
 		$('#shipping-deliver').prop("checked", false);
 		$('#addTitle').focus();
-	})
+	});
 
 	// add product
 	$('#addProductBtn').click(function(){
@@ -1160,10 +1151,8 @@ error: function(error){
 		let pickup = $('#shipping-pick').is(":checked");
 		let deliver = $('#shipping-deliver').is(":checked");
 		let status = "listed";
-		price = price.toFixed(2);
 		let seller = sessionStorage.getItem("userID");
 		let imageUrl = `https://drive.google.com/uc?id=${imageId}`;
-		console.log(typeof(imageId));
 
 		if(imageId.includes("google") || imageId.includes("drive") || imageId.includes("open")){
 			swal({
@@ -1202,7 +1191,6 @@ error: function(error){
 					deliver : deliver
 				},
 				success : function(data){
-					console.log(data)
 					showMyProducts("selling");
 					$('#addProductModal').modal('hide');
 					swal({
@@ -1230,13 +1218,13 @@ error: function(error){
 		for(var i = 0; i < list.length; i++){
 			list[i].classList.remove("account-info__sidebar__list-item--active");
 		}
-		list[0].classList.add("account-info__sidebar__list-item--active")
+		list[0].classList.add("account-info__sidebar__list-item--active");
+		resetCategory();
 		$("#productCards").hide();
 		$('#productPage').hide();
-		resetCategory();
 		$("#account").show();
 		$('#filterBar').hide();
-	})
+	});
 
 	// add profile details on account page
 	function addProfileDetails(){
@@ -1260,15 +1248,15 @@ error: function(error){
 	$("#viewSelling").click(function(){
 		showMyProducts("selling");
 		document.getElementById("myProductCards").scrollIntoView();
-	})
+	});
 	$("#viewSold").click(function(){
 		showMyProducts("sold");
 		document.getElementById("myProductCards").scrollIntoView();
-	})
+	});
 	$("#viewBought").click(function(){
 		showMyProducts("bought");
 		document.getElementById("myProductCards").scrollIntoView();
-	})
+	});
 
 	//Load my cards on account page
 	function showMyProducts(group){
@@ -1277,7 +1265,6 @@ error: function(error){
 			type: 'GET',
 			dataType :'json',
 			success: function(data){
-				console.log(data);
 				document.getElementById('myProductCards').innerHTML = "";
 				for (let i = 0; i < data.length; i++) {
 					if(group === "selling" && data[i].sellerId == sessionStorage.getItem("userID") && data[i].status === "listed"){
@@ -1313,13 +1300,13 @@ error: function(error){
 			error: function(error) {
 				console.log('no good');
 			}
-		})
+		});
 	}
 
 	$("#viewWatchlist").click(function(){
 		showMyWatchlist();
 		document.getElementById("myProductCards").scrollIntoView();
-	})
+	});
 
 	//Load my watchlist on account page
 	function showMyWatchlist(){
@@ -1328,7 +1315,6 @@ error: function(error){
 			type: 'GET',
 			dataType :'json',
 			success: function(userData){
-				console.log(userData);
 				document.getElementById('myProductCards').innerHTML = "";
 				if(userData.watchlist.length == 0){
 					document.getElementById('myProductCards').innerHTML =
@@ -1340,7 +1326,6 @@ error: function(error){
 						type: 'GET',
 						dataType :'json',
 						success: function(data){
-							console.log(data);
 							document.getElementById('myProductCards').innerHTML = "";
 							for (let j = 0; j < userData.watchlist.length; j++) {
 								for (let i = 0; i < data.length; i++) {
@@ -1360,22 +1345,18 @@ error: function(error){
 						error: function(error) {
 							console.log('no good');
 						}
-					})
+					});
 				}
 				openProduct();
 			},
 			error: function(error) {
 				console.log('no good');
 			}
-		})
+		});
 	}
 
 	// shows and prefills user details to edit
 	$("#editProfileBtn").click(function(){
-		$('#editPasswordSection').hide();
-		$('#editPasswordButton').click(function(){
-			$('#editPasswordSection').slideDown()
-		});
 		$.ajax({
 			url :`${url}/users/u=${sessionStorage.getItem('userID')}`,
 			type :'GET',
@@ -1385,7 +1366,6 @@ error: function(error){
 				$("#editLastName").val(data.lastName);
 				$("#editLocation").val(data.location);
 				$("#editEmail").val(data.email);
-				$("#newPassword").val(data.password)
 			},//success
 			error:function(){
 				console.log('error: cannot call api');
@@ -1399,7 +1379,6 @@ error: function(error){
 		let lname = $("#editLastName").val();
 		let city = $("#editLocation").val();
 		let email = $("#editEmail").val();
-		let password = $("#newPassword").val()
 		$.ajax({
 			url :`${url}/updateUser/u=${sessionStorage.getItem('userID')}`,
 			type :'PATCH',
@@ -1407,8 +1386,7 @@ error: function(error){
 				firstName : fname,
 				lastName : lname,
 				email : email,
-				location : city,
-				password : password
+				location : city
 			},
 			success : function(data){
 				$('#editProfileModal').modal('hide');
@@ -1422,7 +1400,7 @@ error: function(error){
 				sessionStorage.setItem('userLName',lname);
 				sessionStorage.setItem('userEmail',email);
 				fullName = sessionStorage.getItem('userFName') + " " + sessionStorage.getItem('userLName');
-				addProfileDetails()
+				addProfileDetails();
 			},//success
 			error:function(){
 				console.log('error: cannot call api');
@@ -1458,7 +1436,7 @@ error: function(error){
 							text: `Successfully deleted`,
 							icon: 'success',
 							button: 'Got it'
-						})
+						});
 						$.ajax({
 							url: `${url}/products/`,
 							type: 'GET',
@@ -1482,7 +1460,7 @@ error: function(error){
 								sessionStorage.clear();
 								setTimeout(location.reload.bind(location), 2500);
 								$("#productPage").hide();
-								showAllProducts()
+								showAllProducts();
 								$("#productCards").show();
 							},
 							error: function(){
@@ -1504,7 +1482,7 @@ error: function(error){
 		for(var i = 0; i < list.length; i++){
 			list[i].classList.remove("account-info__sidebar__list-item--active");
 		}
-		$(this).addClass("account-info__sidebar__list-item--active")
+		$(this).addClass("account-info__sidebar__list-item--active");
 	});
 
 	//add comment to post
@@ -1519,7 +1497,6 @@ error: function(error){
 				replies : []
 			},
 			success : function(comment){
-				console.log(comment);
 				displayComments(product);
 			},
 			error:function(){
@@ -1535,7 +1512,6 @@ error: function(error){
 			type: 'GET',
 			dataType :'json',
 			success: function(data){
-				console.log(data);
 				document.getElementById('qAndAPrintOut').innerHTML = "";
 				for (let i = 0; i < data.length; i++) {
 					$.ajax({
@@ -1554,9 +1530,9 @@ error: function(error){
 									card += `<div class="col-12 col-md-10 border px-2 pt-2 rounded my-2" id="${data[i]["_id"]}">`;
 								}
 								card += `<p class="mb-0 text-primary font-weight-bold">${comUsername}
-									<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i])}</span></p>
-									<p class="card-text ml-2">${data[i].text}</p>
-									<div class="comment-replies col-12" id="comment-${data[i]["_id"]}">`;
+								<span class="text-muted ml-2 font-weight-normal comment-time">${getTimeAgo(data[i])}</span></p>
+								<p class="card-text ml-2">${data[i].text}</p>
+								<div class="comment-replies col-12" id="comment-${data[i]["_id"]}">`;
 								if(!data[i].replies.includes(null)){
 									for (let j = 0; j < data[i].replies.length; j++) {
 										$.ajax({
@@ -1586,7 +1562,7 @@ error: function(error){
 											error: function(error) {
 												console.log('no good');
 											}
-										}) // ajax
+										}); // ajax
 									}
 								}
 								card += `</div><div class="col-12 form-inline float-right">`;
@@ -1595,27 +1571,29 @@ error: function(error){
 									<button type="button" class="btn btn-primary col-4 col-md-3 replyBtn">Reply</button>`;
 								}
 								card += `</div></div>`;
-								function calcPadding(x){
-									let pb = x * 4.6 + 3;
-									pb += "rem";
-									return pb;
-								}
 								document.getElementById('qAndAPrintOut').innerHTML += card;
 								$(".replyBtn").click(function(e){
 									handleReply(e, product);
-								})
+								});
 							}
 						},
 						error: function(error) {
 							console.log('no good');
 						}
-					})
+					});
 				}
 			},
 			error: function(error) {
 				console.log('no good');
 			}
-		})
+		});
+	}
+
+	// calculate comment padding
+	function calcPadding(x){
+		let pb = x * 4.6 + 3;
+		pb += "rem";
+		return pb;
 	}
 
 	// add reply to comments replies
@@ -1632,7 +1610,6 @@ error: function(error){
 					userId : sessionStorage.getItem("userID")
 				},
 				success : function(data){
-					console.log(data);
 					displayComments(product);
 				},
 				error:function(){
