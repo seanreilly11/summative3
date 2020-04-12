@@ -580,7 +580,7 @@ $(document).ready(function(){
 				error: function(error){
 					alert('Failed to get buyer\'s details');
 				}
-			}); // Get buyer's details end	
+			}); // Get buyer's details end
 		});
 	}
 
@@ -800,7 +800,7 @@ $(document).ready(function(){
 		$('.product-link').click(function(){
 			let sellerId, sellerUsername;
 			let clickedProduct = this.id;
-			console.log(clickedProduct);			
+			console.log(clickedProduct);
 
 			// Hides list of products
 			$('#account').hide();
@@ -825,7 +825,7 @@ $(document).ready(function(){
 					}
 					// Gets seller's information
 					sellerId = data.sellerId;
-					
+
 					$.ajax({
 						url: `${url}/users/u=${sellerId}`,
 						type: 'GET',
@@ -858,7 +858,7 @@ $(document).ready(function(){
 								card += `<p class="mb-0">Shipping: Delivery only</p></div>`;
 							}
 							document.getElementById('productButtonContainer').innerHTML = card;
-							listingPrivledges(sellerData, data);							
+							listingPrivledges(sellerData, data);
 						}
 					});
 },
@@ -945,7 +945,7 @@ error: function(error){
 						buyNow(data);
 					}
 				}
-        
+
 				// If the user isn't logged in
 				else{
 					// Adds warning to login or register
@@ -1280,7 +1280,7 @@ error: function(error){
 				document.getElementById('myProductCards').innerHTML = "";
 				for (let i = 0; i < data.length; i++) {
 					if(group === "selling" && data[i].sellerId == sessionStorage.getItem("userID") && data[i].status === "listed"){
-						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+						let card =`<div class="product-link position-rel card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">
 						<div class="card-body">
 						<h3 class="card-title"> ${data[i].title}</h3>
@@ -1543,7 +1543,7 @@ error: function(error){
 						dataType :'json',
 						success: function(user){
 							let comUsername = user.username;
-							if(data[i].productId === product["_id"]){					
+							if(data[i].productId === product["_id"]){
 								let count = 0;
 								let card = "";
 								if(data[i].replies.length == 0){
@@ -1651,7 +1651,7 @@ error: function(error){
 		let month = date.getMonth() + 1;
 		let year = date.getFullYear();
 		let hours = date.getHours();
-		let minutes = date.getMinutes();	
+		let minutes = date.getMinutes();
 		// comparison values
 		const today = new Date();
 		const yesterday = new Date(today - DAY_IN_MS);
@@ -1662,12 +1662,12 @@ error: function(error){
 
 		if (minutes < 10) {	minutes = `0${minutes}`;}
 
-		if (seconds < 10) { return 'Just now';} 
-		else if (seconds < 60) { return `${seconds} seconds ago`; } 
-		else if (seconds < 100) { return 'About a minute ago'; } 
+		if (seconds < 10) { return 'Just now';}
+		else if (seconds < 60) { return `${seconds} seconds ago`; }
+		else if (seconds < 100) { return 'About a minute ago'; }
 		else if (minutes2 < 60) { return `${minutes2} minutes ago`; }
-		else if (isToday) { return `Today at ${hours}:${minutes}`; } 
-		else if (isYesterday) { return `Yesterday at ${hours}:${minutes}`; } 
-		else { return `${day}/${month}/${year} ${hours}:${minutes}`; } 	
+		else if (isToday) { return `Today at ${hours}:${minutes}`; }
+		else if (isYesterday) { return `Yesterday at ${hours}:${minutes}`; }
+		else { return `${day}/${month}/${year} ${hours}:${minutes}`; }
 	}
 }); // document
