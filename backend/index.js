@@ -356,4 +356,4 @@ app.delete('/deleteUser/u=:id', (req,res)=>{
 }); // delete a user
 
 // leave right at bottom
-app.listen(port, () => console.log(`App listening on port ${port}!`))
+app.listen(port, () => console.log(`App listening on port ${port}!`));
