@@ -302,13 +302,11 @@ app.post('/login', (req,res)=>{
 app.patch('/updateUser/u=:id', (req,res)=>{
 	const idParam = req.params.id;
 	User.findById(idParam, (err,result)=>{
-		const hash = bcryptjs.hashSync(req.body.password);
 		const updatedUser = {
 			firstName : req.body.firstName,
 			lastName : req.body.lastName,
 			email : req.body.email,
-			location : req.body.location,
-			password : hash
+			location : req.body.location
 		};
 		User.updateOne({_id:idParam}, updatedUser).then(result=>{
 			res.send(result);

@@ -72,6 +72,10 @@ body{
 	cursor: pointer;
 }
 
+#wrongImageAlert{
+	display: none;
+}
+
 @media (min-width: 576px){
 	.modal-dialog{
 		max-width: 600px;
