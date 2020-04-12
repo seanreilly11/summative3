@@ -8,6 +8,7 @@ $(document).ready(function(){
 	$('#account').hide();
 	$("#productCards").show();
 	$('#productPage').hide();
+	$("#wrongImageAlert").hide();
 
 	if (sessionStorage['username']) {
 		$('#navLoggedIn').show();
@@ -671,7 +672,8 @@ $(document).ready(function(){
 								timer: 2500
 							});
 							$("#productPage").hide();
-							showAllProducts()
+							showAllProducts();
+							resetCategory();
 							$("#productCards").show();
 						},
 						error: function(){
@@ -1043,7 +1045,7 @@ error: function(error){
 						$('#navLoggedIn').show();
 						$('#navLoggedOut').hide();
 						$('#registerForm').hide();
-						$("#productPage").show();
+						$("#productPage").hide();
 						$("#filterContainer").show();
 						openProduct();
 						showAllProducts();
@@ -1149,6 +1151,7 @@ error: function(error){
 
 	// empty all inputs on add product form
 	$("#addListingBtn").click(function(){
+		$("#wrongImageAlert").hide();
 		$('#addTitle').val('');
 		$('#addPrice').val('');
 		$('#addCategory').val('');
@@ -1166,15 +1169,20 @@ error: function(error){
 		let price = parseInt($('#addPrice').val());
 		let category = $('#addCategory').val();
 		let desc = $('#addDescription').val();
-		let image = $('#addImage').val();
+		let imageId = $('#addImage').val();
 		let keywords = $('#addKeywords').val();
 		let pickup = $('#shipping-pick').is(":checked");
 		let deliver = $('#shipping-deliver').is(":checked");
 		let status = "listed";
 		price = price.toFixed(2);
 		let seller = sessionStorage.getItem("userID");
+		let imageUrl = `https://drive.google.com/uc?id=${imageId}`;
+		console.log(imageId);
 
-		if (title == '' || price == '' || category == '' || desc == '' || image == '' || keywords == '' || (!pickup && !deliver)){
+		if(imageId.includes("google") || imageId.includes("drive") || imageId.includes("open")){
+			$("#wrongImageAlert").slideDown();
+		}
+		if (title == '' || price == '' || category == '' || desc == '' || imageId == '' || keywords == '' || (!pickup && !deliver)){
 			swal({
 				title: 'Fill Out Details',
 				text: 'Please enter all details',
@@ -1182,6 +1190,7 @@ error: function(error){
 				button: 'Got it',
 				timer: 2500
 			});
+			console.log(imageId);
 		}
 		else {
 			$.ajax({
@@ -1191,7 +1200,7 @@ error: function(error){
 					title : title,
 					description : desc,
 					price : price,
-					image : image,
+					image : imageUrl,
 					status : status,
 					keywords : keywords,
 					sellerId : seller,

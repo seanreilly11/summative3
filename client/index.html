@@ -52,8 +52,7 @@
 		</div>
 		<div id="filterBar" class="rounded p-2 bg-success">
 			<select id="filterSelect" class="form-control col-lg-2 col-md-4 col-sm-12">
-				<option value="latest">Latest Listings</option>
-				<option value="oldest">Oldest Listings</option>
+				<option value="featured">Featured First</option>
 				<option value="low">Price - Low to High</option>
 				<option value="high">Price - High to Low</option>
 			</select>
@@ -224,11 +223,13 @@
 								<textarea class="form-control" id="addDescription" name="addDescription"></textarea>
 							</div>
 						</div>
+						<div class="alert alert-danger col-12 text-center" role="alert" id="wrongImageAlert">Please only enter the image ID NOT the whole link. i.e. 1kGSm0VVmUzWu1qFKfYP instead of https://drive.google.com/open?id=1kGSm0VVmUzWu1qFKfYP</div>
 						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="addImage">Image URL</label>
-							<div class="col-sm-10">
-								<input type="email" class="form-control" id="addImage" name="addImage">
-							</div>
+							<label class="col-sm-2 col-form-label" for="addImage">Image ID</label>
+								<div class="form-group col-sm-10">
+									<input type="text" class="form-control" id="addImage" name="addImage">
+									<small class="form-text text-danger">Please only enter the image ID NOT the whole link.</small>
+								</div>
 						</div>
 						<div class="form-group row">
 							<label class="col-sm-2 col-form-label" for="addKeywords">Keywords</label>
