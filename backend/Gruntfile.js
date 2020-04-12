@@ -11,9 +11,9 @@ module.exports = function(grunt) {
         dest: 'index.min.js'
       }
     },
-    watch: { // will be all linting tools
+    watch: {
       scripts: {
-        files: 'index.js',
+        files: ['./models/*.js', 'index.js'],
         tasks: ['jshint'],
         options: {
           interrupt: false,
@@ -21,7 +21,7 @@ module.exports = function(grunt) {
       },
     },
     jshint: {
-      all: ['Gruntfile.js', 'index.js'],
+      all: ['Gruntfile.js', 'index.js', './models/*.js'],
       options: {
         esversion: 6
       }

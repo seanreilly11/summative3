@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
 
 html{
+	font-size: 100%;
 	scroll-behavior: smooth;
 }
 
@@ -28,8 +29,8 @@ body{
 }
 
 .account-info__sidebar__list-item--active{
-	margin-left: -15px;
 	font-weight: bold;
+	margin-left: -15px;
 }
 
 .product-btn-container{
@@ -55,7 +56,8 @@ body{
 }
 
 .btn-watchlist-card:hover{
-	background-color: rgb(0,0,0,.3);
+	background-color: #333; 
+	background-color: rgba(0,0,0,.3);
 }
 
 .btn-category{
@@ -69,18 +71,19 @@ body{
 	object-fit: contain;
 }
 
-.comment-time{
-	font-size: .8rem;
+.card-title{
+	font-size: 1.4rem;
 }
 
-.comment-icon{
-	cursor: pointer;
+.comment-time{
+	font-size: .8rem;
 }
 
 #wrongImageAlert{
 	display: none;
 }
 
+/*media queries*/
 @media (min-width: 576px){
 	.modal-dialog{
 		max-width: 600px;
