@@ -628,9 +628,68 @@ $(document).ready(function(){
 								icon: 'success',
 								button: 'Got it',
 								timer: 2500
-							}).then(function(){
-								location.reload();
 							});
+							// Creates product page dynamically
+							$.ajax({
+								url: `${url}/products/p=${data._id}`,
+								type: 'GET',
+								dataType: 'json',
+								success: function(data){
+									let category = data.category.toLowerCase();
+									let categories = document.querySelectorAll(".btn-category");
+									for(let c=0; c<categories.length; c++){
+										let thisCategory = categories[c].id.slice(0, -6);
+										if(category.includes(thisCategory)){
+											$("#"+categories[c].id).removeClass('btn-outline-secondary').addClass('btn-secondary').siblings().removeClass('btn-secondary').addClass('btn-outline-secondary');
+										}
+									}
+									// Gets seller's information
+									var sellerId = data.sellerId;
+				
+									$.ajax({
+										url: `${url}/users/u=${sellerId}`,
+										type: 'GET',
+										dataType: 'json',
+										success: function(sellerData){
+											// Image, description, question section
+											document.getElementById('productInformation').innerHTML =
+											`<div class="d-flex justify-content-center align-items-center">
+											<img src="${data.image}" class="img-fluid" alt="${data.title}"></div>
+											<div class="product-description my-5">${data.description}</div>
+											<div class="col-12" id="questionForm"></div>
+											<div class="question-previous-questions col-12 mt-5">
+											<h3 class="bg-light p-3">Questions and Answers</h3>
+											<div class="col-12" id="qAndAPrintOut"></div></div>`;
+											// Button, title, listing id and seller information
+											let card = `<h3>${data.title}</h3>
+											<h4 class="small">Listing #: ${data._id}</h4>
+											<h4 class="text-success font-weight-bold my-4">$${data.price}</h4>
+											<div id="dynamicBtnContainer" class="row"></div>
+											<div class="mt-3">
+											<h5 class="mb-0">Seller:</h5>
+											<h4 class="mb-0">${sellerData.username}</h5>
+											<h6 class="mb-2">${sellerData.location}</h6>`;
+											if((data.shipping.pickup) && (data.shipping.deliver)){
+												card += `<p class="mb-0">Shipping: Pick up and delivery available</p></div>`;
+											}
+											else if(data.shipping.pickup){
+												card += `<p class="mb-0">Shipping: Pick up only</p></div>`;
+											}
+											else if(data.shipping.deliver){
+												card += `<p class="mb-0">Shipping: Delivery only</p></div>`;
+											}
+											document.getElementById('productButtonContainer').innerHTML = card;
+											listingPrivledges(data);
+										}
+									});
+								},
+								error: function(error){
+									console.log('failed');
+								}
+							});
+							// .then(function(){
+								// location.reload();
+							// });
 						},
 						error: function(error){
 							alert('Could not update listing');
@@ -879,8 +938,8 @@ $(document).ready(function(){
 				error: function(error){
 					console.log('failed');
 				}
-			});
-		}); // Initial ajax ends
+			}); // Initial ajax ends
+		}); // Click function ends
 	} // Open product function ends
 
 	// Gives different layout if user is logged in our out
