@@ -697,45 +697,56 @@ $(document).ready(function(){
 										status: 'sold'
 									},
 									success: function(updateBuyerBalance){
-										var updateBuyerWallet = buyerData.balance - data.price;
-										var updateSellerWallet = sellerData.balance + data.price;
+										// Get's seller's information
 										$.ajax({
-											url: `${url}/products/p=${data._id}`,
+											url: `${url}/users/u=${data.sellerId}`,
 											type: 'GET',
 											data: 'json',
-											success: function(newProdData){
-												listingPrivledges(newProdData);
+											success: function(sellerData){
+												var updateBuyerWallet = buyerData.balance - data.price;
+												var updateSellerWallet = sellerData.balance + data.price;
+												$.ajax({
+													url: `${url}/products/p=${data._id}`,
+													type: 'GET',
+													data: 'json',
+													success: function(newProdData){
+														listingPrivledges(newProdData);
+													},
+													error: function(error){
+														alert("Can't get product");
+													}
+												});
+												// Update buyer's wallet
+												$.ajax({
+													url: `${url}/updateBalance/u=${sessionStorage.getItem('userID')}`,
+													type: `PATCH`,
+													data: {
+														balance: updateBuyerWallet
+													},
+													success: function(){
+														console.log('Buyer\'s balance has changed to ' + buyerData.balance);
+													},
+													error: function(error){
+														console.log('Couldn\'t update buyer\'s balance');
+													}
+												});
+												// Update seller's wallet
+												$.ajax({
+													url: `${url}/updateBalance/u=${data.sellerId}`,
+													type: `PATCH`,
+													data: {
+														balance: updateSellerWallet
+													},
+													success: function(){
+														console.log('Seller\'s balance has changed to ' + sellerData.balance);
+													},
+													error: function(error){
+														console.log('Couldn\'t update seller\'s balance');
+													}
+												});
 											},
-											error: function(error){
-												alert("Can't get product");
-											}
-										});
-										// Update buyer's wallet
-										$.ajax({
-											url: `${url}/updateBalance/u=${sessionStorage.getItem('userID')}`,
-											type: `PATCH`,
-											data: {
-												balance: updateBuyerWallet
-											},
-											success: function(){
-												console.log('Buyer\'s balance has changed to ' + buyerData.balance);
-											},
-											error: function(error){
-												console.log('Couldn\'t update buyer\'s balance');
-											}
-										});
-										// Update seller's wallet
-										$.ajax({
-											url: `${url}/updateBalance/u=${data.sellerId}`,
-											type: `PATCH`,
-											data: {
-												balance: updateSellerWallet
-											},
-											success: function(){
-												console.log('Seller\'s balance has changed to ' + sellerData.balance);
-											},
-											error: function(error){
-												console.log('Couldn\'t update seller\'s balance');
+											eorror: function(){
+												alert('Failed to get seller\'s information');
 											}
 										});
 									},
