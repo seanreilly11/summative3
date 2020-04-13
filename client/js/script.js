@@ -832,11 +832,8 @@ $(document).ready(function(){
 				$("#"+categories[c].id).removeClass('btn-outline-secondary').addClass('btn-secondary').siblings().removeClass('btn-secondary').addClass('btn-outline-secondary');
 			}
 		}
-		// Gets seller's information
-		sellerId = data.sellerId;
-
 		$.ajax({
-			url: `${url}/users/u=${sellerId}`,
+			url: `${url}/users/u=${data.sellerId}`,
 			type: 'GET',
 			dataType: 'json',
 			success: function(sellerData){
@@ -875,7 +872,6 @@ $(document).ready(function(){
 	// Open product page
 	function openProduct(){
 		$('.product-link').click(function(){
-			let sellerId, sellerUsername;
 			let clickedProduct = this.id;
 			// Hides list of products
 			$('#account').hide();
