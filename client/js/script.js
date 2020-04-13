@@ -1224,7 +1224,6 @@ $(document).ready(function(){
 		$('#productPage').hide();
 		$("#account").show();
 		$('#filterBar').hide();
-		$('#categoryDropDownBtn').hide();
 	});
 
 	// add profile details on account page
