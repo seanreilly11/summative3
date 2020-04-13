@@ -57,7 +57,6 @@ $(document).ready(function(){
 				document.getElementById('productCards').innerHTML = " ";
 				let searchInput = $('#searchBar').val().toLowerCase();
 				for (var i = 0; i < data.length; i++) {
-					// console.log(data[i].keywords);
 					let searchTargetTitle = data[i].title.toLowerCase();
 					let searchTargetKeyword = data[i].keywords.toLowerCase();
 					if (data[i].status == 'listed' && (searchTargetTitle.includes(searchInput) || searchTargetKeyword.includes(searchInput))) {
@@ -132,7 +131,6 @@ $(document).ready(function(){
 											var buyerWatchlistItem = buyerWatchlist[j];
 											// Finds if the user has an item in their watchlist already
 											if(buyerWatchlistItem == data[i]._id){
-												console.log(`${buyerWatchlistItem} exsists`);
 												card += `<div class="btn-watchlist-card" title="Remove from watchlist">-</div>
 												<div class="card-body">
 												<h3 class="card-title"> ${data[i].title}</h3>
@@ -168,7 +166,6 @@ $(document).ready(function(){
 				else{
 					for (var i = 0; i < data.length; i++) {
 						let cat = data[i].category.toLowerCase();
-						console.log(data[i].category, cat);
 						if (cat.includes(clickedCategory) & data[i].status == 'listed') {
 							let card =`<div class="product-link position-relative card p-0 col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 							<img class="card-img-top p-4 bg-light" src="${data[i].image}" alt="Image">`;
@@ -192,7 +189,6 @@ $(document).ready(function(){
 	$('#filterSelect').on('change', function(){
 		resetCategory();
 		if ($(this).val() == 'low') {
-			console.log('low to high price selected');
 			$.ajax({
 				url: `${url}/products`,
 				type: 'GET',
@@ -209,7 +205,6 @@ $(document).ready(function(){
 				}
 			});//ajax end
 		} else if ($(this).val() == 'high') {
-			console.log('high to low price selected');
 			$.ajax({
 				url: `${url}/products`,
 				type: 'GET',
@@ -832,11 +827,8 @@ $(document).ready(function(){
 				$("#"+categories[c].id).removeClass('btn-outline-secondary').addClass('btn-secondary').siblings().removeClass('btn-secondary').addClass('btn-outline-secondary');
 			}
 		}
-		// Gets seller's information
-		sellerId = data.sellerId;
-
 		$.ajax({
-			url: `${url}/users/u=${sellerId}`,
+			url: `${url}/users/u=${data.sellerId}`,
 			type: 'GET',
 			dataType: 'json',
 			success: function(sellerData){
@@ -875,7 +867,6 @@ $(document).ready(function(){
 	// Open product page
 	function openProduct(){
 		$('.product-link').click(function(){
-			let sellerId, sellerUsername;
 			let clickedProduct = this.id;
 			// Hides list of products
 			$('#account').hide();
