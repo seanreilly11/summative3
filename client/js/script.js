@@ -74,7 +74,7 @@ $(document).ready(function(){
 					}
 				}
 				openProduct();
-				resetCategory();		
+				resetCategory();
 				$('#account').hide();
 				$("#productCards").show();
 				$('#productPage').hide();
@@ -725,7 +725,7 @@ $(document).ready(function(){
 										// Adds buttons
 										document.getElementById('dynamicBtnContainer').innerHTML =
 										`<div class="alert alert-danger col-12 text-center" role="alert">This product has been sold</div>`;
-				
+
 										// Get's seller's information
 										$.ajax({
 											url: `${url}/users/u=${data.sellerId}`,
@@ -1159,7 +1159,7 @@ $(document).ready(function(){
 							button: 'Okay!',
 							timer: 2500
 						});
-						
+
 					}
 				},
 				error:function(){
@@ -1311,8 +1311,8 @@ $(document).ready(function(){
 				document.getElementById('myProductCards').innerHTML = "";
 				for (let i = 0; i < data.length; i++) {
 					if(group === "selling" && data[i].sellerId == sessionStorage.getItem("userID") && data[i].status === "listed"){
-						let card =`<div class="product-link position-rel card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-						<img class="card-img-top" src="${data[i].image}" alt="Image">
+						let card =`<div class="product-link position-rel card p-0 col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+						<img class="card-img-top p-4 bg-light" src="${data[i].image}" alt="Image">
 						<div class="card-body">
 						<h3 class="card-title"> ${data[i].title}</h3>
 						<h4 class="card-text">$${data[i].price}</h4>
@@ -1320,8 +1320,8 @@ $(document).ready(function(){
 						document.getElementById('myProductCards').innerHTML += card;
 					}
 					if(group === "sold" && data[i].sellerId == sessionStorage.getItem("userID") && data[i].status === "sold"){
-						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-						<img class="card-img-top" src="${data[i].image}" alt="Image">
+						let card =`<div class="product-link position-relative card p-0 col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+						<img class="card-img-top p-4 bg-light" src="${data[i].image}" alt="Image">
 						<div class="card-body">
 						<h3 class="card-title"> ${data[i].title}</h3>
 						<div class="alert alert-danger col-12 text-center" role="alert">Sold</div>
@@ -1329,8 +1329,8 @@ $(document).ready(function(){
 						document.getElementById('myProductCards').innerHTML += card;
 					}
 					if(group === "bought" && data[i].buyerId == sessionStorage.getItem("userID") && data[i].status === "sold"){
-						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-						<img class="card-img-top" src="${data[i].image}" alt="Image">
+						let card =`<div class="product-link position-relative card p-0 col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+						<img class="card-img-top p-4 bg-light" src="${data[i].image}" alt="Image">
 						<div class="card-body">
 						<h3 class="card-title"> ${data[i].title}</h3>
 						<div class="alert alert-success col-12 text-center" role="alert">Bought</div>
@@ -1373,8 +1373,8 @@ $(document).ready(function(){
 							for (let j = 0; j < userData.watchlist.length; j++) {
 								for (let i = 0; i < data.length; i++) {
 									if(data[i]["_id"] == userData.watchlist[j] && data[i].status === "listed"){
-										let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-										<img class="card-img-top" src="${data[i].image}" alt="Image">
+										let card =`<div class="product-link position-relative card p-0 col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+										<img class="card-img-top p-4 bg-light" src="${data[i].image}" alt="Image">
 										<div class="card-body">
 										<h3 class="card-title"> ${data[i].title}</h3>
 										<h4 class="card-text">$${data[i].price}</h4>
