@@ -641,9 +641,6 @@ $(document).ready(function(){
 									console.log('failed');
 								}
 							});
-							// .then(function(){
-								// location.reload();
-							// });
 						},
 						error: function(error){
 							alert('Could not update listing');
@@ -891,7 +888,7 @@ $(document).ready(function(){
 				type: 'GET',
 				dataType: 'json',
 				success: function(data){
-				productInformation(data);
+					productInformation(data);
 				},
 				error: function(error){
 					console.log('failed');
