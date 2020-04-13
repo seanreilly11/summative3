@@ -64,8 +64,8 @@ $(document).ready(function(){
 					console.log(searchTargetTitle);
 					//After test products are deleted, do search for keywords also.
 					if (data[i].status == 'listed' && (searchTargetTitle.includes(searchInput) || searchTargetKeyword.includes(searchInput))) {
-						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+						let card =`<div class="product-link position-relative card p-0 col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+						<img class="card-img-top p-4 bg-light" src="${data[i].image}" alt="Image">`;
 						if (sessionStorage['username']) {
 							card += `<div class="btn-watchlist-card" title="Add to watchlist">+</div>`;
 						}
@@ -126,8 +126,8 @@ $(document).ready(function(){
 							for (var i = 0; i < data.length; i++){
 								let cat = data[i].category.toLowerCase();
 								if (cat.includes(clickedCategory) & data[i].status == 'listed'){
-									let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-									<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+									let card =`<div class="product-link position-relative card p-0 col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+									<img class="card-img-top p-4 bg-light" src="${data[i].image}" alt="Image">`;
 									if (sessionStorage['username'] && sessionStorage.getItem("userID") != data[i].sellerId) {
 										// loops through both products and user's watchlist and compares
 										for(let j = 0; j < buyerWatchlist.length; j++){
@@ -172,8 +172,8 @@ $(document).ready(function(){
 						let cat = data[i].category.toLowerCase();
 						console.log(data[i].category, cat);
 						if (cat.includes(clickedCategory) & data[i].status == 'listed') {
-							let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
-							<img class="card-img-top" src="${data[i].image}" alt="Image">`;
+							let card =`<div class="product-link position-relative card p-0 col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
+							<img class="card-img-top p-4 bg-light" src="${data[i].image}" alt="Image">`;
 							card += `<div class="card-body">
 							<h3 class="card-title"> ${data[i].title}</h3>
 							<h4 class="card-text">$${data[i].price}</h4>
@@ -259,8 +259,8 @@ $(document).ready(function(){
 					outerloop:
 					for (let i = 0; i < a.length; i++) {
 						if(a[i].status === "listed"){
-							let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${a[i]["_id"]}">
-							<img class="card-img-top" src="${a[i].image}" alt="Image">`;
+							let card =`<div class="product-link position-relative card p-0 col-lg-3 col-sm-12 col-md-6" id="${a[i]["_id"]}">
+							<img class="card-img-top p-4 bg-light" src="${a[i].image}" alt="Image">`;
 							if (sessionStorage['username'] && sessionStorage.getItem("userID") != a[i].sellerId) {
 								// loops through both products and user's watchlist and compares
 								for(let j = 0; j < buyerWatchlist.length; j++){
@@ -303,8 +303,8 @@ $(document).ready(function(){
 			document.getElementById('productCards').innerHTML = " ";
 			for (var i = 0; i < a.length; i++) {
 				if (a[i].status == 'listed') {
-					let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${a[i]["_id"]}">
-					<img class="card-img-top" src="${a[i].image}" alt="Image">`;
+					let card =`<div class="product-link position-relative card p-0 col-lg-3 col-sm-12 col-md-6" id="${a[i]["_id"]}">
+					<img class="card-img-top p-4 bg-light" src="${a[i].image}" alt="Image">`;
 					card += `<div class="card-body">
 					<h3 class="card-title"> ${a[i].title}</h3>
 					<h4 class="card-text">$${a[i].price}</h4>
