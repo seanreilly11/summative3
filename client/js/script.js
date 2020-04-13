@@ -56,13 +56,10 @@ $(document).ready(function(){
 			success: function(data){
 				document.getElementById('productCards').innerHTML = " ";
 				let searchInput = $('#searchBar').val().toLowerCase();
-				console.log(searchInput);
 				for (var i = 0; i < data.length; i++) {
 					// console.log(data[i].keywords);
 					let searchTargetTitle = data[i].title.toLowerCase();
 					let searchTargetKeyword = data[i].keywords.toLowerCase();
-					console.log(searchTargetTitle);
-					//After test products are deleted, do search for keywords also.
 					if (data[i].status == 'listed' && (searchTargetTitle.includes(searchInput) || searchTargetKeyword.includes(searchInput))) {
 						let card =`<div class="product-link position-relative card col-lg-3 col-sm-12 col-md-6" id="${data[i]["_id"]}">
 						<img class="card-img-top" src="${data[i].image}" alt="Image">`;
@@ -77,6 +74,7 @@ $(document).ready(function(){
 					}
 				}
 				openProduct();
+				resetCategory();		
 				$('#account').hide();
 				$("#productCards").show();
 				$('#productPage').hide();
@@ -565,13 +563,14 @@ $(document).ready(function(){
 	function editAndDeleteProduct(data){
 		// Allows owner of listing to edit and delete the product
 		$('#editProduct').click(function(){
+			$("#wrongImageEditAlert").hide();
 			// Outputs exsiting product information
 			$('#updateTitle').val(data.title);
 			$('#updatePrice').val(data.price);
 			$('#updateCategory').val(data.category);
 			$('#updateDescription').val(data.description);
 			$('#updateKeywords').val(data.keywords);
-			$('#updateImage').val(data.image);
+			$('#updateImage').val(data.image.slice(31));
 			$('#updateShipping-pick').prop('checked', data.shipping.pickup);
 			$('#updateShipping-deliver').prop('checked', data.shipping.deliver);
 			// Updates listing after save changes has been clicked
@@ -581,40 +580,63 @@ $(document).ready(function(){
 				let newCategory = $('#updateCategory').val();
 				let newDescription = $('#updateDescription').val();
 				let newImage = $('#updateImage').val();
-				let modifiedKeywordArray = document.getElementById('updateKeywords').value;
-				// let modifiedKeywordArray = $('#updateKeywords').val();
+				let modifiedKeywordArray = $('#updateKeywords').val();
 				let newPickup = $('#updateShipping-pick').is(":checked");
 				let newDeliver = $('#updateShipping-deliver').is(":checked");
+				let imageUrl = `https://drive.google.com/uc?id=${newImage}`;
+
+				if(newImage.includes("google") || newImage.includes("drive") || newImage.includes("open")){
+					swal({
+						title: 'Wrong image format',
+						text: 'Please only enter the image ID NOT the whole link',
+						icon: 'warning',
+						button: 'Got it',
+						timer: 2500
+					});
+					$("#wrongImageEditAlert").slideDown();
+				}
+				else if (newTitle == '' || newPrice == '' || newCategory == '' || newDescription == '' || newImage == '' || modifiedKeywordArray == '' || (!newPickup && !newDeliver)){
+					swal({
+						title: 'Fill Out Details',
+						text: 'Please enter all details',
+						icon: 'warning',
+						button: 'Got it',
+						timer: 2500
+					});
+				}
 				// Updates product information
-				$.ajax({
-					url: `${url}/updateProduct/p=${data._id}`,
-					type: 'PATCH',
-					dataType: 'json',
-					data: {
-						title : newTitle,
-						description : newDescription,
-						price : newPrice,
-						image : newImage,
-						category : newCategory,
-						keywords : modifiedKeywordArray,
-						pickup : newPickup,
-						deliver : newDeliver
-					},
-					success: function(updatedData){
-						swal({
-							title: 'Listing Updated',
-							text: `Successfully updated ${data.title} with new details that you have entered`,
-							icon: 'success',
-							button: 'Got it',
-							timer: 2500
-						}).then(function(){
-							location.reload();
-						});
-					},
-					error: function(error){
-						alert('Could not update listing');
-					}
-				});
+				else{
+					$.ajax({
+						url: `${url}/updateProduct/p=${data._id}`,
+						type: 'PATCH',
+						dataType: 'json',
+						data: {
+							title : newTitle,
+							description : newDescription,
+							price : newPrice,
+							image : imageUrl,
+							category : newCategory,
+							keywords : modifiedKeywordArray,
+							pickup : newPickup,
+							deliver : newDeliver
+						},
+						success: function(updatedData){
+							$('#updateProductModal').modal('hide');
+							swal({
+								title: 'Listing Updated',
+								text: `Successfully updated ${data.title} with new details that you have entered`,
+								icon: 'success',
+								button: 'Got it',
+								timer: 2500
+							}).then(function(){
+								location.reload();
+							});
+						},
+						error: function(error){
+							alert('Could not update listing');
+						}
+					});
+				}
 			}); // Save changes end
 		}); // Edit listing
 		// Delete a listing
@@ -673,8 +695,8 @@ $(document).ready(function(){
 					success: {
 						text: 'Purchase',
 						value: 'add',
-					},
-				},
+					}
+				}
 			})
 			// Add to purchased list method
 			.then((value) => {
@@ -688,7 +710,7 @@ $(document).ready(function(){
 						success: function(buyerData){
 							// Conditional statement to make sure that the user buying the product has enough in their account to do so
 							if(buyerData.balance > data.price){
-								// Edit product details
+									// Edit product details
 								$.ajax({
 									url: `${url}/productSold/p=${data._id}`,
 									type: `PATCH`,
@@ -697,6 +719,13 @@ $(document).ready(function(){
 										status: 'sold'
 									},
 									success: function(updateBuyerBalance){
+										document.getElementById('questionForm').innerHTML =
+										`<div class="alert alert-danger col-12 text-center" role="alert">
+										This product has been sold so questions are closed</div>`;
+										// Adds buttons
+										document.getElementById('dynamicBtnContainer').innerHTML =
+										`<div class="alert alert-danger col-12 text-center" role="alert">This product has been sold</div>`;
+				
 										// Get's seller's information
 										$.ajax({
 											url: `${url}/users/u=${data.sellerId}`,
@@ -931,7 +960,6 @@ $(document).ready(function(){
 						buyNow(data);
 					}
 				}
-
 				// If the user isn't logged in
 				else{
 					// Adds warning to login or register
