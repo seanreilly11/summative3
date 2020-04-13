@@ -704,7 +704,7 @@ $(document).ready(function(){
 											type: 'GET',
 											data: 'json',
 											success: function(newProdData){
-												listingPrivledges(sellerId, newProdData);
+												listingPrivledges(newProdData);
 											},
 											error: function(error){
 												alert("Can't get product");
@@ -726,7 +726,7 @@ $(document).ready(function(){
 										});
 										// Update seller's wallet
 										$.ajax({
-											url: `${url}/updateBalance/u=${sellerData._id}`,
+											url: `${url}/updateBalance/u=${data.sellerId}`,
 											type: `PATCH`,
 											data: {
 												balance: updateSellerWallet
@@ -832,7 +832,7 @@ $(document).ready(function(){
 								card += `<p class="mb-0">Shipping: Delivery only</p></div>`;
 							}
 							document.getElementById('productButtonContainer').innerHTML = card;
-							listingPrivledges(sellerData, data);
+							listingPrivledges(data);
 						}
 					});
 				},
@@ -844,7 +844,8 @@ $(document).ready(function(){
 	} // Open product function ends
 
 	// Gives different layout if user is logged in our out
-	function listingPrivledges(sellerId, data){
+	// data is product data
+	function listingPrivledges(data){
 		let status = data.status;
 		let productId = data._id;
 		var sellerId = data.sellerId;
@@ -1109,6 +1110,9 @@ $(document).ready(function(){
 					else{
 						$('#registerForm').hide();
 						$('#loginUsername').focus();
+						$('#productCards').show();
+						$("#filterContainer").show();
+						showAllProducts();
 						swal({
 							title: 'Success!',
 							text: `Congratulations! Your new account has been registered\n Please log in to continue`,
@@ -1116,7 +1120,7 @@ $(document).ready(function(){
 							button: 'Okay!',
 							timer: 2500
 						});
-						showAllProducts();
+						
 					}
 				},
 				error:function(){
@@ -1458,7 +1462,7 @@ $(document).ready(function(){
 									}
 								}
 								sessionStorage.clear();
-								setTimeout(location.reload.bind(location), 2500);
+								setTimeout(location.reload.bind(location), 500);
 								$("#productPage").hide();
 								showAllProducts();
 								$("#productCards").show();
