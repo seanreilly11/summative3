@@ -726,7 +726,7 @@ $(document).ready(function(){
 										});
 										// Update seller's wallet
 										$.ajax({
-											url: `${url}/updateBalance/u=${sellerData._id}`,
+											url: `${url}/updateBalance/u=${data.sellerId}`,
 											type: `PATCH`,
 											data: {
 												balance: updateSellerWallet
