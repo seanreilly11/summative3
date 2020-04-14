@@ -1067,6 +1067,7 @@ $(document).ready(function(){
 						$('#navLoggedOut').hide();
 						$('#registerForm').hide();
 						$("#productPage").hide();
+						$("#productCards").show();
 						$("#filterContainer").show();
 						openProduct();
 						showAllProducts();
