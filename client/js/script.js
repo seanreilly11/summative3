@@ -8,7 +8,6 @@ $(document).ready(function(){
 	$('#account').hide();
 	$("#productCards").show();
 	$('#productPage').hide();
-	$("#wrongImageAlert").hide();
 
 	if (sessionStorage['username']) {
 		$('#navLoggedIn').show();
@@ -74,6 +73,7 @@ $(document).ready(function(){
 				}
 				openProduct();
 				resetCategory();
+				resetFilter();
 				$('#account').hide();
 				$("#productCards").show();
 				$('#productPage').hide();
@@ -91,6 +91,11 @@ $(document).ready(function(){
 		for(let c=0; c<categories.length; c++){
 			$("#"+categories[c].id).removeClass('btn-secondary').addClass('btn-outline-secondary');
 		}
+	}
+
+	// reset filter when not in effect
+	function resetFilter(){
+		$("#filterSelect").val("featured")
 	}
 
 	//category filter
@@ -157,6 +162,7 @@ $(document).ready(function(){
 							}
 							openProduct();
 							addToWatchlistSymbol();
+							resetFilter();
 						},
 						error: function(error){
 							console.log('Couldnt load watchlist while sorting');
@@ -1085,6 +1091,7 @@ $(document).ready(function(){
 		sessionStorage.clear();
 		resetCategory();
 		showAllProducts();
+		$('#filterBar').show();
 		$('#navLoggedIn').hide();
 		$('#navLoggedOut').show();
 		$("#account").hide();
@@ -1615,7 +1622,7 @@ $(document).ready(function(){
 									}
 								}
 								card += `</div><div class="col-12 form-inline float-right">`;
-								if(sessionStorage.getItem("username")){
+								if(sessionStorage.getItem("username") && product.status == "listed"){
 									card += `<input type="text" class="form-control reply-input col-8 col-md-9" name="reply-input" placeholder="Reply">
 									<button type="button" class="btn btn-primary col-4 col-md-3 replyBtn">Reply</button>`;
 								}
