@@ -14,11 +14,14 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "grunt": "^1.1.0",
+    "jquery": "^3.4.1",
     "mongoose": "^5.9.5"
   },
   "devDependencies": {
     "grunt-contrib-jshint": "^2.1.0",
     "grunt-contrib-uglify": "^4.0.1",
-    "grunt-contrib-watch": "^1.1.0"
+    "grunt-contrib-uglify-es": "github:gruntjs/grunt-contrib-uglify#harmony",
+    "grunt-contrib-watch": "^1.1.0",
+    "uglify-es": "^3.3.9"
   }
 }

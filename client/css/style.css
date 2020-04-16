@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+
+html{
+	font-size: 100%;
+	scroll-behavior: smooth;
+}
+
+body{
+	font-family: 'Open Sans', sans-serif;
+}
+
+#homeLogo{
+	width: 90px;
+	margin-left: 1rem;
+}
+
+.swal-text {
+    text-align: center;
+}
+
+.account-info__picture img{
+	max-width: 150px;
+}
+
+.account-info__sidebar__list{
+	list-style: none;
+}
+
+.account-info__sidebar__list-item{
+	cursor: pointer;
+	margin-left: -25px;;
+	color: #007bff;
+	transition: margin-left .35s ease-in-out;
+}
+
+.account-info__sidebar__list-item--active{
+	font-weight: bold;
+	margin-left: -15px;
+}
+
+.product-btn-container{
+	border: 2px solid grey;
+}
+
+.product-link{
+	cursor: pointer;
+}
+
+.btn-watchlist-card{
+	font-size: 30px;
+	font-weight: bold;
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: .25rem .75rem;
+	line-height: 1;
+	cursor: pointer;
+	border-radius: 10px 0 10px 10px;
+	transition: background-color .35s ease-in-out;
+	z-index: 2;
+}
+
+.btn-watchlist-card:hover{
+	background-color: #333;
+	background-color: rgba(0,0,0,.3);
+}
+
+.btn-category{
+	display: block;
+	width: 100%;
+}
+
+.card-img-top{
+	width: auto;
+	max-height: 250px;
+	object-fit: contain;
+}
+
+.card-title{
+	font-size: 1.4rem;
+}
+
+.comment-time{
+	font-size: .8rem;
+}
+
+#wrongImageAlert{
+	display: none;
+}
+
+/*media queries*/
+@media (min-width: 576px){
+	.modal-dialog{
+		max-width: 600px;
+	}
+	.btn-category{
+		display: inline;
+		width: auto;
+	}
+	#categoryDropDownBtn{
+		display: none;
+	}
+	#categories{
+		display: block;
+	}
+}
+@media (min-width: 768px){
+	.account-info__picture img{
+		max-width: 220px;
+	}
+	.product-btn-container{
+		position: sticky;
+		top: 1rem;
+	}
+}
