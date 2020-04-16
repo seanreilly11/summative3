@@ -1,432 +1,964 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Trade Easy - Home</title>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Trade Easy - Home</title>
 
-	<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
-	<link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-	<!-- Logged out nav -->
-	<nav id="navLoggedOut" class="navbar navbar-light bg-light justify-content-between">
-		<a href="index.html" class="navbar-brand">
-			<img src="images/weblogo.png" id="homeLogo" alt="home-logo">
-		</a>
-		<img src="" alt="">
-		<div class="form-inline">
-			<input id="loginUsername" class="form-control mr-2" type="text" placeholder="Username" aria-label="Username">
-			<input id="loginPassword" class="form-control mr-2" type="password" placeholder="Password" aria-label="Password">
-			<button id="loginButton" class="btn btn-outline-dark my-2 mr-2">Login</button>
-			<button id="registerButton" class="btn btn-dark my-2">Register</button>
-		</div>
-	</nav>
+        <link
+            rel="stylesheet"
+            href="node_modules/bootstrap/dist/css/bootstrap.min.css"
+        />
+        <link rel="stylesheet" href="css/style.min.css" />
+    </head>
+    <body>
+        <!-- Logged out nav -->
+        <nav
+            id="navLoggedOut"
+            class="navbar navbar-light bg-light justify-content-between"
+        >
+            <a href="index.html" class="navbar-brand">
+                <img src="images/weblogo.png" id="homeLogo" alt="home-logo" />
+            </a>
+            <img src="" alt="" />
+            <div class="form-inline">
+                <input
+                    id="loginUsername"
+                    class="form-control mr-2"
+                    type="text"
+                    placeholder="Username"
+                    aria-label="Username"
+                />
+                <input
+                    id="loginPassword"
+                    class="form-control mr-2"
+                    type="password"
+                    placeholder="Password"
+                    aria-label="Password"
+                />
+                <button id="loginButton" class="btn btn-outline-dark my-2 mr-2">
+                    Login
+                </button>
+                <button id="registerButton" class="btn btn-dark my-2">
+                    Register
+                </button>
+            </div>
+        </nav>
 
-	<!-- Logged in nav -->
-	<nav id="navLoggedIn" class="navbar navbar-light bg-light justify-content-between">
-		<a href="index.html" class="navbar-brand">
-			<img src="images/weblogo.png" id="homeLogo" alt="home-logo">
-		</a>
-		<div class="form-inline">
-			<p class="my-2 mr-3">Hi, <span id="firstNameGreeting"></span>!</p>
-			<button id="myAccountButton" class="btn btn-dark my-2 mr-2">My account</button>
-			<button id="logoutButton" class="btn btn-outline-dark my-2">Logout</button>
-		</div>
-	</nav>
+        <!-- Logged in nav -->
+        <nav
+            id="navLoggedIn"
+            class="navbar navbar-light bg-light justify-content-between"
+        >
+            <a href="index.html" class="navbar-brand">
+                <img src="images/weblogo.png" id="homeLogo" alt="home-logo" />
+            </a>
+            <div class="form-inline">
+                <p class="my-2 mr-3">
+                    Hi, <span id="firstNameGreeting"></span>!
+                </p>
+                <button id="myAccountButton" class="btn btn-dark my-2 mr-2">
+                    My account
+                </button>
+                <button id="logoutButton" class="btn btn-outline-dark my-2">
+                    Logout
+                </button>
+            </div>
+        </nav>
 
-	<!-- search nav section -->
-	<div id="filterContainer" class="container mt-3 border-success rounded p-0">
-		<form id="searchNav" class="bg-success rounded p-2 form-inline w-100">
-			<input id="searchBar" class="col-lg-11 col-sm-10 form-control bg-light border border-success" type="search" placeholder="Search" aria-label="Search">
-			<button id="searchButton" class="col-lg-1 col-sm-2 btn btn-light">Search</button>
-		</form>
-		<button id="categoryDropDownBtn" class="btn btn-block btn-primary my-1" data-toggle="collapse" data-target="#categories" aria-expanded="false" aria-controls="categories">Categories</button>
-		<div id="categories" class="collapse">
-			<div id="collapse" class="categories-section p-3 bg-light d-flex justify-content-around row m-0">
-				<button type="button" id="collectiblesButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Antiques/Collectibles</button>
-				<button type="button" id="booksButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Books</button>
-				<button type="button" id="clothingButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Clothing</button>
-				<button type="button" id="electronicsButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Electronics</button>
-				<button type="button" id="furnitureButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Furniture/Homeware</button>
-				<button type="button" id="gamesButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Games/Toys</button>
-				<button type="button" id="gardeningButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Gardening/Outdoors</button>
-				<button type="button" id="musicButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Music</button>
-				<button type="button" id="sportButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Sport</button>
-				<button type="button" id="otherButton" class="btn-category btn btn-outline-secondary btn-sm my-1">Other</button>
-			</div>
-		</div>
-		<div id="filterBar" class="rounded p-2 bg-success">
-			<select id="filterSelect" class="form-control col-xl-2 col-lg-3 col-md-4 col-12">
-				<option value="featured">Featured First</option>
-				<option value="low">Price - Low to High</option>
-				<option value="high">Price - High to Low</option>
-			</select>
-		</div>
+        <!-- search nav section -->
+        <div
+            id="filterContainer"
+            class="container mt-3 border-success rounded p-0"
+        >
+            <form
+                id="searchNav"
+                class="bg-success rounded p-2 form-inline w-100"
+            >
+                <input
+                    id="searchBar"
+                    class="col-lg-11 col-sm-10 form-control bg-light border border-success"
+                    type="search"
+                    placeholder="Search"
+                    aria-label="Search"
+                />
+                <button
+                    id="searchButton"
+                    class="col-lg-1 col-sm-2 btn btn-light"
+                >
+                    Search
+                </button>
+            </form>
+            <button
+                id="categoryDropDownBtn"
+                class="btn btn-block btn-primary my-1"
+                data-toggle="collapse"
+                data-target="#categories"
+                aria-expanded="false"
+                aria-controls="categories"
+            >
+                Categories
+            </button>
+            <div id="categories" class="collapse">
+                <div
+                    id="collapse"
+                    class="categories-section p-3 bg-light d-flex justify-content-around row m-0"
+                >
+                    <button
+                        type="button"
+                        id="collectiblesButton"
+                        class="btn-category btn btn-outline-secondary btn-sm my-1"
+                    >
+                        Antiques/Collectibles
+                    </button>
+                    <button
+                        type="button"
+                        id="booksButton"
+                        class="btn-category btn btn-outline-secondary btn-sm my-1"
+                    >
+                        Books
+                    </button>
+                    <button
+                        type="button"
+                        id="clothingButton"
+                        class="btn-category btn btn-outline-secondary btn-sm my-1"
+                    >
+                        Clothing
+                    </button>
+                    <button
+                        type="button"
+                        id="electronicsButton"
+                        class="btn-category btn btn-outline-secondary btn-sm my-1"
+                    >
+                        Electronics
+                    </button>
+                    <button
+                        type="button"
+                        id="furnitureButton"
+                        class="btn-category btn btn-outline-secondary btn-sm my-1"
+                    >
+                        Furniture/Homeware
+                    </button>
+                    <button
+                        type="button"
+                        id="gamesButton"
+                        class="btn-category btn btn-outline-secondary btn-sm my-1"
+                    >
+                        Games/Toys
+                    </button>
+                    <button
+                        type="button"
+                        id="gardeningButton"
+                        class="btn-category btn btn-outline-secondary btn-sm my-1"
+                    >
+                        Gardening/Outdoors
+                    </button>
+                    <button
+                        type="button"
+                        id="musicButton"
+                        class="btn-category btn btn-outline-secondary btn-sm my-1"
+                    >
+                        Music
+                    </button>
+                    <button
+                        type="button"
+                        id="sportButton"
+                        class="btn-category btn btn-outline-secondary btn-sm my-1"
+                    >
+                        Sport
+                    </button>
+                    <button
+                        type="button"
+                        id="otherButton"
+                        class="btn-category btn btn-outline-secondary btn-sm my-1"
+                    >
+                        Other
+                    </button>
+                </div>
+            </div>
+            <div id="filterBar" class="rounded p-2 bg-success">
+                <select
+                    id="filterSelect"
+                    class="form-control col-xl-2 col-lg-3 col-md-4 col-12"
+                >
+                    <option value="featured">Featured First</option>
+                    <option value="low">Price - Low to High</option>
+                    <option value="high">Price - High to Low</option>
+                </select>
+            </div>
+        </div>
 
-	</div>
+        <div class="container h-100">
+            <div class="row justify-content-center align-items-center">
+                <div class="row col-12 my-5" id="productCards"></div>
+                <div class="col-10 col-md-8 col-lg-6">
+                    <!-- Sign Up Start -->
+                    <form class="form-example my-5" id="registerForm">
+                        <h1>Sign Up</h1>
+                        <p>
+                            Sign up today and get a free $100 credit for your
+                            account!
+                        </p>
 
-	<div class="container h-100">
-		<div class="row justify-content-center align-items-center">
-			<div class="row col-12 my-5" id="productCards"></div>
-			<div class="col-10 col-md-8 col-lg-6">
-				<!-- Sign Up Start -->
-				<form class="form-example my-5" id="registerForm">
-					<h1>Sign Up</h1>
-					<p>Sign up today and get a free $100 credit for your account!</p>
+                        <!-- Input fields -->
+                        <div class="form-group mt-5">
+                            <label for="registerUsername">Username</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="registerUsername"
+                                name="registerUsername"
+                            />
+                        </div>
+                        <div class="row">
+                            <div class="col-6 form-group">
+                                <label for="registerFirstName"
+                                    >First Name</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="registerFirstName"
+                                    name="registerFirstName"
+                                />
+                            </div>
+                            <div class="col-6 form-group">
+                                <label for="registerLastName">Last Name</label>
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    id="registerLastName"
+                                    name="registerLastName"
+                                />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerLocation">City</label>
+                            <select class="form-control" id="registerLocation">
+                                <option value="">Please select City</option>
+                                <option value="Auckland">Auckland</option>
+                                <option value="Blenheim">Blenheim</option>
+                                <option value="Christchurch"
+                                    >Christchurch</option
+                                >
+                                <option value="Dunedin">Dunedin</option>
+                                <option value="Gisborne">Gisborne</option>
+                                <option value="Gore">Gore</option>
+                                <option value="Hamilton">Hamilton</option>
+                                <option value="Hastings">Hastings</option>
+                                <option value="Invercargill"
+                                    >Invercargill</option
+                                >
+                                <option value="Masterton">Masterton</option>
+                                <option value="Napier">Napier</option>
+                                <option value="Nelson">Nelson</option>
+                                <option value="Northland">Northland</option>
+                                <option value="New Plymouth"
+                                    >New Plymouth</option
+                                >
+                                <option value="Oamaru">Oamaru</option>
+                                <option value="Palmerson North"
+                                    >Palmerson North</option
+                                >
+                                <option value="Queenstown">Queenstown</option>
+                                <option value="Rotorua">Rotorua</option>
+                                <option value="Taupo">Taupo</option>
+                                <option value="Tauranga">Tauranga</option>
+                                <option value="Timaru">Timaru</option>
+                                <option value="Wellington">Wellington</option>
+                                <option value="Whangarei">Whangarei</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail">Email</label>
+                            <input
+                                type="email"
+                                class="form-control"
+                                id="registerEmail"
+                                name="registerEmail"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword">Password</label>
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="registerPassword"
+                                name="registerPassword"
+                            />
+                        </div>
 
-					<!-- Input fields -->
-					<div class="form-group mt-5">
-						<label for="registerUsername">Username</label>
-						<input type="text" class="form-control" id="registerUsername" name="registerUsername">
-					</div>
-					<div class="row">
-						<div class="col-6 form-group">
-							<label for="registerFirstName">First Name</label>
-							<input type="text" class="form-control" id="registerFirstName" name="registerFirstName">
-						</div>
-						<div class=" col-6 form-group">
-							<label for="registerLastName">Last Name</label>
-							<input type="text" class="form-control" id="registerLastName" name="registerLastName">
-						</div>
-					</div>
-					<div class="form-group">
-						<label for="registerLocation">City</label>
-						<select class="form-control" id="registerLocation">
-							<option value="">Please select City</option>
-							<option value="Auckland">Auckland</option>
-							<option value="Blenheim">Blenheim</option>
-							<option value="Christchurch">Christchurch</option>
-							<option value="Dunedin">Dunedin</option>
-							<option value="Gisborne">Gisborne</option>
-							<option value="Gore">Gore</option>
-							<option value="Hamilton">Hamilton</option>
-							<option value="Hastings">Hastings</option>
-							<option value="Invercargill">Invercargill</option>
-							<option value="Masterton">Masterton</option>
-							<option value="Napier">Napier</option>
-							<option value="Nelson">Nelson</option>
-							<option value="Northland">Northland</option>
-							<option value="New Plymouth">New Plymouth</option>
-							<option value="Oamaru">Oamaru</option>
-							<option value="Palmerson North">Palmerson North</option>
-							<option value="Queenstown">Queenstown</option>
-							<option value="Rotorua">Rotorua</option>
-							<option value="Taupo">Taupo</option>
-							<option value="Tauranga">Tauranga</option>
-							<option value="Timaru">Timaru</option>
-							<option value="Wellington">Wellington</option>
-							<option value="Whangarei">Whangarei</option>
-						</select>
-					</div>
-					<div class="form-group">
-						<label for="registerEmail">Email</label>
-						<input type="email" class="form-control" id="registerEmail" name="registerEmail">
-					</div>
-					<div class="form-group">
-						<label for="registerPassword">Password</label>
-						<input type="password" class="form-control" id="registerPassword" name="registerPassword">
-					</div>
+                        <button
+                            type="button"
+                            class="btn btn-primary mt-3"
+                            id="registerUser"
+                        >
+                            Sign Up
+                        </button>
+                        <!-- End input fields -->
+                    </form>
+                    <!-- Sign Up Finish -->
+                </div>
+                <!-- Product page -->
+                <div class="my-5" id="productPage">
+                    <div class="row d-flex align-items-start">
+                        <!-- Product information -->
+                        <div
+                            id="productInformation"
+                            class="col-11 col-md-8 order-2 order-md-1 px-3 mx-auto"
+                        ></div>
+                        <!-- Button container -->
+                        <div
+                            id="productButtonContainer"
+                            class="col-11 col-md-4 py-2 product-btn-container order-1 order-md-2 mx-auto mb-3"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-					<button type="button" class="btn btn-primary mt-3" id="registerUser">Sign Up</button>
-					<!-- End input fields -->
-				</form>
-				<!-- Sign Up Finish -->
-			</div>
-			<!-- Product page -->
-			<div class="my-5" id="productPage">
-				<div class="row d-flex align-items-start">
-					<!-- Product information -->
-					<div id="productInformation" class="col-11 col-md-8 order-2 order-md-1 px-3 mx-auto"></div>
-					<!-- Button container -->
-					<div id="productButtonContainer" class="col-11 col-md-4 py-2 product-btn-container order-1 order-md-2 mx-auto mb-3"></div>
-				</div>
-			</div>
-		</div>
-	</div>
+        <div class="container h-100 my-5" id="account">
+            <div class="row h-100 justify-content-center align-items-center">
+                <div class="col-9 row account-info border py-3 rounded-lg">
+                    <div
+                        class="col-lg-4 col-md-6 col-sm-12 order-2 order-md-2 order-lg-1 account-info__sidebar d-flex flex-column justify-content-center"
+                    >
+                        <h5 class="account-info__sidebar__heading">Selling</h5>
+                        <ul class="account-info__sidebar__list">
+                            <li
+                                class="account-info__sidebar__list-item account-info__sidebar__list-item--active"
+                                id="viewSelling"
+                            >
+                                Items I'm Selling
+                            </li>
+                            <li
+                                class="account-info__sidebar__list-item"
+                                id="viewSold"
+                            >
+                                Sold items
+                            </li>
+                        </ul>
+                        <h5 class="account-info__sidebar__heading">Buying</h5>
+                        <ul class="account-info__sidebar__list">
+                            <li
+                                class="account-info__sidebar__list-item"
+                                id="viewBought"
+                            >
+                                Bought items
+                            </li>
+                            <li
+                                class="account-info__sidebar__list-item"
+                                id="viewWatchlist"
+                            >
+                                My watchlist
+                            </li>
+                        </ul>
+                    </div>
+                    <div
+                        class="col-lg-4 col-md-12 col-sm-12 order-1 order-md-1 order-lg-2 account-info__picture d-flex flex-column align-items-center justify-content-center"
+                    >
+                        <h3 class="text-center" id="profile-fullname"></h3>
+                        <img
+                            src="images/avatar.png"
+                            alt="Profile avatar"
+                            class="w-100"
+                        />
+                    </div>
+                    <div
+                        class="col-lg-4 col-md-6 col-sm-12 order-3 account-info__details text-left text-md-right d-flex flex-column justify-content-center"
+                    >
+                        <p class="mb-2">
+                            Username: <span id="profile-username"></span>
+                        </p>
+                        <p class="mb-2">
+                            Email: <span id="profile-email"></span>
+                        </p>
+                        <p class="mb-2">
+                            Location: <span id="profile-location"></span>
+                        </p>
+                        <p class="mb-3">
+                            Balance: <span id="profile-balance"></span>
+                        </p>
+                        <div
+                            class="row justify-content-start justify-content-sm-end"
+                        >
+                            <button
+                                class="btn btn-primary mr-2"
+                                data-toggle="modal"
+                                data-target="#addProductModal"
+                                id="addListingBtn"
+                            >
+                                Add Listing
+                            </button>
+                            <button
+                                class="btn btn-outline-primary"
+                                data-toggle="modal"
+                                data-target="#editProfileModal"
+                                id="editProfileBtn"
+                            >
+                                Edit Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row col-12 my-5 mx-auto" id="myProductCards"></div>
+        </div>
 
-	<div class="container h-100 my-5" id="account">
-		<div class="row h-100 justify-content-center align-items-center">
-			<div class="col-9 row account-info border py-3 rounded-lg">
-				<div class="col-lg-4 col-md-6 col-sm-12 order-2 order-md-2 order-lg-1 account-info__sidebar d-flex flex-column justify-content-center">
-					<h5 class="account-info__sidebar__heading">Selling</h5>
-					<ul class="account-info__sidebar__list">
-						<li class="account-info__sidebar__list-item account-info__sidebar__list-item--active" id="viewSelling">Items I'm Selling</li>
-						<li class="account-info__sidebar__list-item" id="viewSold">Sold items</li>
-					</ul>
-					<h5 class="account-info__sidebar__heading">Buying</h5>
-					<ul class="account-info__sidebar__list">
-						<li class="account-info__sidebar__list-item" id="viewBought">Bought items</li>
-						<li class="account-info__sidebar__list-item" id="viewWatchlist">My watchlist</li>
-					</ul>
-				</div>
-				<div class="col-lg-4 col-md-12 col-sm-12 order-1 order-md-1 order-lg-2 account-info__picture d-flex flex-column align-items-center justify-content-center">
-					<h3 class="text-center" id="profile-fullname"></h3>
-					<img src="images/avatar.png" alt="Profile avatar" class="w-100">
-				</div>
-				<div class="col-lg-4 col-md-6 col-sm-12 order-3 account-info__details text-left text-md-right d-flex flex-column justify-content-center">
-					<p class="mb-2">Username: <span id="profile-username"></span></p>
-					<p class="mb-2">Email: <span id="profile-email"></span></p>
-					<p class="mb-2">Location: <span id="profile-location"></span></p>
-					<p class="mb-3">Balance: <span id="profile-balance"></span></p>
-					<div class="row justify-content-start justify-content-sm-end">
-						<button class="btn btn-primary mr-2" data-toggle="modal" data-target="#addProductModal" id="addListingBtn">Add Listing</button>
-						<button class="btn btn-outline-primary" data-toggle="modal" data-target="#editProfileModal" id="editProfileBtn">Edit Profile</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="row col-12 my-5 mx-auto" id="myProductCards"></div>
-	</div>
+        <!-- Add product Modal -->
+        <div
+            class="modal fade"
+            id="addProductModal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="productModalTitle"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productModalTitle">
+                            Add new listing
+                        </h5>
+                        <button
+                            type="button"
+                            class="close"
+                            data-dismiss="modal"
+                            aria-label="Close"
+                        >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Add product Start -->
+                        <form class="form-example" id="addProductForm">
+                            <!-- Input fields -->
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-2 col-form-label"
+                                    for="addTitle"
+                                    >Title</label
+                                >
+                                <div class="col-sm-10">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="addTitle"
+                                        name="addTitle"
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-2 col-form-label"
+                                    for="addPrice"
+                                    >Price</label
+                                >
+                                <div class="col-sm-10">
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        id="addPrice"
+                                        name="addPrice"
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-2 col-form-label"
+                                    for="addCategory"
+                                    >Category</label
+                                >
+                                <div class="col-sm-10">
+                                    <select
+                                        class="form-control"
+                                        id="addCategory"
+                                    >
+                                        <option value=""
+                                            >Please select category</option
+                                        >
+                                        <option value="Antiques/Collectibles"
+                                            >Antiques/Collectibles</option
+                                        >
+                                        <option value="Books">Books</option>
+                                        <option value="Clothing"
+                                            >Clothing</option
+                                        >
+                                        <option value="Electronics"
+                                            >Electronics</option
+                                        >
+                                        <option value="Furniture/Homeware"
+                                            >Furniture/Homeware</option
+                                        >
+                                        <option value="Games/Toys"
+                                            >Games/Toys</option
+                                        >
+                                        <option value="Gardening/Outdoors"
+                                            >Gardening/Outdoors</option
+                                        >
+                                        <option value="Music">Music</option>
+                                        <option value="Sport">Sport</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-2 col-form-label"
+                                    for="addDescription"
+                                    >Description</label
+                                >
+                                <div class="col-sm-10">
+                                    <textarea
+                                        class="form-control"
+                                        id="addDescription"
+                                        name="addDescription"
+                                    ></textarea>
+                                </div>
+                            </div>
+                            <div
+                                class="alert alert-danger col-12 text-center"
+                                role="alert"
+                                id="wrongImageAlert"
+                            >
+                                Please only enter the image ID NOT the whole
+                                link. i.e. 1kGSm0VVmUzWu1qFKfYP instead of
+                                https://drive.google.com/open?id=1kGSm0VVmUzWu1qFKfYP
+                            </div>
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-2 col-form-label"
+                                    for="addImage"
+                                    >Image ID</label
+                                >
+                                <div class="form-group col-sm-10">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="addImage"
+                                        name="addImage"
+                                    />
+                                    <small class="form-text text-danger"
+                                        >Please only enter the image ID NOT the
+                                        whole link.</small
+                                    >
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-2 col-form-label"
+                                    for="addKeywords"
+                                    >Keywords</label
+                                >
+                                <div class="col-sm-10">
+                                    <textarea
+                                        class="form-control"
+                                        id="addKeywords"
+                                        name="addKeywords"
+                                        placeholder="Enter keywords related to your product"
+                                    ></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <legend class="col-form-label col-sm-2 pt-0">
+                                    Shipping
+                                </legend>
+                                <div class="col-sm-10">
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            id="shipping-pick"
+                                            value="Pick up"
+                                        />
+                                        <label
+                                            class="form-check-label"
+                                            for="shipping-pick"
+                                            >Pick up</label
+                                        >
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            id="shipping-deliver"
+                                            value="Delivery"
+                                        />
+                                        <label
+                                            class="form-check-label"
+                                            for="shipping-deliver"
+                                            >Delivery</label
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End input fields -->
+                        </form>
+                        <!-- Add product Finish -->
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-dismiss="modal"
+                        >
+                            Close
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            id="addProductBtn"
+                        >
+                            Save changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-	<!-- Add product Modal -->
-	<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="productModalTitle" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="productModalTitle">Add new listing</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<!-- Add product Start -->
-					<form class="form-example" id="addProductForm">
-						<!-- Input fields -->
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="addTitle">Title</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="addTitle" name="addTitle">
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="addPrice">Price</label>
-							<div class="col-sm-10">
-								<input type="number" class="form-control" id="addPrice" name="addPrice">
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="addCategory">Category</label>
-							<div class="col-sm-10">
-								<select class="form-control" id="addCategory">
-									<option value="">Please select category</option>
-									<option value="Antiques/Collectibles">Antiques/Collectibles</option>
-									<option value="Books">Books</option>
-									<option value="Clothing">Clothing</option>
-									<option value="Electronics">Electronics</option>
-									<option value="Furniture/Homeware">Furniture/Homeware</option>
-									<option value="Games/Toys">Games/Toys</option>
-									<option value="Gardening/Outdoors">Gardening/Outdoors</option>
-									<option value="Music">Music</option>
-									<option value="Sport">Sport</option>
-									<option value="Other">Other</option>
-								</select>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="addDescription">Description</label>
-							<div class="col-sm-10">
-								<textarea class="form-control" id="addDescription" name="addDescription"></textarea>
-							</div>
-						</div>
-						<div class="alert alert-danger col-12 text-center" role="alert" id="wrongImageAlert">Please only enter the image ID NOT the whole link. i.e. 1kGSm0VVmUzWu1qFKfYP instead of https://drive.google.com/open?id=1kGSm0VVmUzWu1qFKfYP</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="addImage">Image ID</label>
-								<div class="form-group col-sm-10">
-									<input type="text" class="form-control" id="addImage" name="addImage">
-									<small class="form-text text-danger">Please only enter the image ID NOT the whole link.</small>
-								</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="addKeywords">Keywords</label>
-							<div class="col-sm-10">
-								<textarea class="form-control" id="addKeywords" name="addKeywords" placeholder="Enter keywords related to your product"></textarea>
-							</div>
-						</div>
-						<div class="form-group row">
-							<legend class="col-form-label col-sm-2 pt-0">Shipping</legend>
-							<div class="col-sm-10">
-								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="checkbox" id="shipping-pick" value="Pick up">
-									<label class="form-check-label" for="shipping-pick">Pick up</label>
-								</div>
-								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="checkbox" id="shipping-deliver" value="Delivery">
-									<label class="form-check-label" for="shipping-deliver">Delivery</label>
-								</div>
-							</div>
-						</div>
-						<!-- End input fields -->
-					</form>
-					<!-- Add product Finish -->
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary" id="addProductBtn">Save changes</button>
-				</div>
-			</div>
-		</div>
-	</div>
+        <!-- edit profile Modal -->
+        <div
+            class="modal fade"
+            id="editProfileModal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="profileModalTitle"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="profileModalTitle">
+                            Edit your profile
+                        </h5>
+                        <button
+                            type="button"
+                            class="close"
+                            data-dismiss="modal"
+                            aria-label="Close"
+                        >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Edit profile Start -->
+                        <form class="form-example" id="editProfileForm">
+                            <div class="row">
+                                <div class="col-6 form-group">
+                                    <label for="editFirstName"
+                                        >First Name</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="editFirstName"
+                                        name="editFirstName"
+                                    />
+                                </div>
+                                <div class="col-6 form-group">
+                                    <label for="editLastName">Last Name</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="editLastName"
+                                        name="editLastName"
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="editLocation">City</label>
+                                <select class="form-control" id="editLocation">
+                                    <option value="">Please select City</option>
+                                    <option value="Auckland">Auckland</option>
+                                    <option value="Blenheim">Blenheim</option>
+                                    <option value="Christchurch"
+                                        >Christchurch</option
+                                    >
+                                    <option value="Dunedin">Dunedin</option>
+                                    <option value="Gisborne">Gisborne</option>
+                                    <option value="Gore">Gore</option>
+                                    <option value="Hamilton">Hamilton</option>
+                                    <option value="Hastings">Hastings</option>
+                                    <option value="Invercargill"
+                                        >Invercargill</option
+                                    >
+                                    <option value="Masterton">Masterton</option>
+                                    <option value="Napier">Napier</option>
+                                    <option value="Nelson">Nelson</option>
+                                    <option value="Northland">Northland</option>
+                                    <option value="New Plymouth"
+                                        >New Plymouth</option
+                                    >
+                                    <option value="Oamaru">Oamaru</option>
+                                    <option value="Palmerson North"
+                                        >Palmerson North</option
+                                    >
+                                    <option value="Queenstown"
+                                        >Queenstown</option
+                                    >
+                                    <option value="Rotorua">Rotorua</option>
+                                    <option value="Taupo">Taupo</option>
+                                    <option value="Tauranga">Tauranga</option>
+                                    <option value="Timaru">Timaru</option>
+                                    <option value="Wellington"
+                                        >Wellington</option
+                                    >
+                                    <option value="Whangarei">Whangarei</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editEmail">Email</label>
+                                <input
+                                    type="email"
+                                    class="form-control"
+                                    id="editEmail"
+                                    name="editEmail"
+                                />
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-danger mr-auto"
+                            id="deleteAccountButton"
+                        >
+                            Delete Account
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            id="closeAccountModal"
+                            data-dismiss="modal"
+                        >
+                            Close
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            id="saveProfileBtn"
+                        >
+                            Save changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-	<!-- edit profile Modal -->
-	<div class="modal fade" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalTitle" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="profileModalTitle">Edit your profile</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<!-- Edit profile Start -->
-					<form class="form-example" id="editProfileForm">
-						<div class="row">
-							<div class="col-6 form-group">
-								<label for="editFirstName">First Name</label>
-								<input type="text" class="form-control" id="editFirstName" name="editFirstName">
-							</div>
-							<div class=" col-6 form-group">
-								<label for="editLastName">Last Name</label>
-								<input type="text" class="form-control" id="editLastName" name="editLastName">
-							</div>
-						</div>
-						<div class="form-group">
-							<label for="editLocation">City</label>
-							<select class="form-control" id="editLocation">
-								<option value="">Please select City</option>
-								<option value="Auckland">Auckland</option>
-								<option value="Blenheim">Blenheim</option>
-								<option value="Christchurch">Christchurch</option>
-								<option value="Dunedin">Dunedin</option>
-								<option value="Gisborne">Gisborne</option>
-								<option value="Gore">Gore</option>
-								<option value="Hamilton">Hamilton</option>
-								<option value="Hastings">Hastings</option>
-								<option value="Invercargill">Invercargill</option>
-								<option value="Masterton">Masterton</option>
-								<option value="Napier">Napier</option>
-								<option value="Nelson">Nelson</option>
-								<option value="Northland">Northland</option>
-								<option value="New Plymouth">New Plymouth</option>
-								<option value="Oamaru">Oamaru</option>
-								<option value="Palmerson North">Palmerson North</option>
-								<option value="Queenstown">Queenstown</option>
-								<option value="Rotorua">Rotorua</option>
-								<option value="Taupo">Taupo</option>
-								<option value="Tauranga">Tauranga</option>
-								<option value="Timaru">Timaru</option>
-								<option value="Wellington">Wellington</option>
-								<option value="Whangarei">Whangarei</option>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="editEmail">Email</label>
-							<input type="email" class="form-control" id="editEmail" name="editEmail">
-						</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-danger mr-auto" id="deleteAccountButton">Delete Account</button>
-					<button type="button" class="btn btn-secondary" id="closeAccountModal" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary" id="saveProfileBtn">Save changes</button>
-				</div>
-			</div>
-		</div>
-	</div>
+        <!-- edit product modal -->
+        <div
+            class="modal fade"
+            id="updateProductModal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="updateProductModal"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateProductModalTitle">
+                            Edit your listing
+                        </h5>
+                        <button
+                            type="button"
+                            class="close"
+                            data-dismiss="modal"
+                            aria-label="Close"
+                        >
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Edit product form start -->
+                        <form id="editProductForm">
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-2 col-form-label"
+                                    for="updateTitle"
+                                    >Title</label
+                                >
+                                <div class="col-sm-10">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="updateTitle"
+                                        name="updateTitle"
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-2 col-form-label"
+                                    for="updatePrice"
+                                    >Price</label
+                                >
+                                <div class="col-sm-10">
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        id="updatePrice"
+                                        name="updatePrice"
+                                    />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-2 col-form-label"
+                                    for="updateCategory"
+                                    >Category</label
+                                >
+                                <div class="col-sm-10">
+                                    <select
+                                        class="form-control"
+                                        id="updateCategory"
+                                    >
+                                        <option value=""
+                                            >Please select category</option
+                                        >
+                                        <option value="Antiques/Collectibles"
+                                            >Antiques/Collectibles</option
+                                        >
+                                        <option value="Books">Books</option>
+                                        <option value="Clothing"
+                                            >Clothing</option
+                                        >
+                                        <option value="Electronics"
+                                            >Electronics</option
+                                        >
+                                        <option value="Furniture/Homeware"
+                                            >Furniture/Homeware</option
+                                        >
+                                        <option value="Games/Toys"
+                                            >Games/Toys</option
+                                        >
+                                        <option value="Gardening/Outdoors"
+                                            >Gardening/Outdoors</option
+                                        >
+                                        <option value="Music">Music</option>
+                                        <option value="Sport">Sport</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-2 col-form-label"
+                                    for="updateDescription"
+                                    >Description</label
+                                >
+                                <div class="col-sm-10">
+                                    <textarea
+                                        class="form-control"
+                                        id="updateDescription"
+                                        name="updateDescription"
+                                    ></textarea>
+                                </div>
+                            </div>
+                            <div
+                                class="alert alert-danger col-12 text-center"
+                                role="alert"
+                                id="wrongImageEditAlert"
+                            >
+                                Please only enter the image ID NOT the whole
+                                link. i.e. 1kGSm0VVmUzWu1qFKfYP instead of
+                                https://drive.google.com/open?id=1kGSm0VVmUzWu1qFKfYP
+                            </div>
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-2 col-form-label"
+                                    for="updateImage"
+                                    >Image URL</label
+                                >
+                                <div class="form-group col-sm-10">
+                                    <input
+                                        type="email"
+                                        class="form-control"
+                                        id="updateImage"
+                                        name="updateImage"
+                                    />
+                                    <small class="form-text text-danger"
+                                        >Please only enter the image ID NOT the
+                                        whole link.</small
+                                    >
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label
+                                    class="col-sm-2 col-form-label"
+                                    for="updateKeywords"
+                                    >Keywords</label
+                                >
+                                <div class="col-sm-10">
+                                    <textarea
+                                        class="form-control"
+                                        id="updateKeywords"
+                                        name="updateKeywords"
+                                        placeholder="Enter keywords related to your product"
+                                    ></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <legend class="col-form-label col-sm-2 pt-0">
+                                    Shipping
+                                </legend>
+                                <div class="col-sm-10">
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            id="updateShipping-pick"
+                                            value="Pick up"
+                                        />
+                                        <label
+                                            class="form-check-label"
+                                            for="updateShipping-pick"
+                                            >Pick up</label
+                                        >
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            id="updateShipping-deliver"
+                                            value="Delivery"
+                                        />
+                                        <label
+                                            class="form-check-label"
+                                            for="updateShipping-deliver"
+                                            >Delivery</label
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End input fields -->
+                        </form>
+                        <!-- Edit product form finish -->
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-dismiss="modal"
+                        >
+                            Close
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            id="updateProductBtn"
+                        >
+                            Save changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-	<!-- edit product modal -->
-	<div class="modal fade" id="updateProductModal" tabindex="-1" role="dialog" aria-labelledby="updateProductModal" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="updateProductModalTitle">Edit your listing</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<!-- Edit product form start -->
-					<form id="editProductForm">
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="updateTitle">Title</label>
-							<div class="col-sm-10">
-								<input type="text" class="form-control" id="updateTitle" name="updateTitle">
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="updatePrice">Price</label>
-							<div class="col-sm-10">
-								<input type="number" class="form-control" id="updatePrice" name="updatePrice">
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="updateCategory">Category</label>
-							<div class="col-sm-10">
-								<select class="form-control" id="updateCategory">
-									<option value="">Please select category</option>
-									<option value="Antiques/Collectibles">Antiques/Collectibles</option>
-									<option value="Books">Books</option>
-									<option value="Clothing">Clothing</option>
-									<option value="Electronics">Electronics</option>
-									<option value="Furniture/Homeware">Furniture/Homeware</option>
-									<option value="Games/Toys">Games/Toys</option>
-									<option value="Gardening/Outdoors">Gardening/Outdoors</option>
-									<option value="Music">Music</option>
-									<option value="Sport">Sport</option>
-									<option value="Other">Other</option>
-								</select>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="updateDescription">Description</label>
-							<div class="col-sm-10">
-								<textarea class="form-control" id="updateDescription" name="updateDescription"></textarea>
-							</div>
-						</div>
-						<div class="alert alert-danger col-12 text-center" role="alert" id="wrongImageEditAlert">Please only enter the image ID NOT the whole link. i.e. 1kGSm0VVmUzWu1qFKfYP instead of https://drive.google.com/open?id=1kGSm0VVmUzWu1qFKfYP</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="updateImage">Image URL</label>
-							<div class="form-group col-sm-10">
-								<input type="email" class="form-control" id="updateImage" name="updateImage">
-								<small class="form-text text-danger">Please only enter the image ID NOT the whole link.</small>
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-sm-2 col-form-label" for="updateKeywords">Keywords</label>
-							<div class="col-sm-10">
-								<textarea class="form-control" id="updateKeywords" name="updateKeywords" placeholder="Enter keywords related to your product"></textarea>
-							</div>
-						</div>
-						<div class="form-group row">
-							<legend class="col-form-label col-sm-2 pt-0">Shipping</legend>
-							<div class="col-sm-10">
-								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="checkbox" id="updateShipping-pick" value="Pick up">
-									<label class="form-check-label" for="updateShipping-pick">Pick up</label>
-								</div>
-								<div class="form-check form-check-inline">
-									<input class="form-check-input" type="checkbox" id="updateShipping-deliver" value="Delivery">
-									<label class="form-check-label" for="updateShipping-deliver">Delivery</label>
-								</div>
-							</div>
-						</div>
-						<!-- End input fields -->
-					</form>
-					<!-- Edit product form finish -->
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary" id="updateProductBtn">Save changes</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<script src="node_modules/jquery/dist/jquery.min.js"></script>
-	<script src="node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
-	<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-	<script src="js/script.js"></script>
-</body>
+        <script src="node_modules/jquery/dist/jquery.min.js"></script>
+        <script src="node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
+        <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <script src="js/script.min.js"></script>
+    </body>
 </html>
