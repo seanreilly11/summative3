@@ -13,6 +13,7 @@
     "bootstrap": "^4.4.1",
     "express": "^4.17.1",
     "grunt": "^1.1.0",
+    "grunt-contrib-uglify-es": "github:gruntjs/grunt-contrib-uglify#harmony",
     "jquery": "^3.4.1",
     "mongoose": "^5.9.6"
   },
@@ -23,6 +24,7 @@
     "grunt-contrib-imagemin": "^3.1.0",
     "grunt-contrib-jshint": "^2.1.0",
     "grunt-contrib-uglify": "^4.0.1",
-    "grunt-contrib-watch": "^1.1.0"
+    "grunt-contrib-watch": "^1.1.0",
+    "uglify-es": "^3.3.9"
   }
 }
